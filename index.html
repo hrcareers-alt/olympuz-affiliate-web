@@ -219,27 +219,21 @@
     </main>
   </div>
 
+ <!-- 1. STANDARD SCRIPT FOR UI SWITCHING -->
   <script>
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const activeTab = document.getElementById(`tab-${tabName}`);
       if(activeTab) activeTab.classList.remove('hidden');
     }
-  <script>
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      const activeTab = document.getElementById(`tab-${tabName}`);
-      if(activeTab) activeTab.classList.remove('hidden');
-    }
-  </script> <!-- THIS WAS THE MISSING TAG! -->
+  </script>
 
+  <!-- 2. MODULE SCRIPT FOR FIREBASE -->
   <script type="module">
-    // 1. Import Firebase tools (Added onAuthStateChanged)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // 2. Paste YOUR Firebase config right here
     const firebaseConfig = {
       apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
       authDomain: "olympuz-affiliateportal.firebaseapp.com",
@@ -249,15 +243,13 @@
       appId: "1:481351568871:web:003376102b843e1b888142"
     };
 
-    // 3. Start Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 4. CHECK FOR EXISTING SESSION ON PAGE LOAD (This prevents the refresh logout)
+    // Keep user logged in on refresh
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is logged in, fetch their data
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
@@ -265,12 +257,10 @@
           if (docSnap.exists()) {
             const userData = docSnap.data();
             
-            // Hide login, show dashboard
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
 
-            // Show admin menu if applicable
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
             }
@@ -279,13 +269,12 @@
           console.error("Error fetching user data on refresh:", error);
         }
       } else {
-        // No user is logged in, ensure login screen is shown
         document.getElementById('auth-screen').classList.remove('hidden');
         document.getElementById('dashboard-screen').classList.add('hidden');
       }
     });
 
-    // 5. Handle the Login Button Click
+    // Handle Login
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -296,7 +285,6 @@
       loginButton.innerText = "Logging in...";
 
       try {
-        // Authenticate with Firebase
         await signInWithEmailAndPassword(auth, email, password);
       } catch (error) {
         alert("Login failed: " + error.message);
@@ -305,10 +293,9 @@
       }
     });
 
-    // 6. Handle Logout
+    // Handle Logout
     window.logout = async () => {
       await signOut(auth);
-      // onAuthStateChanged will detect the logout and automatically show the login screen
       document.getElementById('admin-menu').classList.add('hidden');
       document.getElementById('login-form').reset();
     };

@@ -226,5 +226,82 @@
       if(activeTab) activeTab.classList.remove('hidden');
     }
   </script>
+  <!-- Put this right before </body> -->
+  <script type="module">
+    // 1. Import Firebase tools
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // 2. Paste YOUR Firebase config right here
+    const firebaseConfig = {
+      apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
+      authDomain: "olympuz-affiliateportal.firebaseapp.com",
+      projectId: "https://olympuz-affiliateportal-default-rtdb.asia-southeast1.firebasedatabase.app",
+      storageBucket: "olympuz-affiliateportal",
+      messagingSenderId: "olympuz-affiliateportal.firebasestorage.app",
+      appId: "1:481351568871:web:003376102b843e1b888142"
+      measurementId: "G-M0K2VGSP9C"
+    };
+
+    // 3. Start Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 4. Handle the Login Button Click
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); // Stop page from refreshing
+      
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const loginButton = e.target.querySelector('button');
+      
+      loginButton.innerText = "Logging in...";
+
+      try {
+        // Authenticate with Firebase
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Fetch user role from Firestore database
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          
+          // Hide login screen, show dashboard
+          document.getElementById('auth-screen').classList.add('hidden');
+          document.getElementById('dashboard-screen').classList.remove('hidden');
+          
+          // Update Welcome Text
+          document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
+
+          // If Admin, show the admin menu
+          if (userData.role === 'admin') {
+            document.getElementById('admin-menu').classList.remove('hidden');
+          }
+        } else {
+          alert("Login successful, but profile data is missing. Please contact support.");
+        }
+      } catch (error) {
+        alert("Login failed: " + error.message);
+      } finally {
+        loginButton.innerText = "Log In";
+      }
+    });
+
+    // 5. Handle Logout
+    window.logout = async () => {
+      await signOut(auth);
+      
+      // Hide dashboard, show login screen
+      document.getElementById('auth-screen').classList.remove('hidden');
+      document.getElementById('dashboard-screen').classList.add('hidden');
+      document.getElementById('admin-menu').classList.add('hidden');
+      document.getElementById('login-form').reset();
+    };
+  </script>
 </body>
 </html>

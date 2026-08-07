@@ -220,19 +220,11 @@
   </div>
 
  <!-- 1. STANDARD SCRIPT FOR UI SWITCHING -->
-  <script>
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      const activeTab = document.getElementById(`tab-${tabName}`);
-      if(activeTab) activeTab.classList.remove('hidden');
-    }
-  </script>
-
-  <!-- 2. MODULE SCRIPT FOR FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // ADDED: orderBy (to sort feedback by newest first)
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
@@ -268,9 +260,10 @@
               document.getElementById('admin-menu').classList.remove('hidden');
               loadAffiliates(); 
               listenToPendingPayouts(); 
+              listenToAdminFeedback(); // <-- NEW: Load feedback for admins
             }
 
-            // --- NEW: Load user's approved payouts in real-time ---
+            // Load user's approved payouts in real-time
             listenToUserPayouts(user.uid);
 
             // Auto-fill Settings
@@ -409,7 +402,96 @@
       }
     });
 
-    // --- NEW: USER DASHBOARD PAYOUT LISTENER ---
+    // --- NEW: USER FEEDBACK LOGIC ---
+    document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const textElement = document.getElementById('feedback-text');
+      const feedbackText = textElement.value.trim();
+      const user = auth.currentUser;
+
+      if (!user) return;
+
+      // Check Word Count limit (500 words)
+      const wordCount = feedbackText.split(/\s+/).filter(word => word.length > 0).length;
+      if (wordCount > 500) {
+        alert(`Your feedback is ${wordCount} words. Please limit it to 500 words.`);
+        return;
+      }
+
+      submitBtn.innerText = "Submitting...";
+      submitBtn.disabled = true;
+
+      try {
+        const todayStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        
+        // Check if user already submitted today
+        const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          alert("You have already submitted feedback today. Please try again tomorrow!");
+          submitBtn.innerText = "Submit Feedback";
+          submitBtn.disabled = false;
+          return;
+        }
+
+        // Fetch User's Name to attach to feedback
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userName = userDoc.exists() ? `${userDoc.data().firstName} ${userDoc.data().lastName}` : "Unknown Affiliate";
+
+        // Save Feedback
+        await addDoc(collection(db, "feedback"), {
+          userId: user.uid,
+          userName: userName,
+          message: feedbackText,
+          dateString: todayStr, // Used for the 1-per-day limit
+          createdAt: new Date().toISOString() // Used for exact sorting
+        });
+
+        alert("Feedback submitted successfully! Thank you.");
+        e.target.reset(); // Clear the textarea
+
+      } catch (error) {
+        alert("Failed to submit feedback: " + error.message);
+      } finally {
+        submitBtn.innerText = "Submit Feedback";
+        submitBtn.disabled = false;
+      }
+    });
+
+    // --- NEW: ADMIN FEEDBACK VIEWER ---
+    function listenToAdminFeedback() {
+      // Get all feedback, ordered by newest first
+      const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
+      
+      onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('admin-feedback-list');
+        listDiv.innerHTML = ""; // Clear list
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const formattedDate = new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg mb-3">
+              <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2">
+                <p class="font-bold text-indigo-400">${data.userName}</p>
+                <p class="text-xs text-slate-400">${formattedDate}</p>
+              </div>
+              <p class="text-sm text-slate-200 whitespace-pre-wrap">${data.message}</p>
+            </div>
+          `;
+        });
+      });
+    }
+
+    // --- USER DASHBOARD PAYOUT LISTENER ---
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
       
@@ -417,7 +499,7 @@
         let totalReferrals = 0;
         let totalAmount = 0;
         const invoiceList = document.getElementById('invoice-list');
-        invoiceList.innerHTML = ""; // Clear existing
+        invoiceList.innerHTML = ""; 
 
         if (snapshot.empty) {
           invoiceList.innerHTML = "No official invoices attached yet.";
@@ -428,11 +510,9 @@
           totalReferrals += data.referrals;
           totalAmount += data.amount;
 
-          // Format Date
           const dateObj = new Date(data.createdAt);
           const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-          // Build Invoice Receipt UI
           invoiceList.innerHTML += `
             <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
               <div>
@@ -447,7 +527,6 @@
           `;
         });
 
-        // Update the big dashboard numbers
         document.getElementById('payout-referrals').innerText = totalReferrals;
         document.getElementById('payout-amount').innerText = `₱${totalAmount.toFixed(2)}`;
       });

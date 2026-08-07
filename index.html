@@ -6,6 +6,41 @@
   <title>Olympuz Affiliate Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Light Mode Overrides */
+    body.light-mode {
+      background-color: #f8fafc !important; /* slate-50 */
+      color: #0f172a !important; /* slate-900 */
+    }
+    body.light-mode #dashboard-screen,
+    body.light-mode main {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+    body.light-mode aside,
+    body.light-mode header,
+    body.light-mode .bg-slate-900,
+    body.light-mode .bg-slate-800 {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important; /* slate-200 */
+      color: #1e293b !important; /* slate-800 */
+    }
+    body.light-mode input,
+    body.light-mode select,
+    body.light-mode textarea {
+      background-color: #f1f5f9 !important; /* slate-100 */
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important; /* slate-300 */
+    }
+    body.light-mode .text-slate-400,
+    body.light-mode .text-slate-300 {
+      color: #475569 !important; /* slate-600 */
+    }
+    body.light-mode .text-slate-100,
+    body.light-mode .text-slate-200 {
+      color: #0f172a !important; /* slate-900 */
+    }
+  </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
 
@@ -129,7 +164,7 @@
               <div id="ytd-referrals" class="text-xl md:text-2xl font-bold text-indigo-300 mt-1">0</div>
             </div>
             <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
-              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings This Year (<span class="current-year-label">2026</span>)</div>
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings This Year(<span class="current-year-label">2026</span>)</div>
               <div id="ytd-amount" class="text-xl md:text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
             </div>
           </div>
@@ -178,9 +213,21 @@
 
         <!-- TAB 4: ACCOUNT SETTINGS -->
         <section id="tab-settings" class="tab-content hidden max-w-xl">
+          <!-- TAB 4: THEME PREFERENCE FORM -->
+        <form id="theme-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 mb-6">
+          <h3 class="font-semibold text-indigo-400 border-b border-slate-800 pb-2">Appearance / Theme</h3>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Color Mode</label>
+            <select id="setting-theme" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+              <option value="dark">Dark Mode (Default)</option>
+              <option value="light">Light Mode</option>
+            </select>
+          </div>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Apply Theme</button>
+        </form>
           <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
           
-          <!-- PROFILE INFORMATION FORM WITH PICTURE -->
+          <!-- PROFILE INFORMATION FORM WITH READ-ONLY NAMES & EDITABLE EMAIL -->
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 mb-6">
             <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
             
@@ -198,16 +245,16 @@
 
             <form id="profile-form" class="space-y-4">
               <div>
-                <label class="block text-sm font-medium mb-1 text-slate-300">First Name</label>
-                <input type="text" id="setting-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                <label class="block text-sm font-medium mb-1 text-slate-300">First Name (Read-Only)</label>
+                <input type="text" id="setting-firstname" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1 text-slate-300">Last Name</label>
-                <input type="text" id="setting-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                <label class="block text-sm font-medium mb-1 text-slate-300">Last Name (Read-Only)</label>
+                <input type="text" id="setting-lastname" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1 text-slate-300">Email Address (Read-Only)</label>
-                <input type="email" id="setting-email" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
+                <label class="block text-sm font-medium mb-1 text-slate-300">Email Address</label>
+                <input type="email" id="setting-email" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1 text-slate-300">Confirm Current Password to Save Changes</label>
@@ -356,7 +403,7 @@
   <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
@@ -378,6 +425,39 @@
     let userPayoutsArray = [];
     let currentInvoicePage = 1;
     const itemsPerPage = 5;
+
+    // --- THEME MANAGEMENT ---
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+      } else {
+        document.body.classList.remove('light-mode');
+      }
+      localStorage.setItem('portalTheme', theme);
+      const themeSelect = document.getElementById('setting-theme');
+      if (themeSelect) themeSelect.value = theme;
+    }
+
+    // Load saved theme on initial page render
+    const savedTheme = localStorage.getItem('portalTheme') || 'dark';
+    applyTheme(savedTheme);
+
+    // Save Theme Preference Form Listener
+    document.getElementById('theme-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const selectedTheme = document.getElementById('setting-theme').value;
+      applyTheme(selectedTheme);
+
+      // Optionally save to user's Firestore profile
+      if (auth.currentUser) {
+        try {
+          await updateDoc(doc(db, "users", auth.currentUser.uid), { theme: selectedTheme });
+        } catch (err) {
+          console.warn("Could not save theme to database:", err);
+        }
+      }
+      alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
+    });
 
     // --- DYNAMIC PAYOUT DATE RANGE ---
     function updatePayoutDateRange() {
@@ -444,7 +524,7 @@
 
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
-            document.getElementById('setting-email').value = userData.email || '';
+            document.getElementById('setting-email').value = user.email || userData.email || '';
             if (userData.paymentMethod) document.getElementById('setting-bank').value = userData.paymentMethod;
             if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
           }
@@ -507,38 +587,38 @@
       const currentPassword = document.getElementById('setting-confirm-pwd').value;
       if (!currentPassword) return alert("Please enter your current password to save changes.");
 
+      const newEmail = document.getElementById('setting-email').value.trim();
       const avatarFile = document.getElementById('setting-avatar-input').files[0];
       
       submitBtn.innerText = "Updating Profile...";
       submitBtn.disabled = true;
 
       try {
+        // Re-authenticate user
         const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
         await reauthenticateWithCredential(auth.currentUser, credential);
         
         let photoURL = "";
         
+        // Upload Avatar if changed
         if (avatarFile) {
           const fileRef = ref(storage, `avatars/${auth.currentUser.uid}_${avatarFile.name}`);
           await uploadBytes(fileRef, avatarFile);
           photoURL = await getDownloadURL(fileRef);
         }
 
-        const newFirstName = document.getElementById('setting-firstname').value;
-        const newLastName = document.getElementById('setting-lastname').value;
-
-        const updateData = {
-          firstName: newFirstName,
-          lastName: newLastName
-        };
-
-        if (photoURL) {
-          updateData.photoURL = photoURL;
+        // Update Email in Firebase Auth if modified
+        if (newEmail && newEmail !== auth.currentUser.email) {
+          await updateEmail(auth.currentUser, newEmail);
         }
 
-        await updateDoc(doc(db, "users", auth.currentUser.uid), updateData);
-        
-        document.getElementById('welcome-message').innerText = `Welcome, ${newFirstName}`;
+        const updateData = {};
+        if (photoURL) updateData.photoURL = photoURL;
+        if (newEmail) updateData.email = newEmail;
+
+        if (Object.keys(updateData).length > 0) {
+          await updateDoc(doc(db, "users", auth.currentUser.uid), updateData);
+        }
         
         if (photoURL) {
           const profileImg = document.getElementById('profile-avatar-img');
@@ -563,7 +643,7 @@
         alert("Profile updated successfully!");
 
       } catch (error) {
-        alert("Verification failed or upload error: " + error.message);
+        alert("Update failed: " + error.message);
       } finally {
         submitBtn.innerText = "Update Profile";
         submitBtn.disabled = false;

@@ -231,8 +231,10 @@
   <!-- 2. MODULE SCRIPT FOR FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // ADDED: createUserWithEmailAndPassword
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    // ADDED: setDoc (to create the user profile)
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
@@ -290,6 +292,54 @@
         alert("Login failed: " + error.message);
       } finally {
         loginButton.innerText = "Log In";
+      }
+    });
+
+    // --- NEW: Handle Admin Creating an Account ---
+    document.getElementById('admin-create-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); // Stop the page from refreshing!
+      
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.innerText = "Creating Account...";
+      submitBtn.disabled = true;
+
+      const firstName = document.getElementById('create-firstname').value;
+      const lastName = document.getElementById('create-lastname').value;
+      const username = document.getElementById('create-username').value;
+      const email = document.getElementById('create-email').value;
+      const password = document.getElementById('create-password').value;
+
+      try {
+        // 1. Create a "Secondary" Firebase app so the Admin doesn't get logged out
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+        const secondaryAuth = getAuth(secondaryApp);
+
+        // 2. Create the auth account
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+        const newUser = userCredential.user;
+
+        // 3. Save the profile data to the Firestore Database
+        // We use 'db' here because the Admin is allowed to write to the database!
+        await setDoc(doc(db, "users", newUser.uid), {
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          email: email,
+          role: "affiliate", // Automatically assigns them as a regular user
+          createdAt: new Date().toISOString()
+        });
+
+        // 4. Immediately sign out the secondary app so it doesn't linger
+        await signOut(secondaryAuth);
+
+        alert(`Success! Account for ${firstName} ${lastName} has been created.`);
+        e.target.reset(); // Clear the form
+        
+      } catch (error) {
+        alert("Failed to create account: " + error.message);
+      } finally {
+        submitBtn.innerText = "Create Account";
+        submitBtn.disabled = false;
       }
     });
 

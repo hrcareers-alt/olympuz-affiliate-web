@@ -231,10 +231,9 @@
   <!-- 2. MODULE SCRIPT FOR FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    // ADDED: EmailAuthProvider and reauthenticateWithCredential for security
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    // ADDED: updateDoc to modify existing data
-    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // ADDED: New Firestore tools for querying and creating collections
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
@@ -248,6 +247,9 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    
+    // Store all users in memory for quick lookup in the admin panel
+    let allAffiliates = [];
 
     // Keep user logged in on refresh & Auto-fill Settings
     onAuthStateChanged(auth, async (user) => {
@@ -263,11 +265,14 @@
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
 
+            // Admin Logic
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
+              loadAffiliates(); // Load users into dropdown
+              listenToPendingPayouts(); // Start real-time pending list
             }
 
-            // --- NEW: Auto-fill the Settings Tab ---
+            // Auto-fill Settings
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = userData.email || '';
@@ -280,7 +285,7 @@
             }
           }
         } catch (error) {
-          console.error("Error fetching user data on refresh:", error);
+          console.error("Error fetching user data:", error);
         }
       } else {
         document.getElementById('auth-screen').classList.remove('hidden');
@@ -321,7 +326,6 @@
       try {
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
         const secondaryAuth = getAuth(secondaryApp);
-
         const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
         const newUser = userCredential.user;
 
@@ -337,6 +341,7 @@
         await signOut(secondaryAuth);
         alert(`Success! Account for ${firstName} ${lastName} has been created.`);
         e.target.reset(); 
+        if (auth.currentUser && auth.currentUser.role === 'admin') loadAffiliates(); // Refresh dropdown
         
       } catch (error) {
         alert("Failed to create account: " + error.message);
@@ -346,7 +351,7 @@
       }
     });
 
-    // --- NEW: Handle Saving Payment Method ---
+    // Handle Saving Payment Method
     document.getElementById('payout-method-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -358,7 +363,6 @@
 
       if (user) {
         try {
-          // Update just the payment fields in the database
           await updateDoc(doc(db, "users", user.uid), {
             paymentMethod: bank,
             accountNumber: accNum
@@ -371,7 +375,7 @@
       submitBtn.innerText = "Save Payment Details";
     });
 
-    // --- NEW: Handle Updating Profile Details ---
+    // Handle Updating Profile Details
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -384,31 +388,142 @@
         alert("Please enter your current password to save changes.");
         return;
       }
-
       submitBtn.innerText = "Updating...";
 
       try {
-        // 1. Verify the password before allowing changes
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
-
-        // 2. Save the new name to the database
         await updateDoc(doc(db, "users", user.uid), {
           firstName: newFirstName,
           lastName: newLastName
         });
         
-        // Update the top welcome message instantly
         document.getElementById('welcome-message').innerText = `Welcome, ${newFirstName}`;
-        document.getElementById('setting-confirm-pwd').value = ""; // Clear password field
+        document.getElementById('setting-confirm-pwd').value = ""; 
         alert("Profile updated successfully!");
-
       } catch (error) {
-        alert("Verification failed. Make sure your current password is correct. (" + error.message + ")");
+        alert("Verification failed: " + error.message);
       } finally {
         submitBtn.innerText = "Update Profile";
       }
     });
+
+    // --- NEW: ADMIN DISBURSEMENT LOGIC ---
+    
+    // 1. Fetch Affiliates for Dropdown
+    async function loadAffiliates() {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("role", "==", "affiliate"));
+      const querySnapshot = await getDocs(q);
+      
+      const select = document.getElementById('disburse-user-select');
+      select.innerHTML = '<option value="">-- Choose Affiliate --</option>';
+      allAffiliates = [];
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        data.id = docSnap.id;
+        allAffiliates.push(data);
+        select.innerHTML += `<option value="${data.id}">${data.firstName} ${data.lastName}</option>`;
+      });
+    }
+
+    // 2. Show Bank Info when Dropdown Changes
+    window.loadUserDisburseDetails = () => {
+      const selectedId = document.getElementById('disburse-user-select').value;
+      const infoDiv = document.getElementById('disburse-bank-info');
+      
+      if (!selectedId) {
+        infoDiv.classList.add('hidden');
+        return;
+      }
+
+      const user = allAffiliates.find(u => u.id === selectedId);
+      document.getElementById('disburse-method').innerText = user.paymentMethod || 'Not Set';
+      document.getElementById('disburse-account').innerText = user.accountNumber || 'Not Set';
+      infoDiv.classList.remove('hidden');
+    };
+
+    // 3. Submit Payout for Pre-Approval
+    window.submitPreApproval = async () => {
+      const selectedId = document.getElementById('disburse-user-select').value;
+      const referrals = document.getElementById('disburse-referrals').value;
+      const amount = document.getElementById('disburse-amount').value;
+
+      if (!selectedId || !referrals || !amount) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const user = allAffiliates.find(u => u.id === selectedId);
+
+      try {
+        await addDoc(collection(db, "payouts"), {
+          userId: user.id,
+          userName: `${user.firstName} ${user.lastName}`,
+          paymentMethod: user.paymentMethod || 'None',
+          accountNumber: user.accountNumber || 'None',
+          referrals: parseInt(referrals),
+          amount: parseFloat(amount),
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+        
+        alert("Payout staged for approval!");
+        // Reset fields
+        document.getElementById('disburse-user-select').value = "";
+        document.getElementById('disburse-referrals').value = "";
+        document.getElementById('disburse-amount').value = "";
+        document.getElementById('disburse-bank-info').classList.add('hidden');
+      } catch (error) {
+        alert("Error staging payout: " + error.message);
+      }
+    };
+
+    // 4. Real-time Listener for Pending Approvals
+    function listenToPendingPayouts() {
+      const q = query(collection(db, "payouts"), where("status", "==", "pending"));
+      onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('pending-approval-list');
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No pending approvals.</p>";
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <p class="font-bold text-indigo-400">${data.userName}</p>
+                <p class="text-xs text-slate-400">${data.paymentMethod} - ${data.accountNumber}</p>
+                <p class="text-sm mt-1">Referrals: <span class="font-bold">${data.referrals}</span> | Amt: <span class="text-emerald-400 font-bold">₱${data.amount.toFixed(2)}</span></p>
+              </div>
+              <div class="space-x-2">
+                <button onclick="approvePayout('${docSnap.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 px-3 py-1 rounded text-sm hover:bg-emerald-600/40">Approve</button>
+                <button onclick="declinePayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-sm hover:bg-red-600/40">Decline</button>
+              </div>
+            </div>
+          `;
+        });
+      });
+    }
+
+    // 5. Approve Payout
+    window.approvePayout = async (payoutId) => {
+      if(confirm("Are you sure you want to approve this payout? It will be sent to the user's weekly dashboard.")) {
+        await updateDoc(doc(db, "payouts", payoutId), { status: 'approved' });
+      }
+    };
+
+    // 6. Decline Payout
+    window.declinePayout = async (payoutId) => {
+      if(confirm("Are you sure you want to decline and remove this payout?")) {
+        await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
+      }
+    };
 
     // Handle Logout
     window.logout = async () => {

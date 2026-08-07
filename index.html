@@ -34,303 +34,295 @@
     </div>
   </div>
 
-  <!-- MAIN DASHBOARD -->
-  <div id="dashboard-screen" class="hidden min-h-screen flex">
+  <!-- MAIN DASHBOARD SCREEN -->
+  <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex">
     
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col justify-between">
-      <div class="p-4 space-y-6">
-        <div class="font-bold text-xl text-indigo-400 border-b border-slate-700 pb-4">
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+      <div class="space-y-6">
+        <div class="font-bold text-xl text-indigo-400 border-b border-slate-800 pb-4">
           Olympuz Affiliate
         </div>
         
         <nav id="sidebar-menu" class="space-y-1 text-sm">
           <!-- Standard User Links -->
-          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
-          <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
-          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
-          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
-          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
-          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-paste"></i> Post&Chat Templates</a>
-          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
-          <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
+          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
+          <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
+          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
+          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
+          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-paste"></i> Post&Chat Templates</a>
+          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
+          <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
 
-          <!-- Admin Only Links -->
-          <div id="admin-menu" class="hidden pt-4 border-t border-slate-700 space-y-1">
+          <!-- Admin Panel Links -->
+          <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
-            <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
-            <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
-            <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
+            <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
+            <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
           </div>
         </nav>
       </div>
 
       <!-- Support Footer -->
-      <div class="p-4 border-t border-slate-700 text-xs text-slate-400">
+      <div class="border-t border-slate-800 pt-4 text-xs text-slate-400">
         Need help? 
-        <a href="https://wa.me/639915225686" target="_blank" class="text-green-400 font-semibold block mt-1 hover:underline">
-          <i class="fa-brands fa-whatsapp"></i> WhatsApp Support
+        <a href="https://wa.me/639915225686" target="_blank" class="text-green-400 font-semibold block mt-1 hover:underline flex items-center gap-1">
+          <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Support
         </a>
       </div>
     </aside>
-<main class="flex-1 p-6 lg:p-8 flex flex-col gap-6 w-full max-w-7xl">
-    
-    <!-- MAIN DASHBOARD SCREEN -->
-  <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex">
-    
-    <!-- LEFT SIDEBAR -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
-      <!-- Keep your existing left sidebar code untouched -->
-    </aside>
 
-    <!-- RIGHT MAIN CONTENT AREA (STACKS VERTICALLY) -->
+    <!-- RIGHT MAIN CONTENT AREA -->
     <main class="flex-1 p-6 lg:p-8 flex flex-col gap-6 overflow-y-auto">
       
-      <!-- 1. DASHBOARD HEADER (TOP OF RIGHT CONTENT) -->
-      <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full">
+      <!-- DASHBOARD HEADER -->
+      <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-slate-700 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
+          <div class="w-10 h-10 rounded-full bg-slate-800 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
             <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
             <i id="header-avatar-icon" class="fa-solid fa-user text-lg text-slate-400"></i>
           </div>
-          <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Nick</h1>
+          <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Affiliate</h1>
         </div>
-        <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30">Logout</button>
+        <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30 transition">Logout</button>
       </header>
 
-      <!-- 2. TAB CONTENTS (RENDER DIRECTLY BELOW THE HEADER) -->
+      <!-- TAB CONTENTS CONTAINER -->
       <div class="w-full">
         
         <!-- TAB 1: WEEKLY PAYOUT -->
         <section id="tab-payout" class="tab-content w-full">
-          <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday | Coverage of Endorsement: Aug 3 - Aug 7)</h2>
+          <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
           
-          <!-- TOP CARDS -->
+          <!-- TOP CARDS: LATEST DISBURSEMENT -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-              <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (This Week)</div>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (Latest)</div>
               <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
             </div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-              <div class="text-slate-400 text-sm">Total Amount Credited (This Week)</div>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-sm">Total Amount Credited (Latest)</div>
               <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
             </div>
           </div>
 
           <!-- YTD OVERVIEW CARDS -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+            <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
               <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Valid Referrals (<span class="current-year-label">2026</span>)</div>
               <div id="ytd-referrals" class="text-2xl font-bold text-indigo-300 mt-1">0</div>
             </div>
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+            <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
               <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings (<span class="current-year-label">2026</span>)</div>
               <div id="ytd-amount" class="text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
             </div>
           </div>
 
           <!-- ATTACHED INVOICES -->
-          <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+          <div class="bg-slate-900 rounded-xl p-4 border border-slate-800">
             <div class="flex justify-between items-center mb-3">
               <h3 class="font-semibold text-slate-100">Attached Invoices</h3>
               <span id="page-indicator" class="text-xs text-slate-400">Page 1</span>
             </div>
+            
             <div id="invoice-list" class="text-slate-400 text-sm min-h-[120px]">No official invoices attached yet.</div>
+
+            <!-- PAGINATION CONTROLS -->
+            <div id="pagination-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-800 pt-3">
+              <button id="btn-prev-page" onclick="changeInvoicePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+              </button>
+              <div id="page-numbers" class="flex gap-1 text-xs"></div>
+              <button id="btn-next-page" onclick="changeInvoicePage(1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                Next <i class="fa-solid fa-chevron-right ml-1"></i>
+              </button>
+            </div>
           </div>
+        </section>
+
+        <!-- TAB 2: POST & CHAT TEMPLATES -->
+        <section id="tab-templates" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Post & Chat Templates</h2>
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-lg space-y-4">
+            <p class="text-sm text-slate-300">Access pre-made posting scripts, response templates, and outreach messages to boost your referral conversions.</p>
+            <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition">
+              <i class="fa-solid fa-external-link"></i> Open Templates Folder
+            </a>
+          </div>
+        </section>
+
+        <!-- TAB 3: FEEDBACK -->
+        <section id="tab-feedback" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
+          <form id="feedback-form" class="max-w-lg space-y-4">
+            <textarea id="feedback-text" maxlength="500" rows="5" required placeholder="Write your comments here (Max 500 words)..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
+            <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-500 transition">Submit Feedback</button>
+          </form>
+        </section>
+
+        <!-- TAB 4: ACCOUNT SETTINGS -->
+        <section id="tab-settings" class="tab-content hidden max-w-xl">
+          <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
+          
+          <!-- PROFILE INFORMATION FORM WITH PICTURE -->
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 mb-6">
+            <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
+            
+            <div class="flex items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+              <div class="relative w-20 h-20 rounded-full bg-slate-800 border-2 border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
+                <img id="profile-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Profile Picture">
+                <i id="profile-avatar-icon" class="fa-solid fa-user text-3xl text-slate-400"></i>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Profile Picture</label>
+                <input type="file" id="setting-avatar-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+                <p class="text-xs text-slate-500 mt-1">PNG, JPG, or WEBP up to 5MB.</p>
+              </div>
+            </div>
+
+            <form id="profile-form" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">First Name</label>
+                <input type="text" id="setting-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Last Name</label>
+                <input type="text" id="setting-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Email Address (Read-Only)</label>
+                <input type="email" id="setting-email" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Confirm Current Password to Save Changes</label>
+                <input type="password" id="setting-confirm-pwd" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+              </div>
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition">Update Profile</button>
+            </form>
+          </div>
+
+          <form id="change-password-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 mb-6">
+            <h3 class="font-semibold text-amber-400 border-b border-slate-800 pb-2">Change Password</h3>
+            <div>
+              <label class="block text-xs text-slate-400">Current Password</label>
+              <input type="password" id="pwd-current" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">New Password</label>
+              <input type="password" id="pwd-new" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Confirm New Password</label>
+              <input type="password" id="pwd-confirm" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+            </div>
+            <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-lg text-sm font-semibold transition">Update Password</button>
+          </form>
+
+          <form id="payout-method-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
+            <h3 class="font-semibold text-emerald-400 border-b border-slate-800 pb-2">Preferred Payment Method</h3>
+            <div>
+              <label class="block text-xs text-slate-400">Select Bank / E-Wallet</label>
+              <select id="setting-bank" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+                <option value="GoTyme">GoTyme</option>
+                <option value="GCash">GCash</option>
+                <option value="Maya">Maya</option>
+                <option value="BPI">BPI</option>
+                <option value="RCBC">RCBC</option>
+                <option value="Metrobank">Metrobank</option>
+                <option value="China Bank">China Bank</option>
+                <option value="Others">Others (Specify)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Account Number</label>
+              <input type="text" id="setting-account-num" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+              <p class="text-xs text-amber-400 mt-1">⚠️ Note: Invalid details may lead to disbursement errors or funds being sent to the wrong person. Please verify before saving.</p>
+            </div>
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold transition">Save Payment Details</button>
+          </form>
+        </section>
+
+        <!-- TAB 5: ADMIN FEEDBACK -->
+        <section id="tab-admin-feedback" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Affiliate Feedback Submissions</h2>
+          <div id="admin-feedback-list" class="space-y-3"></div>
+        </section>
+
+        <!-- TAB 6: ADMIN CREATE ACCOUNT -->
+        <section id="tab-admin-create" class="tab-content hidden max-w-lg">
+          <h2 class="text-xl font-semibold mb-4">Create Affiliate Account</h2>
+          <form id="admin-create-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
+            <div>
+              <label class="block text-xs text-slate-400">First Name</label>
+              <input type="text" id="create-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Last Name</label>
+              <input type="text" id="create-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Username</label>
+              <input type="text" id="create-username" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Email Address</label>
+              <input type="email" id="create-email" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Password</label>
+              <input type="password" id="create-password" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2 rounded-lg font-semibold transition">Create Account</button>
+          </form>
+        </section>
+
+        <!-- TAB 7: ADMIN DISBURSE PAYOUT -->
+        <section id="tab-admin-disburse" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Disburse Weekly Payout</h2>
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4 mb-8">
+            <div>
+              <label class="block text-xs text-slate-400">Select Affiliate</label>
+              <select id="disburse-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2" onchange="loadUserDisburseDetails()">
+                <option value="">-- Choose Affiliate --</option>
+              </select>
+            </div>
+            <div id="disburse-bank-info" class="text-sm text-slate-300 bg-slate-950/50 p-3 rounded-lg hidden">
+              <div><strong>Payment Method:</strong> <span id="disburse-method">-</span></div>
+              <div><strong>Account Number:</strong> <span id="disburse-account">-</span></div>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Total Valid Referrals</label>
+              <input type="number" id="disburse-referrals" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">Amount to Credited (PHP)</label>
+              <input type="number" id="disburse-amount" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
+            </div>
+            <button onclick="submitPreApproval()" class="bg-amber-600 hover:bg-amber-500 w-full py-2 rounded-lg font-semibold transition">Stage for Approval</button>
+          </div>
+
+          <h3 class="text-lg font-semibold mb-2">Pending Approvals</h3>
+          <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
       </div>
     </main>
   </div>
 
-          <!-- PAGINATION CONTROLS -->
-          <div id="pagination-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-700 pt-3">
-            <button id="btn-prev-page" onclick="changeInvoicePage(-1)" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
-              <i class="fa-solid fa-chevron-left mr-1"></i> Previous
-            </button>
-            <div id="page-numbers" class="flex gap-1 text-xs"></div>
-            <button id="btn-next-page" onclick="changeInvoicePage(1)" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
-              Next <i class="fa-solid fa-chevron-right ml-1"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 2: POST & CHAT TEMPLATES -->
-      <section id="tab-templates" class="tab-content hidden">
-        <h2 class="text-xl font-semibold mb-4">Post & Chat Templates</h2>
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-lg space-y-4">
-          <p class="text-sm text-slate-300">Access pre-made posting scripts, response templates, and outreach messages to boost your referral conversions.</p>
-          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition">
-            <i class="fa-solid fa-external-link"></i> Open Templates Folder
-          </a>
-        </div>
-      </section>
-
-      <!-- TAB 6: FEEDBACK -->
-      <section id="tab-feedback" class="tab-content hidden">
-        <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
-        <form id="feedback-form" class="max-w-lg space-y-4">
-          <textarea id="feedback-text" maxlength="500" rows="5" required placeholder="Write your comments here (Max 500 words)..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
-          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-500">Submit Feedback</button>
-        </form>
-      </section>
-
-      <!-- TAB 7: ACCOUNT SETTINGS -->
-      <section id="tab-settings" class="tab-content hidden max-w-xl">
-        <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
-        
-        <!-- PROFILE INFORMATION FORM WITH PICTURE -->
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-xl mb-6">
-          <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
-          
-          <!-- AVATAR DISPLAY & UPLOAD -->
-          <div class="flex items-center gap-4 mb-6 pb-4 border-b border-slate-700">
-            <div class="relative w-20 h-20 rounded-full bg-slate-700 border-2 border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
-              <img id="profile-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Profile Picture">
-              <i id="profile-avatar-icon" class="fa-solid fa-user text-3xl text-slate-400"></i>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1 text-slate-300">Profile Picture</label>
-              <input type="file" id="setting-avatar-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
-              <p class="text-xs text-slate-500 mt-1">PNG, JPG, or WEBP up to 5MB.</p>
-            </div>
-          </div>
-
-          <form id="profile-form" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1 text-slate-300">First Name</label>
-              <input type="text" id="setting-firstname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1 text-slate-300">Last Name</label>
-              <input type="text" id="setting-lastname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1 text-slate-300">Email Address (Read-Only)</label>
-              <input type="email" id="setting-email" readonly class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1 text-slate-300">Confirm Current Password to Save Changes</label>
-              <input type="password" id="setting-confirm-pwd" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-            </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition">Update Profile</button>
-          </form>
-        </div>
-        <form id="change-password-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
-          <h3 class="font-semibold text-amber-400 border-b border-slate-700 pb-2">Change Password</h3>
-          <div>
-            <label class="block text-xs text-slate-400">Current Password</label>
-            <input type="password" id="pwd-current" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">New Password</label>
-            <input type="password" id="pwd-new" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Confirm New Password</label>
-            <input type="password" id="pwd-confirm" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
-          </div>
-          <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-lg text-sm font-semibold">Update Password</button>
-        </form>
-
-        <form id="payout-method-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
-          <h3 class="font-semibold text-emerald-400 border-b border-slate-700 pb-2">Preferred Payment Method</h3>
-          <div>
-            <label class="block text-xs text-slate-400">Select Bank / E-Wallet</label>
-            <select id="setting-bank" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-              <option value="GoTyme">GoTyme</option>
-              <option value="GCash">GCash</option>
-              <option value="Maya">Maya</option>
-              <option value="BPI">BPI</option>
-              <option value="RCBC">RCBC</option>
-              <option value="Metrobank">Metrobank</option>
-              <option value="China Bank">China Bank</option>
-              <option value="Others">Others (Specify)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Account Number</label>
-            <input type="text" id="setting-account-num" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-            <p class="text-xs text-amber-400 mt-1">⚠️ Note: Invalid details may lead to disbursement errors or funds being sent to the wrong person. Please verify before saving.</p>
-          </div>
-          <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold">Save Payment Details</button>
-        </form>
-      </section>
-
-      <!-- TAB 8: ADMIN FEEDBACK -->
-      <section id="tab-admin-feedback" class="tab-content hidden">
-        <h2 class="text-xl font-semibold mb-4">Affiliate Feedback Submissions</h2>
-        <div id="admin-feedback-list" class="space-y-3"></div>
-      </section>
-
-      <!-- TAB 9: ADMIN CREATE ACCOUNT -->
-      <section id="tab-admin-create" class="tab-content hidden max-w-lg">
-        <h2 class="text-xl font-semibold mb-4">Create Affiliate Account</h2>
-        <form id="admin-create-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
-          <div>
-            <label class="block text-xs text-slate-400">First Name</label>
-            <input type="text" id="create-firstname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Last Name</label>
-            <input type="text" id="create-lastname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Username</label>
-            <input type="text" id="create-username" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Email Address</label>
-            <input type="email" id="create-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Password</label>
-            <input type="password" id="create-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2 rounded-lg font-semibold">Create Account</button>
-        </form>
-      </section>
-
-      <!-- TAB 10: ADMIN DISBURSE PAYOUT -->
-      <section id="tab-admin-disburse" class="tab-content hidden">
-        <h2 class="text-xl font-semibold mb-4">Disburse Weekly Payout</h2>
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-xl space-y-4 mb-8">
-          <div>
-            <label class="block text-xs text-slate-400">Select Affiliate</label>
-            <select id="disburse-user-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2" onchange="loadUserDisburseDetails()">
-              <option value="">-- Choose Affiliate --</option>
-            </select>
-          </div>
-          <div id="disburse-bank-info" class="text-sm text-slate-300 bg-slate-900/50 p-3 rounded-lg hidden">
-            <div><strong>Payment Method:</strong> <span id="disburse-method">-</span></div>
-            <div><strong>Account Number:</strong> <span id="disburse-account">-</span></div>
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Total Valid Referrals</label>
-            <input type="number" id="disburse-referrals" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Amount to Credited (PHP)</label>
-            <input type="number" id="disburse-amount" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <button onclick="submitPreApproval()" class="bg-amber-600 hover:bg-amber-500 w-full py-2 rounded-lg font-semibold">Stage for Approval</button>
-        </div>
-
-        <h3 class="text-lg font-semibold mb-2">Pending Approvals</h3>
-        <div id="pending-approval-list" class="space-y-3"></div>
-      </section>
-    </main>
-  </div>
-
+  <!-- TAB SWITCHER SCRIPT -->
   <script>
-    function switchTab(tabName) {
+    window.switchTab = function(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const activeTab = document.getElementById(`tab-${tabName}`);
-      if(activeTab) activeTab.classList.remove('hidden');
-    }
+      if (activeTab) {
+        activeTab.classList.remove('hidden');
+      }
+    };
   </script>
 
+  <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -352,6 +344,9 @@
     const storage = getStorage(app);
     
     let allAffiliates = [];
+    let userPayoutsArray = [];
+    let currentInvoicePage = 1;
+    const itemsPerPage = 5;
 
     // --- DYNAMIC PAYOUT DATE RANGE ---
     function updatePayoutDateRange() {
@@ -386,7 +381,27 @@
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
 
+            // Handle Profile Avatars
+            if (userData.photoURL) {
+              const profileImg = document.getElementById('profile-avatar-img');
+              const profileIcon = document.getElementById('profile-avatar-icon');
+              if (profileImg && profileIcon) {
+                profileImg.src = userData.photoURL;
+                profileImg.classList.remove('hidden');
+                profileIcon.classList.add('hidden');
+              }
+
+              const headerImg = document.getElementById('header-avatar-img');
+              const headerIcon = document.getElementById('header-avatar-icon');
+              if (headerImg && headerIcon) {
+                headerImg.src = userData.photoURL;
+                headerImg.classList.remove('hidden');
+                headerIcon.classList.add('hidden');
+              }
+            }
+
             updatePayoutDateRange();
+            window.switchTab('payout');
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
@@ -461,25 +476,67 @@
       const submitBtn = e.target.querySelector('button');
       const currentPassword = document.getElementById('setting-confirm-pwd').value;
       if (!currentPassword) return alert("Please enter your current password to save changes.");
+
+      const avatarFile = document.getElementById('setting-avatar-input').files[0];
       
-      submitBtn.innerText = "Updating...";
+      submitBtn.innerText = "Updating Profile...";
+      submitBtn.disabled = true;
+
       try {
         const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
         await reauthenticateWithCredential(auth.currentUser, credential);
         
+        let photoURL = "";
+        
+        if (avatarFile) {
+          const fileRef = ref(storage, `avatars/${auth.currentUser.uid}_${avatarFile.name}`);
+          await uploadBytes(fileRef, avatarFile);
+          photoURL = await getDownloadURL(fileRef);
+        }
+
         const newFirstName = document.getElementById('setting-firstname').value;
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+        const newLastName = document.getElementById('setting-lastname').value;
+
+        const updateData = {
           firstName: newFirstName,
-          lastName: document.getElementById('setting-lastname').value
-        });
+          lastName: newLastName
+        };
+
+        if (photoURL) {
+          updateData.photoURL = photoURL;
+        }
+
+        await updateDoc(doc(db, "users", auth.currentUser.uid), updateData);
         
         document.getElementById('welcome-message').innerText = `Welcome, ${newFirstName}`;
+        
+        if (photoURL) {
+          const profileImg = document.getElementById('profile-avatar-img');
+          const profileIcon = document.getElementById('profile-avatar-icon');
+          if (profileImg && profileIcon) {
+            profileImg.src = photoURL;
+            profileImg.classList.remove('hidden');
+            profileIcon.classList.add('hidden');
+          }
+
+          const headerImg = document.getElementById('header-avatar-img');
+          const headerIcon = document.getElementById('header-avatar-icon');
+          if (headerImg && headerIcon) {
+            headerImg.src = photoURL;
+            headerImg.classList.remove('hidden');
+            headerIcon.classList.add('hidden');
+          }
+        }
+
         document.getElementById('setting-confirm-pwd').value = ""; 
+        document.getElementById('setting-avatar-input').value = "";
         alert("Profile updated successfully!");
+
       } catch (error) {
-        alert("Verification failed. Please check your current password.");
+        alert("Verification failed or upload error: " + error.message);
       } finally {
         submitBtn.innerText = "Update Profile";
+        submitBtn.disabled = false;
       }
     });
 
@@ -523,7 +580,6 @@
       try {
         const todayStr = new Date().toISOString().split('T')[0]; 
         
-        // 1. Check if user already submitted today (wrapped in try/catch to avoid hard errors)
         try {
           const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
           const querySnapshot = await getDocs(q);
@@ -538,7 +594,6 @@
           console.warn("Skipped duplicate check due to rule restrictions, proceeding to submit:", checkError);
         }
 
-        // 2. Fetch user profile for display name
         let displayName = "Affiliate User";
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -558,7 +613,6 @@
           if (user.email) displayName = user.email;
         }
 
-        // 3. Create the feedback document
         await addDoc(collection(db, "feedback"), {
           userId: user.uid,
           userName: displayName,
@@ -581,16 +635,30 @@
       const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-feedback-list');
+        if (!listDiv) return;
         listDiv.innerHTML = ""; 
-        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
+          return;
+        }
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          let authorName = data.userName;
+          if (!authorName || authorName.includes("undefined")) {
+            authorName = "Affiliate User";
+          }
+
+          const formattedDate = data.createdAt 
+            ? new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+            : 'Recent';
+
           listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg mb-3">
-              <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2">
-                <p class="font-bold text-indigo-400">${data.userName}</p>
-                <p class="text-xs text-slate-400">${new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg mb-3">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
+                <p class="font-bold text-indigo-400">${authorName}</p>
+                <p class="text-xs text-slate-400">${formattedDate}</p>
               </div>
               <p class="text-sm text-slate-200 whitespace-pre-wrap">${data.message}</p>
             </div>
@@ -608,8 +676,6 @@
         if (!invoiceList) return;
 
         const currentYear = new Date().getFullYear();
-        
-        // Update Year Labels in UI
         document.querySelectorAll('.current-year-label').forEach(el => el.innerText = currentYear);
 
         if (snapshot.empty) {
@@ -622,18 +688,14 @@
           return;
         }
 
-        let allPayouts = [];
         let yearlyPayouts = [];
         let ytdReferrals = 0;
         let ytdAmount = 0;
 
         snapshot.forEach((docSnap) => {
           const item = { id: docSnap.id, ...docSnap.data() };
-          allPayouts.push(item);
-
           const itemYear = new Date(item.createdAt).getFullYear();
           
-          // YEARLY RESET FILTER: Only count records created in the CURRENT calendar year
           if (itemYear === currentYear) {
             yearlyPayouts.push(item);
             ytdReferrals += (item.referrals || 0);
@@ -641,15 +703,12 @@
           }
         });
 
-        // 1. Sort current year payouts by newest first
         yearlyPayouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        userPayoutsArray = yearlyPayouts; // Store filtered payouts for pagination
+        userPayoutsArray = yearlyPayouts;
 
-        // 2. Set Year-To-Date Totals
         document.getElementById('ytd-referrals').innerText = ytdReferrals;
         document.getElementById('ytd-amount').innerText = `₱${ytdAmount.toFixed(2)}`;
 
-        // 3. Set Latest Disbursement Stats
         if (yearlyPayouts.length > 0) {
           const latest = yearlyPayouts[0];
           document.getElementById('payout-referrals').innerText = latest.referrals || 0;
@@ -659,13 +718,11 @@
           document.getElementById('payout-amount').innerText = "₱0.00";
         }
 
-        // 4. Render Paginated Invoice List
         currentInvoicePage = 1;
         renderInvoicePage();
       });
     }
 
-    // PAGINATION RENDERER
     function renderInvoicePage() {
       const invoiceList = document.getElementById('invoice-list');
       const paginationControls = document.getElementById('pagination-controls');
@@ -690,7 +747,7 @@
       pageItems.forEach((item) => {
         const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         invoiceList.innerHTML += `
-          <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
+          <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg mb-2 flex justify-between items-center">
             <div>
               <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
               <p class="text-xs text-slate-400 mb-1">Credited: ${formattedDate}</p>
@@ -705,18 +762,16 @@
         `;
       });
 
-      // Show/Hide Pagination Bar
       if (totalPages > 1) {
         paginationControls.classList.remove('hidden');
         pageIndicator.innerText = `Page ${currentInvoicePage} of ${totalPages}`;
         document.getElementById('btn-prev-page').disabled = (currentInvoicePage === 1);
         document.getElementById('btn-next-page').disabled = (currentInvoicePage === totalPages);
 
-        // Build numbered page buttons
         pageNumbersDiv.innerHTML = "";
         for (let i = 1; i <= totalPages; i++) {
           pageNumbersDiv.innerHTML += `
-            <button onclick="goToInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === currentInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">
+            <button onclick="goToInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === currentInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
               ${i}
             </button>
           `;
@@ -727,7 +782,6 @@
       }
     }
 
-    // Expose Pagination functions globally for onclick buttons
     window.changeInvoicePage = (direction) => {
       currentInvoicePage += direction;
       renderInvoicePage();
@@ -834,7 +888,7 @@
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg flex flex-col gap-3">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg flex flex-col gap-3">
               <div class="flex justify-between items-start">
                 <div>
                   <p class="font-bold text-indigo-400">${data.userName}</p>
@@ -843,10 +897,10 @@
                 </div>
                 <button onclick="declinePayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-sm hover:bg-red-600/40">Decline</button>
               </div>
-              <div class="border-t border-slate-700 pt-3 space-y-2">
-                <input type="text" id="remark-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
+              <div class="border-t border-slate-800 pt-3 space-y-2">
+                <input type="text" id="remark-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                 <div class="flex items-center gap-2">
-                  <input type="file" id="receipt-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600 cursor-pointer">
+                  <input type="file" id="receipt-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
                   <button onclick="approvePayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Approve & Upload</button>
                 </div>
               </div>

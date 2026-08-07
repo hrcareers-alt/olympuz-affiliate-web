@@ -23,6 +23,9 @@
           <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
         </div>
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2 rounded-lg transition">Log In</button>
+        <div class="text-center mt-2">
+          <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline">Forgot Password?</button>
+        </div>
       </form>
       <div class="mt-4 text-center text-sm text-slate-400">
         Don't have an account? 
@@ -129,7 +132,23 @@
           </div>
           <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Update Profile</button>
         </form>
-
+<!-- CHANGE PASSWORD FORM -->
+        <form id="change-password-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
+          <h3 class="font-semibold text-amber-400 border-b border-slate-700 pb-2">Change Password</h3>
+          <div>
+            <label class="block text-xs text-slate-400">Current Password</label>
+            <input type="password" id="pwd-current" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">New Password</label>
+            <input type="password" id="pwd-new" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Confirm New Password</label>
+            <input type="password" id="pwd-confirm" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-amber-500 focus:outline-none">
+          </div>
+          <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-lg text-sm font-semibold">Update Password</button>
+        </form>
         <form id="payout-method-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
           <h3 class="font-semibold text-indigo-400 border-b border-slate-700 pb-2">Preferred Payment Method</h3>
           <div>
@@ -222,6 +241,7 @@
  <!-- 1. STANDARD SCRIPT FOR UI SWITCHING -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     // ADDED: orderBy (to sort feedback by newest first)
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";

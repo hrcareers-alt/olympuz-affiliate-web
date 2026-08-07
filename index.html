@@ -84,20 +84,50 @@
       <!-- TAB 1: WEEKLY PAYOUT -->
       <section id="tab-payout" class="tab-content">
         <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
-        <div class="grid grid-cols-2 gap-4 mb-6">
+        
+        <!-- TOP CARDS: LATEST DISBURSEMENT STATS -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
           <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-slate-400 text-sm">Valid Referrals / Endorsements</div>
+            <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (Latest)</div>
             <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
           </div>
           <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <!-- UPDATED LABEL -->
-            <div class="text-slate-400 text-sm">Total Amount Credited</div>
+            <div class="text-slate-400 text-sm">Total Amount Credited (Latest)</div>
             <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
           </div>
         </div>
+
+        <!-- NEW CARDS: YEAR-TO-DATE OVERVIEW STATS -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Valid Referrals (<span class="current-year-label">2026</span>)</div>
+            <div id="ytd-referrals" class="text-2xl font-bold text-indigo-300 mt-1">0</div>
+          </div>
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings (<span class="current-year-label">2026</span>)</div>
+            <div id="ytd-amount" class="text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
+          </div>
+        </div>
+
+        <!-- ATTACHED INVOICES WITH PAGINATION -->
         <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-          <h3 class="font-semibold mb-2">Attached Invoices (Latest 10)</h3>
-          <div id="invoice-list" class="text-slate-400 text-sm">No official invoices attached yet.</div>
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-slate-100">Attached Invoices</h3>
+            <span id="page-indicator" class="text-xs text-slate-400">Page 1</span>
+          </div>
+
+          <div id="invoice-list" class="text-slate-400 text-sm min-h-[120px]">No official invoices attached yet.</div>
+
+          <!-- PAGINATION CONTROLS -->
+          <div id="pagination-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-700 pt-3">
+            <button id="btn-prev-page" onclick="changeInvoicePage(-1)" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+              <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+            </button>
+            <div id="page-numbers" class="flex gap-1 text-xs"></div>
+            <button id="btn-next-page" onclick="changeInvoicePage(1)" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+              Next <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -531,50 +561,141 @@
     // --- PAYOUT SYSTEM (USER VIEW) ---
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
+      
       onSnapshot(q, (snapshot) => {
         const invoiceList = document.getElementById('invoice-list');
         if (!invoiceList) return;
-        invoiceList.innerHTML = ""; 
+
+        const currentYear = new Date().getFullYear();
+        
+        // Update Year Labels in UI
+        document.querySelectorAll('.current-year-label').forEach(el => el.innerText = currentYear);
 
         if (snapshot.empty) {
           invoiceList.innerHTML = "No official invoices attached yet.";
           document.getElementById('payout-referrals').innerText = "0";
           document.getElementById('payout-amount').innerText = "₱0.00";
+          document.getElementById('ytd-referrals').innerText = "0";
+          document.getElementById('ytd-amount').innerText = "₱0.00";
+          document.getElementById('pagination-controls').classList.add('hidden');
           return;
         }
 
-        let payouts = [];
-        snapshot.forEach((docSnap) => {
-          const itemData = docSnap.data();
-          payouts.push({ id: docSnap.id, ...itemData });
-        });
-        
-        payouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
-        const latestPayout = payouts[0];
-        document.getElementById('payout-referrals').innerText = latestPayout.referrals || 0;
-        document.getElementById('payout-amount').innerText = `₱${(latestPayout.amount || 0).toFixed(2)}`;
+        let allPayouts = [];
+        let yearlyPayouts = [];
+        let ytdReferrals = 0;
+        let ytdAmount = 0;
 
-        const top10Payouts = payouts.slice(0, 10);
-        top10Payouts.forEach((item) => {
-          const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-          invoiceList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
-              <div>
-                <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
-                <p class="text-xs text-slate-400 mb-1">Credited: ${formattedDate}</p>
-                ${item.remarks ? `<p class="text-xs text-amber-400 italic">" ${item.remarks} "</p>` : ''}
-              </div>
-              <div class="text-right">
-                <p class="text-sm text-emerald-400 font-bold">₱${(item.amount || 0).toFixed(2)}</p>
-                <p class="text-xs text-slate-400">${item.referrals || 0} Referrals</p>
-                ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
-              </div>
-            </div>
-          `;
+        snapshot.forEach((docSnap) => {
+          const item = { id: docSnap.id, ...docSnap.data() };
+          allPayouts.push(item);
+
+          const itemYear = new Date(item.createdAt).getFullYear();
+          
+          // YEARLY RESET FILTER: Only count records created in the CURRENT calendar year
+          if (itemYear === currentYear) {
+            yearlyPayouts.push(item);
+            ytdReferrals += (item.referrals || 0);
+            ytdAmount += (item.amount || 0);
+          }
         });
+
+        // 1. Sort current year payouts by newest first
+        yearlyPayouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        userPayoutsArray = yearlyPayouts; // Store filtered payouts for pagination
+
+        // 2. Set Year-To-Date Totals
+        document.getElementById('ytd-referrals').innerText = ytdReferrals;
+        document.getElementById('ytd-amount').innerText = `₱${ytdAmount.toFixed(2)}`;
+
+        // 3. Set Latest Disbursement Stats
+        if (yearlyPayouts.length > 0) {
+          const latest = yearlyPayouts[0];
+          document.getElementById('payout-referrals').innerText = latest.referrals || 0;
+          document.getElementById('payout-amount').innerText = `₱${(latest.amount || 0).toFixed(2)}`;
+        } else {
+          document.getElementById('payout-referrals').innerText = "0";
+          document.getElementById('payout-amount').innerText = "₱0.00";
+        }
+
+        // 4. Render Paginated Invoice List
+        currentInvoicePage = 1;
+        renderInvoicePage();
       });
     }
+
+    // PAGINATION RENDERER
+    function renderInvoicePage() {
+      const invoiceList = document.getElementById('invoice-list');
+      const paginationControls = document.getElementById('pagination-controls');
+      const pageIndicator = document.getElementById('page-indicator');
+      const pageNumbersDiv = document.getElementById('page-numbers');
+
+      if (!userPayoutsArray || userPayoutsArray.length === 0) {
+        invoiceList.innerHTML = "No official invoices attached for this year yet.";
+        paginationControls.classList.add('hidden');
+        return;
+      }
+
+      const totalPages = Math.ceil(userPayoutsArray.length / itemsPerPage);
+      if (currentInvoicePage > totalPages) currentInvoicePage = totalPages;
+      if (currentInvoicePage < 1) currentInvoicePage = 1;
+
+      const startIndex = (currentInvoicePage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageItems = userPayoutsArray.slice(startIndex, endIndex);
+
+      invoiceList.innerHTML = "";
+      pageItems.forEach((item) => {
+        const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        invoiceList.innerHTML += `
+          <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
+            <div>
+              <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
+              <p class="text-xs text-slate-400 mb-1">Credited: ${formattedDate}</p>
+              ${item.remarks ? `<p class="text-xs text-amber-400 italic">" ${item.remarks} "</p>` : ''}
+            </div>
+            <div class="text-right">
+              <p class="text-sm text-emerald-400 font-bold">₱${(item.amount || 0).toFixed(2)}</p>
+              <p class="text-xs text-slate-400">${item.referrals || 0} Referrals</p>
+              ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      // Show/Hide Pagination Bar
+      if (totalPages > 1) {
+        paginationControls.classList.remove('hidden');
+        pageIndicator.innerText = `Page ${currentInvoicePage} of ${totalPages}`;
+        document.getElementById('btn-prev-page').disabled = (currentInvoicePage === 1);
+        document.getElementById('btn-next-page').disabled = (currentInvoicePage === totalPages);
+
+        // Build numbered page buttons
+        pageNumbersDiv.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          pageNumbersDiv.innerHTML += `
+            <button onclick="goToInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === currentInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">
+              ${i}
+            </button>
+          `;
+        }
+      } else {
+        paginationControls.classList.add('hidden');
+        pageIndicator.innerText = `Showing 1–${userPayoutsArray.length} of ${userPayoutsArray.length}`;
+      }
+    }
+
+    // Expose Pagination functions globally for onclick buttons
+    window.changeInvoicePage = (direction) => {
+      currentInvoicePage += direction;
+      renderInvoicePage();
+    };
+
+    window.goToInvoicePage = (pageNum) => {
+      currentInvoicePage = pageNum;
+      renderInvoicePage();
+    };
 
     // --- ADMIN PAYOUT SYSTEM ---
     document.getElementById('admin-create-form').addEventListener('submit', async (e) => {

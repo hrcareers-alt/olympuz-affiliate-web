@@ -75,61 +75,73 @@
     </aside>
 <main class="flex-1 p-6 lg:p-8 flex flex-col gap-6 w-full max-w-7xl">
     
-    <!-- DASHBOARD TOP HEADER (STAYS AT THE VERY TOP) -->
-    <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full">
-      <div class="flex items-center gap-3">
-        <!-- TOP HEADER AVATAR -->
-        <div class="w-10 h-10 rounded-full bg-slate-700 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
-          <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
-          <i id="header-avatar-icon" class="fa-solid fa-user text-lg text-slate-400"></i>
+    <!-- MAIN DASHBOARD SCREEN -->
+  <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+      <!-- Keep your existing left sidebar code untouched -->
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT AREA (STACKS VERTICALLY) -->
+    <main class="flex-1 p-6 lg:p-8 flex flex-col gap-6 overflow-y-auto">
+      
+      <!-- 1. DASHBOARD HEADER (TOP OF RIGHT CONTENT) -->
+      <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-slate-700 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
+            <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+            <i id="header-avatar-icon" class="fa-solid fa-user text-lg text-slate-400"></i>
+          </div>
+          <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Nick</h1>
         </div>
-        <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Affiliate</h1>
-      </div>
-      <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30">Logout</button>
-    </header>
-  <!-- YOUR TAB CONTENT SITS DIRECTLY UNDERNEATH HERE -->
-    <section id="tab-payout" class="tab-content w-full">
-      <!-- Payout cards and attached invoices go here -->
-    </section>
+        <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30">Logout</button>
+      </header>
 
-  </main>
-
-      <!-- TAB 1: WEEKLY PAYOUT -->
-      <section id="tab-payout" class="tab-content">
-        <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
+      <!-- 2. TAB CONTENTS (RENDER DIRECTLY BELOW THE HEADER) -->
+      <div class="w-full">
         
-        <!-- TOP CARDS: LATEST DISBURSEMENT STATS -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (This Week)</div>
-            <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
-          </div>
-          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-slate-400 text-sm">Total Amount Credited (This Week)</div>
-            <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
-          </div>
-        </div>
-
-        <!-- NEW CARDS: YEAR-TO-DATE OVERVIEW STATS -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
-            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Valid Referrals This Year (<span class="current-year-label">2026</span>)</div>
-            <div id="ytd-referrals" class="text-2xl font-bold text-indigo-300 mt-1">0</div>
-          </div>
-          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
-            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings This Year (<span class="current-year-label">2026</span>)</div>
-            <div id="ytd-amount" class="text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
-          </div>
-        </div>
-
-        <!-- ATTACHED INVOICES WITH PAGINATION -->
-        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-semibold text-slate-100">Attached Invoices</h3>
-            <span id="page-indicator" class="text-xs text-slate-400">Page 1</span>
+        <!-- TAB 1: WEEKLY PAYOUT -->
+        <section id="tab-payout" class="tab-content w-full">
+          <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday | Coverage of Endorsement: Aug 3 - Aug 7)</h2>
+          
+          <!-- TOP CARDS -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (This Week)</div>
+              <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-sm">Total Amount Credited (This Week)</div>
+              <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
+            </div>
           </div>
 
-          <div id="invoice-list" class="text-slate-400 text-sm min-h-[120px]">No official invoices attached yet.</div>
+          <!-- YTD OVERVIEW CARDS -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Valid Referrals (<span class="current-year-label">2026</span>)</div>
+              <div id="ytd-referrals" class="text-2xl font-bold text-indigo-300 mt-1">0</div>
+            </div>
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings (<span class="current-year-label">2026</span>)</div>
+              <div id="ytd-amount" class="text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
+            </div>
+          </div>
+
+          <!-- ATTACHED INVOICES -->
+          <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-slate-100">Attached Invoices</h3>
+              <span id="page-indicator" class="text-xs text-slate-400">Page 1</span>
+            </div>
+            <div id="invoice-list" class="text-slate-400 text-sm min-h-[120px]">No official invoices attached yet.</div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
 
           <!-- PAGINATION CONTROLS -->
           <div id="pagination-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-700 pt-3">

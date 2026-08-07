@@ -15,7 +15,7 @@
       <h2 class="text-2xl font-bold text-center text-indigo-400 mb-6">Affiliate Portal Login</h2>
       <form id="login-form" class="space-y-4">
         <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Email / Username</label>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Email</label>
           <input type="email" id="login-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
         </div>
         <div>
@@ -23,10 +23,10 @@
           <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
         </div>
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2 rounded-lg transition">Log In</button>
-        <div class="text-center mt-2">
-          <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline">Forgot Password?</button>
-        </div>
       </form>
+      <div class="text-center mt-3">
+        <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline">Forgot Password?</button>
+      </div>
       <div class="mt-4 text-center text-sm text-slate-400">
         Don't have an account? 
         <a href="https://form.jotform.com/243515259342456" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">Register here</a>
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <!-- MAIN DASHBOARD APPS (HIDDEN BY DEFAULT) -->
+  <!-- MAIN DASHBOARD -->
   <div id="dashboard-screen" class="hidden min-h-screen flex">
     
     <!-- SIDEBAR -->
@@ -128,11 +128,11 @@
           </div>
           <div>
             <label class="block text-xs text-slate-400">Current Password (Required to save changes)</label>
-            <input type="password" id="setting-confirm-pwd" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+            <input type="password" id="setting-confirm-pwd" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
           </div>
           <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Update Profile</button>
         </form>
-<!-- CHANGE PASSWORD FORM -->
+
         <form id="change-password-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
           <h3 class="font-semibold text-amber-400 border-b border-slate-700 pb-2">Change Password</h3>
           <div>
@@ -149,8 +149,9 @@
           </div>
           <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-lg text-sm font-semibold">Update Password</button>
         </form>
+
         <form id="payout-method-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
-          <h3 class="font-semibold text-indigo-400 border-b border-slate-700 pb-2">Preferred Payment Method</h3>
+          <h3 class="font-semibold text-emerald-400 border-b border-slate-700 pb-2">Preferred Payment Method</h3>
           <div>
             <label class="block text-xs text-slate-400">Select Bank / E-Wallet</label>
             <select id="setting-bank" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
@@ -169,7 +170,7 @@
             <input type="text" id="setting-account-num" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
             <p class="text-xs text-amber-400 mt-1">⚠️ Note: Invalid details may lead to disbursement errors or funds being sent to the wrong person. Please verify before saving.</p>
           </div>
-          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Save Payment Details</button>
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold">Save Payment Details</button>
         </form>
       </section>
 
@@ -238,12 +239,17 @@
     </main>
   </div>
 
- <!-- 1. STANDARD SCRIPT FOR UI SWITCHING -->
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTab = document.getElementById(`tab-${tabName}`);
+      if(activeTab) activeTab.classList.remove('hidden');
+    }
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    // ADDED: orderBy (to sort feedback by newest first)
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -261,7 +267,7 @@
     
     let allAffiliates = [];
 
-    // Keep user logged in on refresh & Auto-fill Settings
+    // Auto-login & Profile Data Load
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -275,18 +281,15 @@
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
 
-            // Admin Logic
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
               loadAffiliates(); 
               listenToPendingPayouts(); 
-              listenToAdminFeedback(); // <-- NEW: Load feedback for admins
+              listenToAdminFeedback(); 
             }
 
-            // Load user's approved payouts in real-time
             listenToUserPayouts(user.uid);
 
-            // Auto-fill Settings
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = userData.email || '';
@@ -307,7 +310,7 @@
       }
     });
 
-    // Handle Login
+    // Login Form Submit
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
@@ -318,13 +321,28 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
       } catch (error) {
-        alert("Login failed: " + error.message);
+        alert("Login failed. Please check your credentials.");
       } finally {
         loginButton.innerText = "Log In";
       }
     });
 
-    // Handle Admin Creating an Account
+    // Forgot Password Flow
+    window.forgotPassword = async () => {
+      const emailInput = document.getElementById('login-email').value;
+      if (!emailInput) {
+        alert("Please enter your email address in the box above first, then click 'Forgot Password?'.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, emailInput);
+        alert(`A password reset link has been sent to ${emailInput}. Please check your inbox (and spam folder).`);
+      } catch (error) {
+        alert("Error sending reset email: " + error.message);
+      }
+    };
+
+    // Admin Create Account
     document.getElementById('admin-create-form').addEventListener('submit', async (e) => {
       e.preventDefault(); 
       const submitBtn = e.target.querySelector('button');
@@ -365,7 +383,7 @@
       }
     });
 
-    // Handle Saving Payment Method
+    // Save Payment Details
     document.getElementById('payout-method-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -389,7 +407,7 @@
       submitBtn.innerText = "Save Payment Details";
     });
 
-    // Handle Updating Profile Details
+    // Update Profile
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -416,13 +434,45 @@
         document.getElementById('setting-confirm-pwd').value = ""; 
         alert("Profile updated successfully!");
       } catch (error) {
-        alert("Verification failed: " + error.message);
+        alert("Verification failed. Please check your current password.");
       } finally {
         submitBtn.innerText = "Update Profile";
       }
     });
 
-    // --- NEW: USER FEEDBACK LOGIC ---
+    // Change Password Form
+    document.getElementById('change-password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const currentPwd = document.getElementById('pwd-current').value;
+      const newPwd = document.getElementById('pwd-new').value;
+      const confirmPwd = document.getElementById('pwd-confirm').value;
+      const user = auth.currentUser;
+
+      if (newPwd !== confirmPwd) {
+        alert("Your new passwords do not match!");
+        return;
+      }
+
+      submitBtn.innerText = "Updating...";
+      submitBtn.disabled = true;
+
+      try {
+        const credential = EmailAuthProvider.credential(user.email, currentPwd);
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, newPwd);
+        
+        alert("Password updated successfully!");
+        e.target.reset(); 
+      } catch (error) {
+        alert("Failed to change password. Make sure your 'Current Password' is correct.");
+      } finally {
+        submitBtn.innerText = "Update Password";
+        submitBtn.disabled = false;
+      }
+    });
+
+    // User Feedback Submission
     document.getElementById('feedback-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -432,7 +482,6 @@
 
       if (!user) return;
 
-      // Check Word Count limit (500 words)
       const wordCount = feedbackText.split(/\s+/).filter(word => word.length > 0).length;
       if (wordCount > 500) {
         alert(`Your feedback is ${wordCount} words. Please limit it to 500 words.`);
@@ -443,9 +492,7 @@
       submitBtn.disabled = true;
 
       try {
-        const todayStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        
-        // Check if user already submitted today
+        const todayStr = new Date().toISOString().split('T')[0]; 
         const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
         const querySnapshot = await getDocs(q);
 
@@ -456,22 +503,19 @@
           return;
         }
 
-        // Fetch User's Name to attach to feedback
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userName = userDoc.exists() ? `${userDoc.data().firstName} ${userDoc.data().lastName}` : "Unknown Affiliate";
 
-        // Save Feedback
         await addDoc(collection(db, "feedback"), {
           userId: user.uid,
           userName: userName,
           message: feedbackText,
-          dateString: todayStr, // Used for the 1-per-day limit
-          createdAt: new Date().toISOString() // Used for exact sorting
+          dateString: todayStr, 
+          createdAt: new Date().toISOString() 
         });
 
         alert("Feedback submitted successfully! Thank you.");
-        e.target.reset(); // Clear the textarea
-
+        e.target.reset(); 
       } catch (error) {
         alert("Failed to submit feedback: " + error.message);
       } finally {
@@ -480,14 +524,12 @@
       }
     });
 
-    // --- NEW: ADMIN FEEDBACK VIEWER ---
+    // Admin Feedback Viewer
     function listenToAdminFeedback() {
-      // Get all feedback, ordered by newest first
       const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
-      
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-feedback-list');
-        listDiv.innerHTML = ""; // Clear list
+        listDiv.innerHTML = ""; 
 
         if (snapshot.empty) {
           listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
@@ -511,10 +553,9 @@
       });
     }
 
-    // --- USER DASHBOARD PAYOUT LISTENER ---
+    // User Payout Viewer
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
-      
       onSnapshot(q, (snapshot) => {
         let totalReferrals = 0;
         let totalAmount = 0;
@@ -552,7 +593,7 @@
       });
     }
 
-    // --- ADMIN DISBURSEMENT LOGIC ---
+    // Admin Disbursement Logic
     async function loadAffiliates() {
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("role", "==", "affiliate"));
@@ -661,7 +702,7 @@
       }
     };
 
-    // Handle Logout
+    // Logout
     window.logout = async () => {
       await signOut(auth);
       document.getElementById('admin-menu').classList.add('hidden');

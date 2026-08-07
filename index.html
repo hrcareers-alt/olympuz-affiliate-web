@@ -441,31 +441,56 @@
       const submitBtn = e.target.querySelector('button');
       const feedbackText = document.getElementById('feedback-text').value.trim();
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user) return alert("You must be logged in to submit feedback.");
 
       const wordCount = feedbackText.split(/\s+/).filter(word => word.length > 0).length;
-      if (wordCount > 500) return alert(`Your feedback is ${wordCount} words. Please limit it to 500.`);
+      if (wordCount > 500) return alert(`Your feedback is ${wordCount} words. Please limit it to 500 words.`);
 
       submitBtn.innerText = "Submitting...";
       submitBtn.disabled = true;
+
       try {
         const todayStr = new Date().toISOString().split('T')[0]; 
-        const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
-        const querySnapshot = await getDocs(q);
+        
+        // 1. Check if user already submitted today (wrapped in try/catch to avoid hard errors)
+        try {
+          const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
+          const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          alert("You have already submitted feedback today. Please try again tomorrow!");
-          submitBtn.innerText = "Submit Feedback";
-          submitBtn.disabled = false;
-          return;
+          if (!querySnapshot.empty) {
+            alert("You have already submitted feedback today. Please try again tomorrow!");
+            submitBtn.innerText = "Submit Feedback";
+            submitBtn.disabled = false;
+            return;
+          }
+        } catch (checkError) {
+          console.warn("Skipped duplicate check due to rule restrictions, proceeding to submit:", checkError);
         }
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const userName = userDoc.exists() ? `${userDoc.data().firstName} ${userDoc.data().lastName}` : "Unknown Affiliate";
+        // 2. Fetch user profile for display name
+        let displayName = "Affiliate User";
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const uData = userDoc.data();
+            if (uData.firstName || uData.lastName) {
+              displayName = `${uData.firstName || ''} ${uData.lastName || ''}`.trim();
+            } else if (uData.username) {
+              displayName = uData.username;
+            } else if (uData.email) {
+              displayName = uData.email;
+            }
+          } else if (user.email) {
+            displayName = user.email;
+          }
+        } catch (nameError) {
+          if (user.email) displayName = user.email;
+        }
 
+        // 3. Create the feedback document
         await addDoc(collection(db, "feedback"), {
           userId: user.uid,
-          userName: userName,
+          userName: displayName,
           message: feedbackText,
           dateString: todayStr, 
           createdAt: new Date().toISOString() 

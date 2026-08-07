@@ -225,6 +225,14 @@
       const activeTab = document.getElementById(`tab-${tabName}`);
       if(activeTab) activeTab.classList.remove('hidden');
     }
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTab = document.getElementById(`tab-${tabName}`);
+      if(activeTab) activeTab.classList.remove('hidden');
+    }
+  </script> <!-- THIS WAS THE MISSING TAG! -->
+
   <script type="module">
     // 1. Import Firebase tools (Added onAuthStateChanged)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -235,7 +243,7 @@
     const firebaseConfig = {
       apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
       authDomain: "olympuz-affiliateportal.firebaseapp.com",
-      projectId: "olympuz-affiliateportal", // Make sure there is no https:// here!
+      projectId: "olympuz-affiliateportal",
       storageBucket: "olympuz-affiliateportal",
       messagingSenderId: "olympuz-affiliateportal.firebasestorage.app",
       appId: "1:481351568871:web:003376102b843e1b888142"
@@ -290,8 +298,6 @@
       try {
         // Authenticate with Firebase
         await signInWithEmailAndPassword(auth, email, password);
-        // We don't need to manually switch screens here anymore, 
-        // because onAuthStateChanged (above) will automatically trigger and do it!
       } catch (error) {
         alert("Login failed: " + error.message);
       } finally {

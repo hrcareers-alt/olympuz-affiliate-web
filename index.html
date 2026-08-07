@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased">
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center text-indigo-400 mb-6">Affiliate Portal Login</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Email / Username</label>
+          <input type="email" id="login-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Password</label>
+          <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2 rounded-lg transition">Log In</button>
+      </form>
+      <div class="mt-4 text-center text-sm text-slate-400">
+        Don't have an account? 
+        <a href="https://form.jotform.com/243515259342456" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">Register here</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD APPS (HIDDEN BY DEFAULT) -->
+  <div id="dashboard-screen" class="hidden min-h-screen flex">
+    
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col justify-between">
+      <div class="p-4 space-y-6">
+        <div class="font-bold text-xl text-indigo-400 border-b border-slate-700 pb-4">
+          Affiliate Workspace
+        </div>
+        
+        <nav id="sidebar-menu" class="space-y-1 text-sm">
+          <!-- Standard User Links -->
+          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
+          <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
+          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Declare/Claim Hire</a>
+          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
+          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
+          <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
+
+          <!-- Admin Only Links -->
+          <div id="admin-menu" class="hidden pt-4 border-t border-slate-700 space-y-1">
+            <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
+            <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
+            <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Support Footer -->
+      <div class="p-4 border-t border-slate-700 text-xs text-slate-400">
+        Need help? 
+        <a href="https://wa.me/639915225686" target="_blank" class="text-green-400 font-semibold block mt-1 hover:underline">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp Support
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+        <h1 id="welcome-message" class="text-2xl font-bold text-slate-100">Welcome, Affiliate</h1>
+        <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30">Logout</button>
+      </header>
+
+      <!-- TAB 1: WEEKLY PAYOUT -->
+      <section id="tab-payout" class="tab-content">
+        <h2 class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-slate-400 text-sm">Valid Referrals / Endorsements</div>
+            <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-slate-400 text-sm">Total Amount to be Credited</div>
+            <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
+          </div>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+          <h3 class="font-semibold mb-2">Attached Invoices</h3>
+          <div id="invoice-list" class="text-slate-400 text-sm">No official invoices attached yet.</div>
+        </div>
+      </section>
+
+      <!-- TAB 6: FEEDBACK -->
+      <section id="tab-feedback" class="tab-content hidden">
+        <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
+        <form id="feedback-form" class="max-w-lg space-y-4">
+          <textarea id="feedback-text" maxlength="500" rows="5" required placeholder="Write your comments here (Max 500 words)..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
+          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-500">Submit Feedback</button>
+        </form>
+      </section>
+
+      <!-- TAB 7: ACCOUNT SETTINGS -->
+      <section id="tab-settings" class="tab-content hidden max-w-xl">
+        <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
+        
+        <form id="profile-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
+          <h3 class="font-semibold text-indigo-400 border-b border-slate-700 pb-2">Profile Details</h3>
+          <div>
+            <label class="block text-xs text-slate-400">First Name</label>
+            <input type="text" id="setting-firstname" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Last Name</label>
+            <input type="text" id="setting-lastname" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Email Address</label>
+            <input type="email" id="setting-email" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Current Password (Required to save changes)</label>
+            <input type="password" id="setting-confirm-pwd" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Update Profile</button>
+        </form>
+
+        <form id="payout-method-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+          <h3 class="font-semibold text-indigo-400 border-b border-slate-700 pb-2">Preferred Payment Method</h3>
+          <div>
+            <label class="block text-xs text-slate-400">Select Bank / E-Wallet</label>
+            <select id="setting-bank" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+              <option value="GoTyme">GoTyme</option>
+              <option value="GCash">GCash</option>
+              <option value="Maya">Maya</option>
+              <option value="BPI">BPI</option>
+              <option value="RCBC">RCBC</option>
+              <option value="Metrobank">Metrobank</option>
+              <option value="China Bank">China Bank</option>
+              <option value="Others">Others (Specify)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Account Number</label>
+            <input type="text" id="setting-account-num" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+            <p class="text-xs text-amber-400 mt-1">⚠️ Note: Invalid details may lead to disbursement errors or funds being sent to the wrong person. Please verify before saving.</p>
+          </div>
+          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Save Payment Details</button>
+        </form>
+      </section>
+
+      <!-- TAB 8: ADMIN FEEDBACK -->
+      <section id="tab-admin-feedback" class="tab-content hidden">
+        <h2 class="text-xl font-semibold mb-4">Affiliate Feedback Submissions</h2>
+        <div id="admin-feedback-list" class="space-y-3"></div>
+      </section>
+
+      <!-- TAB 9: ADMIN CREATE ACCOUNT -->
+      <section id="tab-admin-create" class="tab-content hidden max-w-lg">
+        <h2 class="text-xl font-semibold mb-4">Create Affiliate Account</h2>
+        <form id="admin-create-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+          <div>
+            <label class="block text-xs text-slate-400">First Name</label>
+            <input type="text" id="create-firstname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Last Name</label>
+            <input type="text" id="create-lastname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Username</label>
+            <input type="text" id="create-username" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Email Address</label>
+            <input type="email" id="create-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Password</label>
+            <input type="password" id="create-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2 rounded-lg font-semibold">Create Account</button>
+        </form>
+      </section>
+
+      <!-- TAB 10: ADMIN DISBURSE PAYOUT -->
+      <section id="tab-admin-disburse" class="tab-content hidden">
+        <h2 class="text-xl font-semibold mb-4">Disburse Weekly Payout</h2>
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-xl space-y-4 mb-8">
+          <div>
+            <label class="block text-xs text-slate-400">Select Affiliate</label>
+            <select id="disburse-user-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2" onchange="loadUserDisburseDetails()">
+              <option value="">-- Choose Affiliate --</option>
+            </select>
+          </div>
+          <div id="disburse-bank-info" class="text-sm text-slate-300 bg-slate-900/50 p-3 rounded-lg hidden">
+            <div><strong>Payment Method:</strong> <span id="disburse-method">-</span></div>
+            <div><strong>Account Number:</strong> <span id="disburse-account">-</span></div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Total Valid Referrals</label>
+            <input type="number" id="disburse-referrals" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400">Amount to Credited (PHP)</label>
+            <input type="number" id="disburse-amount" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+          </div>
+          <button onclick="submitPreApproval()" class="bg-amber-600 hover:bg-amber-500 w-full py-2 rounded-lg font-semibold">Stage for Approval</button>
+        </div>
+
+        <h3 class="text-lg font-semibold mb-2">Pending Approvals</h3>
+        <div id="pending-approval-list" class="space-y-3"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTab = document.getElementById(`tab-${tabName}`);
+      if(activeTab) activeTab.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

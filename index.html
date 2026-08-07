@@ -73,11 +73,16 @@
         </a>
       </div>
     </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-8 overflow-y-auto">
-      <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-        <h1 id="welcome-message" class="text-2xl font-bold text-slate-100">Welcome, Affiliate</h1>
+    <!-- DASHBOARD TOP HEADER -->
+      <header class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <!-- TOP HEADER AVATAR -->
+          <div class="w-10 h-10 rounded-full bg-slate-700 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
+            <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+            <i id="header-avatar-icon" class="fa-solid fa-user text-lg text-slate-400"></i>
+          </div>
+          <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Affiliate</h1>
+        </div>
         <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30">Logout</button>
       </header>
 
@@ -155,27 +160,43 @@
       <section id="tab-settings" class="tab-content hidden max-w-xl">
         <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
         
-        <form id="profile-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
-          <h3 class="font-semibold text-indigo-400 border-b border-slate-700 pb-2">Profile Details</h3>
-          <div>
-            <label class="block text-xs text-slate-400">First Name</label>
-            <input type="text" id="setting-firstname" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+        <!-- PROFILE INFORMATION FORM WITH PICTURE -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-xl mb-6">
+          <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
+          
+          <!-- AVATAR DISPLAY & UPLOAD -->
+          <div class="flex items-center gap-4 mb-6 pb-4 border-b border-slate-700">
+            <div class="relative w-20 h-20 rounded-full bg-slate-700 border-2 border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
+              <img id="profile-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Profile Picture">
+              <i id="profile-avatar-icon" class="fa-solid fa-user text-3xl text-slate-400"></i>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1 text-slate-300">Profile Picture</label>
+              <input type="file" id="setting-avatar-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+              <p class="text-xs text-slate-500 mt-1">PNG, JPG, or WEBP up to 5MB.</p>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs text-slate-400">Last Name</label>
-            <input type="text" id="setting-lastname" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Email Address</label>
-            <input type="email" id="setting-email" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400">Current Password (Required to save changes)</label>
-            <input type="password" id="setting-confirm-pwd" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
-          </div>
-          <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold">Update Profile</button>
-        </form>
 
+          <form id="profile-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1 text-slate-300">First Name</label>
+              <input type="text" id="setting-firstname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1 text-slate-300">Last Name</label>
+              <input type="text" id="setting-lastname" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1 text-slate-300">Email Address (Read-Only)</label>
+              <input type="email" id="setting-email" readonly class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1 text-slate-300">Confirm Current Password to Save Changes</label>
+              <input type="password" id="setting-confirm-pwd" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition">Update Profile</button>
+          </form>
+        </div>
         <form id="change-password-form" class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 mb-6">
           <h3 class="font-semibold text-amber-400 border-b border-slate-700 pb-2">Change Password</h3>
           <div>

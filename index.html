@@ -89,12 +89,13 @@
             <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
           </div>
           <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-slate-400 text-sm">Total Amount to be Credited</div>
+            <!-- UPDATED LABEL -->
+            <div class="text-slate-400 text-sm">Total Amount Credited</div>
             <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
           </div>
         </div>
         <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-          <h3 class="font-semibold mb-2">Attached Invoices</h3>
+          <h3 class="font-semibold mb-2">Attached Invoices (Latest 10)</h3>
           <div id="invoice-list" class="text-slate-400 text-sm">No official invoices attached yet.</div>
         </div>
       </section>
@@ -557,27 +558,40 @@
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
       onSnapshot(q, (snapshot) => {
-        let totalReferrals = 0;
-        let totalAmount = 0;
         const invoiceList = document.getElementById('invoice-list');
         invoiceList.innerHTML = ""; 
 
         if (snapshot.empty) {
           invoiceList.innerHTML = "No official invoices attached yet.";
+          document.getElementById('payout-referrals').innerText = "0";
+          document.getElementById('payout-amount').innerText = "₱0.00";
+          return;
         }
 
+        // 1. Put all payouts into an array
+        let payouts = [];
         snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          totalReferrals += data.referrals;
-          totalAmount += data.amount;
+          payouts.push({ id: docSnap.id, ...docSnap.data() });
+        });
 
+        // 2. Sort them by newest date first
+        payouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        // 3. Update the big numbers using ONLY the latest payout (the first one in the sorted list)
+        const latestPayout = payouts[0];
+        document.getElementById('payout-referrals').innerText = latestPayout.referrals;
+        document.getElementById('payout-amount').innerText = `₱${latestPayout.amount.toFixed(2)}`;
+
+        // 4. Display up to 10 invoices in the list below
+        const top10Payouts = payouts.slice(0, 10);
+        top10Payouts.forEach((data) => {
           const dateObj = new Date(data.createdAt);
           const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
           invoiceList.innerHTML += `
             <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
               <div>
-                <p class="text-sm font-bold text-slate-200">Invoice: #${docSnap.id.substring(0, 6).toUpperCase()}</p>
+                <p class="text-sm font-bold text-slate-200">Invoice: #${data.id.substring(0, 6).toUpperCase()}</p>
                 <p class="text-xs text-slate-400">Credited: ${formattedDate}</p>
               </div>
               <div class="text-right">
@@ -587,12 +601,8 @@
             </div>
           `;
         });
-
-        document.getElementById('payout-referrals').innerText = totalReferrals;
-        document.getElementById('payout-amount').innerText = `₱${totalAmount.toFixed(2)}`;
       });
     }
-
     // Admin Disbursement Logic
     async function loadAffiliates() {
       const usersRef = collection(db, "users");

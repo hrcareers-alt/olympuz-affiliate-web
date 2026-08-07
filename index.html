@@ -716,25 +716,28 @@
 // --- NEW: DYNAMIC PAYOUT DATE RANGE ---
     function updatePayoutDateRange() {
       const today = new Date();
-      const currentDay = today.getDay(); // 0 is Sunday, 6 is Saturday
+      const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
       
-      // Calculate the most recent Sunday
-      const sunday = new Date(today);
-      sunday.setDate(today.getDate() - currentDay);
+      // Calculate how many days ago Monday was
+      // (If today is Sunday, we go back 6 days. Otherwise, go back currentDay - 1)
+      const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
       
-      // Calculate the Friday of that week (Sunday + 5 days)
-      const friday = new Date(sunday);
-      friday.setDate(sunday.getDate() + 5);
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - daysToMonday);
+      
+      // Calculate the Friday of that week (Monday + 4 days)
+      const friday = new Date(monday);
+      friday.setDate(monday.getDate() + 4);
       
       // Format as "Aug 2"
       const options = { month: 'short', day: 'numeric' };
-      const sundayStr = sunday.toLocaleDateString('en-US', options);
+      const mondayStr = monday.toLocaleDateString('en-US', options);
       const fridayStr = friday.toLocaleDateString('en-US', options);
       
       // Update the heading
       const heading = document.getElementById('weekly-payout-heading');
       if (heading) {
-        heading.innerText = `Weekly Payout (Releasing Every Saturday | Cutoff: ${sundayStr} - ${fridayStr})`;
+        heading.innerText = `Weekly Payout (Releasing Every Saturday | Coverage of Endorsement: ${mondayStr} - ${fridayStr})`;
       }
     }
     // Logout

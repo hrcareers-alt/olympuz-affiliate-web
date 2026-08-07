@@ -82,7 +82,7 @@
 
       <!-- TAB 1: WEEKLY PAYOUT -->
       <section id="tab-payout" class="tab-content">
-        <h2 class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
+        <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
         <div class="grid grid-cols-2 gap-4 mb-6">
           <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
             <div class="text-slate-400 text-sm">Valid Referrals / Endorsements</div>
@@ -281,6 +281,8 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
+
+            updatePayoutDateRange();
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
@@ -711,7 +713,30 @@
         await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
       }
     };
-
+// --- NEW: DYNAMIC PAYOUT DATE RANGE ---
+    function updatePayoutDateRange() {
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 is Sunday, 6 is Saturday
+      
+      // Calculate the most recent Sunday
+      const sunday = new Date(today);
+      sunday.setDate(today.getDate() - currentDay);
+      
+      // Calculate the Friday of that week (Sunday + 5 days)
+      const friday = new Date(sunday);
+      friday.setDate(sunday.getDate() + 5);
+      
+      // Format as "Aug 2"
+      const options = { month: 'short', day: 'numeric' };
+      const sundayStr = sunday.toLocaleDateString('en-US', options);
+      const fridayStr = friday.toLocaleDateString('en-US', options);
+      
+      // Update the heading
+      const heading = document.getElementById('weekly-payout-heading');
+      if (heading) {
+        heading.innerText = `Weekly Payout (Releasing Every Saturday | Cutoff: ${sundayStr} - ${fridayStr})`;
+      }
+    }
     // Logout
     window.logout = async () => {
       await signOut(auth);

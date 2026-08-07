@@ -270,7 +270,26 @@
     
     let allAffiliates = [];
 
-    // Auto-login & Profile Data Load
+    // --- DYNAMIC PAYOUT DATE RANGE ---
+    function updatePayoutDateRange() {
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
+      const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+      
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - daysToMonday);
+      
+      const friday = new Date(monday);
+      friday.setDate(monday.getDate() + 4);
+      
+      const options = { month: 'short', day: 'numeric' };
+      const heading = document.getElementById('weekly-payout-heading');
+      if (heading) {
+        heading.innerText = `Weekly Payout (Releasing Every Saturday | Coverage of Endorsement: ${monday.toLocaleDateString('en-US', options)} - ${friday.toLocaleDateString('en-US', options)})`;
+      }
+    }
+
+    // --- AUTO LOGIN & LOAD ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -298,13 +317,8 @@
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = userData.email || '';
-            
-            if (userData.paymentMethod) {
-              document.getElementById('setting-bank').value = userData.paymentMethod;
-            }
-            if (userData.accountNumber) {
-              document.getElementById('setting-account-num').value = userData.accountNumber;
-            }
+            if (userData.paymentMethod) document.getElementById('setting-bank').value = userData.paymentMethod;
+            if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -315,13 +329,12 @@
       }
     });
 
-    // Login Form Submit
+    // --- AUTHENTICATION ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
       const loginButton = e.target.querySelector('button');
-      
       loginButton.innerText = "Logging in...";
       try {
         await signInWithEmailAndPassword(auth, email, password);
@@ -332,107 +345,49 @@
       }
     });
 
-    // Forgot Password Flow
     window.forgotPassword = async () => {
       const emailInput = document.getElementById('login-email').value;
-      if (!emailInput) {
-        alert("Please enter your email address in the box above first, then click 'Forgot Password?'.");
-        return;
-      }
+      if (!emailInput) return alert("Please enter your email address in the box above first, then click 'Forgot Password?'.");
       try {
         await sendPasswordResetEmail(auth, emailInput);
-        alert(`A password reset link has been sent to ${emailInput}. Please check your inbox (and spam folder).`);
+        alert(`A password reset link has been sent to ${emailInput}.`);
       } catch (error) {
         alert("Error sending reset email: " + error.message);
       }
     };
 
-    // Admin Create Account
-    document.getElementById('admin-create-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); 
-      const submitBtn = e.target.querySelector('button');
-      submitBtn.innerText = "Creating Account...";
-      submitBtn.disabled = true;
-
-      const firstName = document.getElementById('create-firstname').value;
-      const lastName = document.getElementById('create-lastname').value;
-      const username = document.getElementById('create-username').value;
-      const email = document.getElementById('create-email').value;
-      const password = document.getElementById('create-password').value;
-
-      try {
-        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
-        const secondaryAuth = getAuth(secondaryApp);
-        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-        const newUser = userCredential.user;
-
-        await setDoc(doc(db, "users", newUser.uid), {
-          firstName: firstName,
-          lastName: lastName,
-          username: username,
-          email: email,
-          role: "affiliate", 
-          createdAt: new Date().toISOString()
-        });
-
-        await signOut(secondaryAuth);
-        alert(`Success! Account for ${firstName} ${lastName} has been created.`);
-        e.target.reset(); 
-        if (auth.currentUser && auth.currentUser.role === 'admin') loadAffiliates(); 
-        
-      } catch (error) {
-        alert("Failed to create account: " + error.message);
-      } finally {
-        submitBtn.innerText = "Create Account";
-        submitBtn.disabled = false;
-      }
-    });
-
-    // Save Payment Details
+    // --- SETTINGS FORMS ---
     document.getElementById('payout-method-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
       submitBtn.innerText = "Saving...";
-      
-      const bank = document.getElementById('setting-bank').value;
-      const accNum = document.getElementById('setting-account-num').value;
-      const user = auth.currentUser;
-
-      if (user) {
-        try {
-          await updateDoc(doc(db, "users", user.uid), {
-            paymentMethod: bank,
-            accountNumber: accNum
-          });
-          alert("Payment details saved successfully!");
-        } catch (error) {
-          alert("Error saving payment details: " + error.message);
-        }
+      try {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          paymentMethod: document.getElementById('setting-bank').value,
+          accountNumber: document.getElementById('setting-account-num').value
+        });
+        alert("Payment details saved successfully!");
+      } catch (error) {
+        alert("Error saving payment details: " + error.message);
       }
       submitBtn.innerText = "Save Payment Details";
     });
 
-    // Update Profile
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
       const currentPassword = document.getElementById('setting-confirm-pwd').value;
-      const newFirstName = document.getElementById('setting-firstname').value;
-      const newLastName = document.getElementById('setting-lastname').value;
-      const user = auth.currentUser;
-
-      if (!currentPassword) {
-        alert("Please enter your current password to save changes.");
-        return;
-      }
+      if (!currentPassword) return alert("Please enter your current password to save changes.");
+      
       submitBtn.innerText = "Updating...";
-
       try {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-        await updateDoc(doc(db, "users", user.uid), {
+        const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+        await reauthenticateWithCredential(auth.currentUser, credential);
+        
+        const newFirstName = document.getElementById('setting-firstname').value;
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
           firstName: newFirstName,
-          lastName: newLastName
+          lastName: document.getElementById('setting-lastname').value
         });
         
         document.getElementById('welcome-message').innerText = `Welcome, ${newFirstName}`;
@@ -445,28 +400,19 @@
       }
     });
 
-    // Change Password Form
     document.getElementById('change-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
       const currentPwd = document.getElementById('pwd-current').value;
       const newPwd = document.getElementById('pwd-new').value;
-      const confirmPwd = document.getElementById('pwd-confirm').value;
-      const user = auth.currentUser;
-
-      if (newPwd !== confirmPwd) {
-        alert("Your new passwords do not match!");
-        return;
-      }
+      if (newPwd !== document.getElementById('pwd-confirm').value) return alert("Your new passwords do not match!");
 
       submitBtn.innerText = "Updating...";
       submitBtn.disabled = true;
-
       try {
-        const credential = EmailAuthProvider.credential(user.email, currentPwd);
-        await reauthenticateWithCredential(user, credential);
-        await updatePassword(user, newPwd);
-        
+        const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPwd);
+        await reauthenticateWithCredential(auth.currentUser, credential);
+        await updatePassword(auth.currentUser, newPwd);
         alert("Password updated successfully!");
         e.target.reset(); 
       } catch (error) {
@@ -477,25 +423,19 @@
       }
     });
 
-    // User Feedback Submission
+    // --- FEEDBACK SYSTEM ---
     document.getElementById('feedback-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
-      const textElement = document.getElementById('feedback-text');
-      const feedbackText = textElement.value.trim();
+      const feedbackText = document.getElementById('feedback-text').value.trim();
       const user = auth.currentUser;
-
       if (!user) return;
 
       const wordCount = feedbackText.split(/\s+/).filter(word => word.length > 0).length;
-      if (wordCount > 500) {
-        alert(`Your feedback is ${wordCount} words. Please limit it to 500 words.`);
-        return;
-      }
+      if (wordCount > 500) return alert(`Your feedback is ${wordCount} words. Please limit it to 500.`);
 
       submitBtn.innerText = "Submitting...";
       submitBtn.disabled = true;
-
       try {
         const todayStr = new Date().toISOString().split('T')[0]; 
         const q = query(collection(db, "feedback"), where("userId", "==", user.uid), where("dateString", "==", todayStr));
@@ -529,27 +469,20 @@
       }
     });
 
-    // Admin Feedback Viewer
     function listenToAdminFeedback() {
       const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-feedback-list');
         listDiv.innerHTML = ""; 
-
-        if (snapshot.empty) {
-          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
-          return;
-        }
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-sm text-slate-400'>No feedback submissions yet.</p>";
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
-          const formattedDate = new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-
           listDiv.innerHTML += `
             <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg mb-3">
               <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2">
                 <p class="font-bold text-indigo-400">${data.userName}</p>
-                <p class="text-xs text-slate-400">${formattedDate}</p>
+                <p class="text-xs text-slate-400">${new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
               </div>
               <p class="text-sm text-slate-200 whitespace-pre-wrap">${data.message}</p>
             </div>
@@ -564,7 +497,6 @@
       onSnapshot(q, (snapshot) => {
         const invoiceList = document.getElementById('invoice-list');
         if (!invoiceList) return;
-        
         invoiceList.innerHTML = ""; 
 
         if (snapshot.empty) {
@@ -576,7 +508,6 @@
 
         let payouts = [];
         snapshot.forEach((docSnap) => {
-          // Declare data cleanly inside the snapshot iteration
           const itemData = docSnap.data();
           payouts.push({ id: docSnap.id, ...itemData });
         });
@@ -608,47 +539,41 @@
       });
     }
 
-        // 1. Put all payouts into an array
-        let payouts = [];
-        snapshot.forEach((docSnap) => {
-          payouts.push({ id: docSnap.id, ...docSnap.data() });
+    // --- ADMIN PAYOUT SYSTEM ---
+    document.getElementById('admin-create-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); 
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.innerText = "Creating Account...";
+      submitBtn.disabled = true;
+      try {
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+        const secondaryAuth = getAuth(secondaryApp);
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, document.getElementById('create-email').value, document.getElementById('create-password').value);
+        
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          firstName: document.getElementById('create-firstname').value,
+          lastName: document.getElementById('create-lastname').value,
+          username: document.getElementById('create-username').value,
+          email: document.getElementById('create-email').value,
+          role: "affiliate", 
+          createdAt: new Date().toISOString()
         });
 
-        // 2. Sort them by newest date first
-        payouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        await signOut(secondaryAuth);
+        alert("Account created successfully!");
+        e.target.reset(); 
+        loadAffiliates(); 
+      } catch (error) {
+        alert("Failed to create account: " + error.message);
+      } finally {
+        submitBtn.innerText = "Create Account";
+        submitBtn.disabled = false;
+      }
+    });
 
-        // 3. Update the big numbers using ONLY the latest payout (the first one in the sorted list)
-        const latestPayout = payouts[0];
-        document.getElementById('payout-referrals').innerText = latestPayout.referrals;
-        document.getElementById('payout-amount').innerText = `₱${latestPayout.amount.toFixed(2)}`;
-
-        // 4. Display up to 10 invoices in the list below
-        const top10Payouts = payouts.slice(0, 10);
-        top10Payouts.forEach((data) => {
-          const dateObj = new Date(data.createdAt);
-          const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-          invoiceList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
-              <div>
-                <p class="text-sm font-bold text-slate-200">Invoice: #${data.id.substring(0, 6).toUpperCase()}</p>
-                <p class="text-xs text-slate-400">Credited: ${formattedDate}</p>
-              </div>
-              <div class="text-right">
-                <p class="text-sm text-emerald-400 font-bold">₱${data.amount.toFixed(2)}</p>
-                <p class="text-xs text-slate-400">${data.referrals} Referrals</p>
-              </div>
-            </div>
-          `;
-        });
-      });
-    }
-    // Admin Disbursement Logic
     async function loadAffiliates() {
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("role", "==", "affiliate"));
+      const q = query(collection(db, "users"), where("role", "==", "affiliate"));
       const querySnapshot = await getDocs(q);
-      
       const select = document.getElementById('disburse-user-select');
       select.innerHTML = '<option value="">-- Choose Affiliate --</option>';
       allAffiliates = [];
@@ -664,11 +589,7 @@
     window.loadUserDisburseDetails = () => {
       const selectedId = document.getElementById('disburse-user-select').value;
       const infoDiv = document.getElementById('disburse-bank-info');
-      
-      if (!selectedId) {
-        infoDiv.classList.add('hidden');
-        return;
-      }
+      if (!selectedId) return infoDiv.classList.add('hidden');
 
       const user = allAffiliates.find(u => u.id === selectedId);
       document.getElementById('disburse-method').innerText = user.paymentMethod || 'Not Set';
@@ -680,14 +601,9 @@
       const selectedId = document.getElementById('disburse-user-select').value;
       const referrals = document.getElementById('disburse-referrals').value;
       const amount = document.getElementById('disburse-amount').value;
-
-      if (!selectedId || !referrals || !amount) {
-        alert("Please fill in all fields.");
-        return;
-      }
+      if (!selectedId || !referrals || !amount) return alert("Please fill in all fields.");
 
       const user = allAffiliates.find(u => u.id === selectedId);
-
       try {
         await addDoc(collection(db, "payouts"), {
           userId: user.id,
@@ -699,7 +615,6 @@
           status: 'pending',
           createdAt: new Date().toISOString()
         });
-        
         alert("Payout staged for approval!");
         document.getElementById('disburse-user-select').value = "";
         document.getElementById('disburse-referrals').value = "";
@@ -715,11 +630,7 @@
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('pending-approval-list');
         listDiv.innerHTML = "";
-
-        if (snapshot.empty) {
-          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No pending approvals.</p>";
-          return;
-        }
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-sm text-slate-400'>No pending approvals.</p>";
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
@@ -733,13 +644,11 @@
                 </div>
                 <button onclick="declinePayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-sm hover:bg-red-600/40">Decline</button>
               </div>
-              
-              <!-- NEW: REMARKS AND UPLOAD SECTION -->
               <div class="border-t border-slate-700 pt-3 space-y-2">
                 <input type="text" id="remark-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                 <div class="flex items-center gap-2">
                   <input type="file" id="receipt-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600 cursor-pointer">
-                  <button onclick="approvePayout('${docSnap.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Approve & Upload</button>
+                  <button onclick="approvePayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Approve & Upload</button>
                 </div>
               </div>
             </div>
@@ -748,69 +657,39 @@
       });
     }
 
-    window.approvePayout = async (payoutId) => {
+    window.approvePayout = async (payoutId, btn) => {
       const remarkInput = document.getElementById(`remark-${payoutId}`).value;
       const fileInput = document.getElementById(`receipt-${payoutId}`).files[0];
 
-      if (!fileInput) {
-        if(!confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
-      }
+      if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
 
-      // Change button text to show it's working
-      event.target.innerText = "Uploading...";
-      event.target.disabled = true;
-
+      btn.innerText = "Uploading...";
+      btn.disabled = true;
       try {
         let receiptUrl = "";
-        
-        // If a file was selected, upload it to Firebase Storage
         if (fileInput) {
           const storageRef = ref(storage, `receipts/${payoutId}_${fileInput.name}`);
           await uploadBytes(storageRef, fileInput);
-          receiptUrl = await getDownloadURL(storageRef); // Get the public link
+          receiptUrl = await getDownloadURL(storageRef);
         }
-
-        // Save the approval, remarks, and link to the database
         await updateDoc(doc(db, "payouts", payoutId), { 
           status: 'approved',
           remarks: remarkInput || "",
           receiptUrl: receiptUrl
         });
-
       } catch (error) {
         alert("Error approving payout: " + error.message);
-        event.target.innerText = "Approve & Upload";
-        event.target.disabled = false;
+        btn.innerText = "Approve & Upload";
+        btn.disabled = false;
       }
     };
-// --- NEW: DYNAMIC PAYOUT DATE RANGE ---
-    function updatePayoutDateRange() {
-      const today = new Date();
-      const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
-      
-      // Calculate how many days ago Monday was
-      // (If today is Sunday, we go back 6 days. Otherwise, go back currentDay - 1)
-      const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
-      
-      const monday = new Date(today);
-      monday.setDate(today.getDate() - daysToMonday);
-      
-      // Calculate the Friday of that week (Monday + 4 days)
-      const friday = new Date(monday);
-      friday.setDate(monday.getDate() + 4);
-      
-      // Format as "Aug 2"
-      const options = { month: 'short', day: 'numeric' };
-      const mondayStr = monday.toLocaleDateString('en-US', options);
-      const fridayStr = friday.toLocaleDateString('en-US', options);
-      
-      // Update the heading
-      const heading = document.getElementById('weekly-payout-heading');
-      if (heading) {
-        heading.innerText = `Weekly Payout (Releasing Every Saturday | Coverage of Endorsement: ${mondayStr} - ${fridayStr})`;
+
+    window.declinePayout = async (payoutId) => {
+      if(confirm("Are you sure you want to decline and remove this payout?")) {
+        await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
       }
-    }
-    // Logout
+    };
+
     window.logout = async () => {
       await signOut(auth);
       document.getElementById('admin-menu').classList.add('hidden');

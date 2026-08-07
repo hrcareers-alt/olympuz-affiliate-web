@@ -558,32 +558,55 @@
       });
     }
 
-    // User Payout Viewer
+    // --- PAYOUT SYSTEM (USER VIEW) ---
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
       onSnapshot(q, (snapshot) => {
         const invoiceList = document.getElementById('invoice-list');
+        if (!invoiceList) return;
+        
         invoiceList.innerHTML = ""; 
 
         if (snapshot.empty) {
-          invoiceList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
-              <div>
-                <p class="text-sm font-bold text-slate-200">Invoice: #${data.id.substring(0, 6).toUpperCase()}</p>
-                <p class="text-xs text-slate-400 mb-1">Credited: ${formattedDate}</p>
-                ${data.remarks ? `<p class="text-xs text-amber-400 italic">" ${data.remarks} "</p>` : ''}
-              </div>
-              <div class="text-right">
-                <p class="text-sm text-emerald-400 font-bold">₱${data.amount.toFixed(2)}</p>
-                <p class="text-xs text-slate-400">${data.referrals} Referrals</p>
-                ${data.receiptUrl ? `<a href="${data.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
-              </div>
-            </div>
-          `;
+          invoiceList.innerHTML = "No official invoices attached yet.";
           document.getElementById('payout-referrals').innerText = "0";
           document.getElementById('payout-amount').innerText = "₱0.00";
           return;
         }
+
+        let payouts = [];
+        snapshot.forEach((docSnap) => {
+          // Declare data cleanly inside the snapshot iteration
+          const itemData = docSnap.data();
+          payouts.push({ id: docSnap.id, ...itemData });
+        });
+        
+        payouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        const latestPayout = payouts[0];
+        document.getElementById('payout-referrals').innerText = latestPayout.referrals || 0;
+        document.getElementById('payout-amount').innerText = `₱${(latestPayout.amount || 0).toFixed(2)}`;
+
+        const top10Payouts = payouts.slice(0, 10);
+        top10Payouts.forEach((item) => {
+          const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          invoiceList.innerHTML += `
+            <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2 flex justify-between items-center">
+              <div>
+                <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
+                <p class="text-xs text-slate-400 mb-1">Credited: ${formattedDate}</p>
+                ${item.remarks ? `<p class="text-xs text-amber-400 italic">" ${item.remarks} "</p>` : ''}
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-emerald-400 font-bold">₱${(item.amount || 0).toFixed(2)}</p>
+                <p class="text-xs text-slate-400">${item.referrals || 0} Referrals</p>
+                ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
+              </div>
+            </div>
+          `;
+        });
+      });
+    }
 
         // 1. Put all payouts into an array
         let payouts = [];

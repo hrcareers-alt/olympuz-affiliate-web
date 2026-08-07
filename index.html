@@ -35,23 +35,37 @@
   </div>
 
   <!-- MAIN DASHBOARD SCREEN -->
-  <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex">
+  <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
     
-    <!-- LEFT SIDEBAR -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+    <!-- MOBILE TOP BAR WITH BURGER MENU -->
+    <div class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30">
+      <div class="font-bold text-lg text-indigo-400">Olympuz Affiliate</div>
+      <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="text-slate-200 text-xl p-2 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- BACKDROP OVERLAY FOR MOBILE SIDEBAR -->
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+    <!-- RESPONSIVE SIDEBAR -->
+    <aside id="main-sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
       <div class="space-y-6">
-        <div class="font-bold text-xl text-indigo-400 border-b border-slate-800 pb-4">
-          Olympuz Affiliate
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div class="font-bold text-xl text-indigo-400">Olympuz Affiliate</div>
+          <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-200 text-lg">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
         
         <nav id="sidebar-menu" class="space-y-1 text-sm">
           <!-- Standard User Links -->
           <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
-          <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
-          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
-          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
-          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
-          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-paste"></i> Post&Chat Templates</a>
+          <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
+          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
+          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
+          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-paste"></i> Post&Chat Templates</a>
           <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
           <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
 
@@ -75,7 +89,7 @@
     </aside>
 
     <!-- RIGHT MAIN CONTENT AREA -->
-    <main class="flex-1 p-6 lg:p-8 flex flex-col gap-6 overflow-y-auto">
+    <main class="flex-1 p-4 md:p-8 flex flex-col gap-6 overflow-y-auto">
       
       <!-- DASHBOARD HEADER -->
       <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full shrink-0">
@@ -84,7 +98,7 @@
             <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
             <i id="header-avatar-icon" class="fa-solid fa-user text-lg text-slate-400"></i>
           </div>
-          <h1 id="welcome-message" class="text-2xl font-bold">Welcome, Affiliate</h1>
+          <h1 id="welcome-message" class="text-xl md:text-2xl font-bold">Welcome, Affiliate</h1>
         </div>
         <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30 transition">Logout</button>
       </header>
@@ -94,17 +108,17 @@
         
         <!-- TAB 1: WEEKLY PAYOUT -->
         <section id="tab-payout" class="tab-content w-full">
-          <h2 id="weekly-payout-heading" class="text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
+          <h2 id="weekly-payout-heading" class="text-lg md:text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
           
           <!-- TOP CARDS: LATEST DISBURSEMENT -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-              <div class="text-slate-400 text-sm">Valid Referrals / Endorsements (Latest)</div>
-              <div id="payout-referrals" class="text-3xl font-bold text-indigo-400 mt-1">0</div>
+              <div class="text-slate-400 text-xs md:text-sm">Valid Referrals / Endorsements (Latest)</div>
+              <div id="payout-referrals" class="text-2xl md:text-3xl font-bold text-indigo-400 mt-1">0</div>
             </div>
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-              <div class="text-slate-400 text-sm">Total Amount Credited (Latest)</div>
-              <div id="payout-amount" class="text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
+              <div class="text-slate-400 text-xs md:text-sm">Total Amount Credited (Latest)</div>
+              <div id="payout-amount" class="text-2xl md:text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
             </div>
           </div>
 
@@ -112,11 +126,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
               <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Valid Referrals (<span class="current-year-label">2026</span>)</div>
-              <div id="ytd-referrals" class="text-2xl font-bold text-indigo-300 mt-1">0</div>
+              <div id="ytd-referrals" class="text-xl md:text-2xl font-bold text-indigo-300 mt-1">0</div>
             </div>
             <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
               <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Earnings (<span class="current-year-label">2026</span>)</div>
-              <div id="ytd-amount" class="text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
+              <div id="ytd-amount" class="text-xl md:text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
             </div>
           </div>
 
@@ -132,7 +146,7 @@
             <!-- PAGINATION CONTROLS -->
             <div id="pagination-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-800 pt-3">
               <button id="btn-prev-page" onclick="changeInvoicePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+                <i class="fa-solid fa-chevron-left mr-1"></i> Prev
               </button>
               <div id="page-numbers" class="flex gap-1 text-xs"></div>
               <button id="btn-next-page" onclick="changeInvoicePage(1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
@@ -170,12 +184,12 @@
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 mb-6">
             <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
             
-            <div class="flex items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+            <div class="flex flex-col sm:flex-row items-center gap-4 mb-6 pb-4 border-b border-slate-800">
               <div class="relative w-20 h-20 rounded-full bg-slate-800 border-2 border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
                 <img id="profile-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Profile Picture">
                 <i id="profile-avatar-icon" class="fa-solid fa-user text-3xl text-slate-400"></i>
               </div>
-              <div>
+              <div class="text-center sm:text-left">
                 <label class="block text-sm font-medium mb-1 text-slate-300">Profile Picture</label>
                 <input type="file" id="setting-avatar-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
                 <p class="text-xs text-slate-500 mt-1">PNG, JPG, or WEBP up to 5MB.</p>
@@ -311,13 +325,30 @@
     </main>
   </div>
 
-  <!-- TAB SWITCHER SCRIPT -->
+  <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
     window.switchTab = function(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const activeTab = document.getElementById(`tab-${tabName}`);
       if (activeTab) {
         activeTab.classList.remove('hidden');
+      }
+      closeSidebarOnMobile();
+    };
+
+    window.toggleMobileSidebar = function() {
+      const sidebar = document.getElementById('main-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    };
+
+    window.closeSidebarOnMobile = function() {
+      const sidebar = document.getElementById('main-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
       }
     };
   </script>
@@ -351,7 +382,7 @@
     // --- DYNAMIC PAYOUT DATE RANGE ---
     function updatePayoutDateRange() {
       const today = new Date();
-      const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
+      const currentDay = today.getDay(); 
       const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
       
       const monday = new Date(today);
@@ -381,7 +412,6 @@
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
 
-            // Handle Profile Avatars
             if (userData.photoURL) {
               const profileImg = document.getElementById('profile-avatar-img');
               const profileIcon = document.getElementById('profile-avatar-icon');

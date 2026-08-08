@@ -129,6 +129,16 @@
     body.light-mode #tab-leaderboard .text-indigo-300 {
       color: #3730a3 !important;
     }
+    /* FIX SIDEBAR & HEADER BRANDING IN LIGHT MODE */
+    body.light-mode #main-sidebar .text-indigo-400,
+    body.light-mode .md\:hidden .text-indigo-400 {
+      color: #3730a3 !important; /* Deep Indigo for light background contrast */
+      font-weight: 800 !important;
+    }
+
+    body.light-mode #main-sidebar div.font-bold {
+      color: #0f172a !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

@@ -420,8 +420,8 @@
             <div>
               <label class="block text-xs text-slate-400 mb-1">Color Mode</label>
               <select id="setting-theme" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
-                <option value="dark">Dark Mode (Default)</option>
-                <option value="light">Light Mode</option>
+                <option value="light">Light Mode (Default)</option>
+                <option value="dark">Dark Mode</option>
               </select>
             </div>
             <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Apply Theme</button>
@@ -687,7 +687,7 @@
       return array.sort(() => Math.random() - 0.5);
     }
 
-    // --- THEME MANAGEMENT ---
+    // --- THEME MANAGEMENT (DEFAULT: LIGHT MODE) ---
     function applyTheme(theme) {
       if (theme === 'light') {
         document.body.classList.add('light-mode');
@@ -699,7 +699,8 @@
       if (themeSelect) themeSelect.value = theme;
     }
 
-    const savedTheme = localStorage.getItem('portalTheme') || 'dark';
+    // Default to 'light' if no preference is saved in local storage
+    const savedTheme = localStorage.getItem('portalTheme') || 'light';
     applyTheme(savedTheme);
 
     document.getElementById('theme-form').addEventListener('submit', async (e) => {
@@ -711,7 +712,7 @@
         try {
           await updateDoc(doc(db, "users", auth.currentUser.uid), { theme: selectedTheme });
         } catch (err) {
-          console.warn("Could not save theme to database:", err);
+          console.warn("Could not save theme preference to database:", err);
         }
       }
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);

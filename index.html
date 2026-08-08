@@ -185,6 +185,43 @@
 
       <!-- TAB CONTENTS CONTAINER -->
       <div class="w-full">
+
+        <!-- LEADERBOARD SECTION -->
+        <section id="leaderboard-section" class="w-full mb-8">
+          <div class="bg-gradient-to-r from-indigo-900/60 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl">
+            
+            <!-- HEADER & MOTIVATIONAL BANNER -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
+              <div>
+                <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                  <i class="fa-solid fa-trophy"></i> Monthly Leaderboard
+                </div>
+                <h2 class="text-2xl font-extrabold text-white">Top Performing Affiliates (<span id="leaderboard-month-label">This Month</span>)</h2>
+                <p class="text-xs text-slate-400 mt-1">Standings reset on the 1st of every month. Climb the ranks and secure your spot at the top!</p>
+              </div>
+              <div class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl text-center md:text-right shrink-0">
+                <span class="text-xs text-indigo-300 block font-semibold uppercase tracking-wider">Your Current Standing</span>
+                <span id="user-current-rank" class="text-xl font-bold text-amber-400">#-</span>
+              </div>
+            </div>
+
+            <!-- TOP 5 PODIUM / CARDS -->
+            <div id="top-5-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+              <div class="text-center text-slate-400 text-sm col-span-full py-4">Loading monthly leaderboard standings...</div>
+            </div>
+
+            <!-- EXTENDED RANKING LIST (RANK 6+) -->
+            <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
+              <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-list-ol text-indigo-400"></i> Full Monthly Standings
+              </h3>
+              <div id="extended-rankings-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div class="text-xs text-slate-500 py-2">No other participant data available for this month yet.</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
         
         <!-- TAB 1: WEEKLY PAYOUT -->
         <section id="tab-payout" class="tab-content w-full">
@@ -574,6 +611,159 @@
       }
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
     });
+
+    // --- MONTHLY LEADERBOARD SYSTEM ---
+    function listenToMonthlyLeaderboard() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth(); // 0-indexed
+
+      // Update Month Label in Heading
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const monthLabel = document.getElementById('leaderboard-month-label');
+      if (monthLabel) monthLabel.innerText = `${monthNames[currentMonth]} ${currentYear}`;
+
+      // Query only approved payouts
+      const q = query(collection(db, "payouts"), where("status", "==", "approved"));
+
+      onSnapshot(q, async (payoutSnapshot) => {
+        const userReferralsMap = {};
+
+        // Aggregate referrals for the current calendar month
+        payoutSnapshot.forEach((docSnap) => {
+          const item = docSnap.data();
+          const createdAtDate = new Date(item.createdAt);
+
+          if (createdAtDate.getFullYear() === currentYear && createdAtDate.getMonth() === currentMonth) {
+            const uid = item.userId;
+            const referrals = item.referrals || 0;
+
+            if (!userReferralsMap[uid]) {
+              userReferralsMap[uid] = {
+                userId: uid,
+                userName: item.userName || "Affiliate",
+                totalReferrals: 0
+              };
+            }
+            userReferralsMap[uid].totalReferrals += referrals;
+          }
+        });
+
+        // Fetch User Avatars/Profiles to ensure up-to-date photo URLs and names
+        const leaderboardData = [];
+        for (const uid in userReferralsMap) {
+          let photoURL = "";
+          let fullName = userReferralsMap[uid].userName;
+
+          try {
+            const userDoc = await getDoc(doc(db, "users", uid));
+            if (userDoc.exists()) {
+              const uData = userDoc.data();
+              photoURL = uData.photoURL || "";
+              if (uData.firstName || uData.lastName) {
+                fullName = `${uData.firstName || ''} ${uData.lastName || ''}`.trim();
+              }
+            }
+          } catch (e) {
+            console.warn("Could not fetch user profile for leaderboard:", e);
+          }
+
+          leaderboardData.push({
+            userId: uid,
+            userName: fullName,
+            photoURL: photoURL,
+            totalReferrals: userReferralsMap[uid].totalReferrals
+          });
+        }
+
+        // Sort descending by valid referrals
+        leaderboardData.sort((a, b) => b.totalReferrals - a.totalReferrals);
+
+        renderLeaderboard(leaderboardData);
+      }, (error) => {
+        console.warn("Leaderboard listener subscription handled silently:", error.message);
+      });
+    }
+
+    function renderLeaderboard(rankings) {
+      const top5Container = document.getElementById('top-5-container');
+      const extendedList = document.getElementById('extended-rankings-list');
+      const userRankLabel = document.getElementById('user-current-rank');
+
+      if (!top5Container || !extendedList) return;
+
+      top5Container.innerHTML = "";
+      extendedList.innerHTML = "";
+
+      if (rankings.length === 0) {
+        top5Container.innerHTML = `<div class="text-center text-slate-400 text-sm col-span-full py-4">No valid referrals recorded yet for this month. Be the first to claim Rank #1! 🚀</div>`;
+        extendedList.innerHTML = `<div class="text-xs text-slate-500 py-2">No standings to display yet.</div>`;
+        if (userRankLabel) userRankLabel.innerText = "#-";
+        return;
+      }
+
+      // Update current logged in user's rank
+      const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+      let userRankIndex = rankings.findIndex(r => r.userId === currentUid);
+
+      if (userRankLabel) {
+        userRankLabel.innerText = userRankIndex !== -1 ? `#${userRankIndex + 1}` : "Unranked";
+      }
+
+      // Top 5 Rendering
+      const top5 = rankings.slice(0, 5);
+      const rankBadges = [
+        { border: "border-amber-400", bg: "bg-amber-500/10", text: "text-amber-400", label: "🥇 Rank 1" },
+        { border: "border-slate-300", bg: "bg-slate-300/10", text: "text-slate-300", label: "🥈 Rank 2" },
+        { border: "border-amber-600", bg: "bg-amber-600/10", text: "text-amber-600", label: "🥉 Rank 3" },
+        { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 4" },
+        { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 5" }
+      ];
+
+      top5.forEach((item, index) => {
+        const badge = rankBadges[index];
+        const isCurrentUser = item.userId === currentUid;
+
+        top5Container.innerHTML += `
+          <div class="bg-slate-900 border ${badge.border} ${isCurrentUser ? 'ring-2 ring-indigo-500' : ''} p-4 rounded-xl flex flex-col items-center text-center relative overflow-hidden transition transform hover:-translate-y-1 shadow-lg">
+            <span class="text-[10px] font-bold uppercase ${badge.text} ${badge.bg} border ${badge.border} px-2.5 py-0.5 rounded-full mb-3">
+              ${badge.label}
+            </span>
+            <div class="w-16 h-16 rounded-full border-2 ${badge.border} overflow-hidden bg-slate-800 flex items-center justify-center mb-2 shrink-0">
+              ${item.photoURL ? `<img src="${item.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-2xl text-slate-400"></i>`}
+            </div>
+            <h4 class="font-bold text-sm text-slate-100 truncate w-full ${isCurrentUser ? 'text-indigo-400' : ''}">${item.userName} ${isCurrentUser ? '(You)' : ''}</h4>
+            <div class="mt-2 text-xs text-slate-400">
+              <span class="text-lg font-extrabold ${badge.text}">${item.totalReferrals}</span> Referrals
+            </div>
+          </div>
+        `;
+      });
+
+      // Extended Ranks (Rank 6+) Rendering
+      const extendedRanks = rankings.slice(5);
+      if (extendedRanks.length === 0) {
+        extendedList.innerHTML = `<div class="text-xs text-slate-500 py-2">All active participants are currently in the Top 5!</div>`;
+      } else {
+        extendedRanks.forEach((item, index) => {
+          const rankNum = index + 6;
+          const isCurrentUser = item.userId === currentUid;
+
+          extendedList.innerHTML += `
+            <div class="bg-slate-900/80 border ${isCurrentUser ? 'border-indigo-500 bg-indigo-950/40' : 'border-slate-800'} p-2.5 rounded-lg flex items-center justify-between text-xs">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-slate-400 w-6 text-center">#${rankNum}</span>
+                <div class="w-8 h-8 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
+                  ${item.photoURL ? `<img src="${item.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-xs text-slate-400"></i>`}
+                </div>
+                <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-indigo-400 font-bold' : ''}">${item.userName} ${isCurrentUser ? '(You)' : ''}</span>
+              </div>
+              <span class="font-bold text-emerald-400">${item.totalReferrals} Valid Referrals</span>
+            </div>
+          `;
+        });
+      }
+    }
 
     // --- ADMIN: CREATE AD ---
     document.getElementById('admin-ad-form').addEventListener('submit', async (e) => {

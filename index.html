@@ -137,6 +137,7 @@
         
         <nav id="sidebar-menu" class="space-y-1 text-sm">
           <!-- Standard User Links -->
+          <button onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
           <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
           <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
@@ -181,43 +182,6 @@
         </div>
         <button onclick="logout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30 transition">Logout</button>
       </header>
-
-      <!-- MONTHLY LEADERBOARD SECTION (GLOBAL HEADER ABOVE ALL TABS) -->
-      <section id="leaderboard-section" class="w-full">
-        <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl">
-          
-          <!-- HEADER & MOTIVATIONAL BANNER -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
-            <div>
-              <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                <i class="fa-solid fa-trophy"></i> Monthly Leaderboard
-              </div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-white">Top Performing Affiliates (<span id="leaderboard-month-label">This Month</span>)</h2>
-              <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Climb the ranks and secure your spot at the top!</p>
-            </div>
-            <div class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl text-center md:text-right shrink-0">
-              <span class="text-xs text-indigo-300 block font-semibold uppercase tracking-wider">Your Current Standing</span>
-              <span id="user-current-rank" class="text-xl font-bold text-amber-400">#-</span>
-            </div>
-          </div>
-
-          <!-- TOP 5 PODIUM / CARDS -->
-          <div id="top-5-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div class="text-center text-slate-400 text-sm col-span-full py-4">Loading monthly leaderboard standings...</div>
-          </div>
-
-          <!-- EXTENDED RANKING LIST (RANK 6+) -->
-          <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
-              <i class="fa-solid fa-list-ol text-indigo-400"></i> Full Monthly Standings
-            </h3>
-            <div id="extended-rankings-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-              <div class="text-xs text-slate-500 py-2">No other participant data available for this month yet.</div>
-            </div>
-          </div>
-
-        </div>
-      </section>
 
       <!-- TAB CONTENTS CONTAINER -->
       <div class="w-full">
@@ -272,7 +236,44 @@
           </div>
         </section>
 
-        <!-- TAB 2: POST & CHAT TEMPLATES -->
+        <!-- TAB 2: MONTHLY LEADERBOARD (SEPARATE TAB) -->
+        <section id="tab-leaderboard" class="tab-content hidden w-full">
+          <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl">
+            
+            <!-- HEADER & MOTIVATIONAL BANNER -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
+              <div>
+                <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                  <i class="fa-solid fa-trophy"></i> Monthly Leaderboard
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white">Top Performing Affiliates (<span id="leaderboard-month-label">This Month</span>)</h2>
+                <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Climb the ranks and secure your spot at the top!</p>
+              </div>
+              <div class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl text-center md:text-right shrink-0">
+                <span class="text-xs text-indigo-300 block font-semibold uppercase tracking-wider">Your Current Standing</span>
+                <span id="user-current-rank" class="text-xl font-bold text-amber-400">#-</span>
+              </div>
+            </div>
+
+            <!-- TOP 5 PODIUM / CARDS -->
+            <div id="top-5-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div class="text-center text-slate-400 text-sm col-span-full py-4">Loading monthly leaderboard standings...</div>
+            </div>
+
+            <!-- EXTENDED RANKING LIST (RANK 6+) -->
+            <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
+              <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-list-ol text-indigo-400"></i> Full Monthly Standings
+              </h3>
+              <div id="extended-rankings-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div class="text-xs text-slate-500 py-2">No other participant data available for this month yet.</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB 3: POST & CHAT TEMPLATES -->
         <section id="tab-templates" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Post & Chat Templates</h2>
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-lg space-y-4">
@@ -283,7 +284,7 @@
           </div>
         </section>
 
-        <!-- TAB 3: FEEDBACK -->
+        <!-- TAB 4: FEEDBACK -->
         <section id="tab-feedback" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
           <form id="feedback-form" class="max-w-lg space-y-4">
@@ -292,7 +293,7 @@
           </form>
         </section>
 
-        <!-- TAB 4: ACCOUNT SETTINGS -->
+        <!-- TAB 5: ACCOUNT SETTINGS -->
         <section id="tab-settings" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
           
@@ -387,13 +388,13 @@
           </form>
         </section>
 
-        <!-- TAB 5: ADMIN FEEDBACK -->
+        <!-- TAB 6: ADMIN FEEDBACK -->
         <section id="tab-admin-feedback" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Affiliate Feedback Submissions</h2>
           <div id="admin-feedback-list" class="space-y-3"></div>
         </section>
 
-        <!-- TAB 6: ADMIN CREATE ACCOUNT -->
+        <!-- TAB 7: ADMIN CREATE ACCOUNT -->
         <section id="tab-admin-create" class="tab-content hidden max-w-lg">
           <h2 class="text-xl font-semibold mb-4">Create Affiliate Account</h2>
           <form id="admin-create-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
@@ -421,7 +422,7 @@
           </form>
         </section>
 
-        <!-- TAB 7: ADMIN DISBURSE PAYOUT -->
+        <!-- TAB 8: ADMIN DISBURSE PAYOUT -->
         <section id="tab-admin-disburse" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Disburse Weekly Payout</h2>
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4 mb-8">
@@ -450,7 +451,7 @@
           <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
-        <!-- TAB 8: ADMIN CREATE ADS -->
+        <!-- TAB 9: ADMIN CREATE ADS -->
         <section id="tab-admin-ads" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Create & Manage Ads / Announcements</h2>
           

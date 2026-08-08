@@ -600,7 +600,7 @@
       }
     });
 
-    // --- ADMIN: LISTEN TO ADS ---
+    // --- ADMIN: LISTEN & DISPLAY ADS WITH DELETE OPTION ---
     function listenToAdminAds() {
       const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
@@ -609,33 +609,39 @@
         listDiv.innerHTML = "";
 
         if (snapshot.empty) {
-          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No ads created yet.</p>";
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No active or scheduled ads.</p>";
           return;
         }
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          const adId = docSnap.id;
+
           listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-start mb-2">
-              <div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-start gap-4 mb-2">
+              <div class="flex-1">
                 <p class="font-bold text-amber-400">${data.title}</p>
-                <p class="text-xs text-slate-300 mt-1 mb-2">${data.content}</p>
-                ${data.linkUrl ? `<p class="text-xs text-indigo-400 mb-1"><i class="fa-solid fa-link"></i> ${data.buttonTitle || 'Link'}: ${data.linkUrl}</p>` : ''}
+                <p class="text-xs text-slate-300 mt-1 mb-2 whitespace-pre-wrap">${data.content}</p>
+                ${data.linkUrl ? `<p class="text-xs text-indigo-400 mb-1"><i class="fa-solid fa-link"></i> ${data.buttonTitle || 'Link'}: <a href="${data.linkUrl}" target="_blank" class="underline">${data.linkUrl}</a></p>` : ''}
                 <p class="text-xs text-slate-500">📅 Active: ${data.startDate} to ${data.endDate}</p>
               </div>
-              <button onclick="deleteAd('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded hover:bg-red-600/40 shrink-0">Delete</button>
+              <button onclick="deleteAd('${adId}')" class="bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white text-xs px-3 py-1.5 rounded-lg transition shrink-0 flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i> Delete
+              </button>
             </div>
           `;
         });
       }, (error) => console.warn("Admin ads listener error:", error.message));
     }
 
+    // --- GLOBAL AD DELETION FUNCTION ---
     window.deleteAd = async (adId) => {
-      if (confirm("Are you sure you want to delete this ad?")) {
+      if (confirm("Are you sure you want to terminate and delete this ad? It will immediately stop appearing to all affiliates.")) {
         try {
           await deleteDoc(doc(db, "ads", adId));
-        } catch (err) {
-          alert("Failed to delete ad: " + err.message);
+          alert("Ad deleted successfully.");
+        } catch (error) {
+          alert("Error deleting ad: " + error.message);
         }
       }
     };

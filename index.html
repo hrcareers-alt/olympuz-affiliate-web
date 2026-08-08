@@ -8,7 +8,83 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-   /* LIGHT MODE LEADERBOARD OVERRIDES */
+    /* LIGHT MODE OVERRIDES */
+    body.light-mode {
+      background-color: #f1f5f9 !important; /* slate-100 */
+      color: #0f172a !important; /* slate-900 */
+    }
+
+    body.light-mode #dashboard-screen,
+    body.light-mode main {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+
+    /* Cards, Sidebar, Header & Opacity Containers */
+    body.light-mode aside,
+    body.light-mode header,
+    body.light-mode .bg-slate-900,
+    body.light-mode .bg-slate-800,
+    body.light-mode .bg-slate-900\/80 {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important; /* slate-300 */
+      color: #0f172a !important;
+    }
+
+    /* Form Controls, Inner Lists & Dark Containers */
+    body.light-mode .bg-slate-950,
+    body.light-mode input,
+    body.light-mode select,
+    body.light-mode textarea {
+      background-color: #f8fafc !important; /* slate-50 */
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* Fix Faded / Faint Text Labels */
+    body.light-mode .text-slate-400,
+    body.light-mode .text-slate-300,
+    body.light-mode .text-slate-500 {
+      color: #475569 !important; /* High-contrast slate-600 */
+    }
+
+    body.light-mode .text-slate-100,
+    body.light-mode .text-slate-200,
+    body.light-mode h1,
+    body.light-mode h2,
+    body.light-mode h3 {
+      color: #0f172a !important; /* Crisp dark slate-900 */
+    }
+
+    /* Fix Hover States for Sidebar Buttons & Navigation */
+    body.light-mode #sidebar-menu button:hover,
+    body.light-mode #sidebar-menu a:hover,
+    body.light-mode .hover\:bg-slate-800:hover,
+    body.light-mode .hover\:bg-slate-700:hover {
+      background-color: #e2e8f0 !important; /* slate-200 hover background */
+      color: #0f172a !important;
+    }
+
+    /* Fix Pagination Controls */
+    body.light-mode #pagination-controls button:not(:disabled) {
+      background-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode #pagination-controls button:not(:disabled):hover {
+      background-color: #cbd5e1 !important;
+    }
+
+    /* Accent Buttons */
+    body.light-mode .bg-indigo-600 {
+      background-color: #4f46e5 !important;
+      color: #ffffff !important;
+    }
+    body.light-mode .bg-indigo-600:hover {
+      background-color: #4338ca !important;
+    }
+
+    /* LIGHT MODE LEADERBOARD OVERRIDES */
     body.light-mode #tab-leaderboard > div {
       background: linear-gradient(to right, #e0e7ff, #ffffff, #f1f5f9) !important;
       border-color: #a5b4fc !important;

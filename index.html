@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Olympuz Affiliate Portal</title>
-  <link rel="icon" type="image/png" href="Logo New.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -138,16 +137,17 @@
         
         <nav id="sidebar-menu" class="space-y-1 text-sm">
           <!-- Standard User Links -->
-          <button onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
           <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
+          <button onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
+          <button onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Join Chat Channels</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
           <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Dispute? Claim Your Hire</a>
           <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Hire's Payout Result</a>
           <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
           <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-paste"></i> Post&Chat Templates</a>
           <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-store"></i> Affiliate Shop</a>
-          <button onclick="switchTab('testimonials')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-star text-amber-400"></i> Testimonials/Reviews</button>
-          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Suggestions Box</button>
+          <button onclick="switchTab('testimonials')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-star text-amber-400"></i> Testimonials</button>
+          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
           <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
 
           <!-- Admin Panel Links -->
@@ -238,18 +238,16 @@
           </div>
         </section>
 
-        <!-- TAB 2: MONTHLY LEADERBOARD (SEPARATE TAB) -->
+        <!-- TAB 2: MONTHLY LEADERBOARD -->
         <section id="tab-leaderboard" class="tab-content hidden w-full">
           <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl">
-            
-            <!-- HEADER & MOTIVATIONAL BANNER -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
               <div>
                 <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
                   <i class="fa-solid fa-trophy"></i> Monthly Leaderboard
                 </div>
                 <h2 class="text-xl sm:text-2xl font-extrabold text-white">Top Performing Affiliates (<span id="leaderboard-month-label">This Month</span>)</h2>
-                <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Maximize your valid referrals and climb to the top of the money ranks!</p>
+                <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Climb the ranks and secure your spot at the top!</p>
               </div>
               <div class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl text-center md:text-right shrink-0">
                 <span class="text-xs text-indigo-300 block font-semibold uppercase tracking-wider">Your Current Standing</span>
@@ -257,12 +255,10 @@
               </div>
             </div>
 
-            <!-- TOP 5 PODIUM / CARDS -->
             <div id="top-5-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
               <div class="text-center text-slate-400 text-sm col-span-full py-4">Loading monthly leaderboard standings...</div>
             </div>
 
-            <!-- EXTENDED RANKING LIST (RANK 6+) -->
             <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
               <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-list-ol text-indigo-400"></i> Full Monthly Standings
@@ -271,35 +267,71 @@
                 <div class="text-xs text-slate-500 py-2">No other participant data available for this month yet.</div>
               </div>
             </div>
-
           </div>
         </section>
 
-        <!-- TAB 3: POST & CHAT TEMPLATES -->
-        <section id="tab-templates" class="tab-content hidden">
-          <h2 class="text-xl font-semibold mb-4">Post & Chat Templates</h2>
-          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-lg space-y-4">
-            <p class="text-sm text-slate-300">Access pre-made posting scripts, response templates, and outreach messages to boost your referral conversions.</p>
-            <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition">
-              <i class="fa-solid fa-external-link"></i> Open Templates Folder
-            </a>
-          </div>
-        </section>
+        <!-- TAB: JOIN CHAT CHANNELS -->
+        <section id="tab-channels" class="tab-content hidden w-full">
+          <div class="max-w-3xl space-y-6">
+            <div class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-emerald-500/30 shadow-xl">
+              <div class="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                <i class="fa-solid fa-users"></i> Official Channels
+              </div>
+              <h2 class="text-2xl font-extrabold text-white">Join Our Community Chat Channels</h2>
+              <p class="text-xs text-slate-300 mt-1">Stay updated with live announcements, weekly payout alerts, tips, and direct affiliate discussions!</p>
+            </div>
 
-        <!-- TAB 4: FEEDBACK -->
-        <section id="tab-feedback" class="tab-content hidden">
-          <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
-          <form id="feedback-form" class="max-w-lg space-y-4">
-            <textarea id="feedback-text" maxlength="500" rows="5" required placeholder="Write your comments here (Max 500 words)..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
-            <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-500 transition">Submit Feedback</button>
-          </form>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- WhatsApp Channel -->
+              <a href="https://whatsapp.com/channel/0029Vb8Qg783wtb3WKL0ei41" target="_blank" class="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 p-5 rounded-2xl flex items-center gap-4 transition group shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white group-hover:text-emerald-400 transition">WhatsApp Channel</h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Follow for payout updates & alerts</p>
+                </div>
+              </a>
+
+              <!-- Viber Channel -->
+              <a href="https://invite.viber.com/?g2=AQAsmJI6XdNO5FUj7XYnKvIzGdQyNqRgHfhTBpkupr7D5Bz9bsM1knlTtzQa5Y5%2B" target="_blank" class="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-purple-500/50 p-5 rounded-2xl flex items-center gap-4 transition group shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition">
+                  <i class="fa-brands fa-viber"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white group-hover:text-purple-400 transition">Viber Channel</h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Remote Jobs PH x Olympuz</p>
+                </div>
+              </a>
+
+              <!-- Telegram Channel -->
+              <a href="https://t.me/OlympuzPH" target="_blank" class="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-sky-500/50 p-5 rounded-2xl flex items-center gap-4 transition group shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition">
+                  <i class="fa-brands fa-telegram"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white group-hover:text-sky-400 transition">Telegram Channel</h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Official Olympuz PH Broadcast</p>
+                </div>
+              </a>
+
+              <!-- Threads Groupchat -->
+              <a href="https://threads.com/chat/j/AbbgorHPPiE3QCUO/" target="_blank" class="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-amber-500/50 p-5 rounded-2xl flex items-center gap-4 transition group shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition">
+                  <i class="fa-brands fa-threads"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white group-hover:text-amber-400 transition">Threads Groupchat</h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Connect with fellow affiliates</p>
+                </div>
+              </a>
+            </div>
+          </div>
         </section>
 
         <!-- TAB: TESTIMONIALS & REVIEWS -->
         <section id="tab-testimonials" class="tab-content hidden w-full">
           <div class="max-w-4xl space-y-8">
-            
-            <!-- HEADER BANNER -->
             <div class="bg-gradient-to-r from-amber-900/40 via-slate-900 to-indigo-950/60 p-6 rounded-2xl border border-amber-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
@@ -313,7 +345,6 @@
               </button>
             </div>
 
-            <!-- TESTIMONIAL SUBMISSION FORM (HIDDEN BY DEFAULT UNTIL CLICKED) -->
             <div id="testimonial-form-card" class="bg-slate-900 border border-amber-500/40 p-6 rounded-2xl shadow-2xl space-y-5 hidden">
               <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
@@ -323,7 +354,6 @@
               </div>
 
               <form id="testimonial-form" class="space-y-4">
-                <!-- STAR RATING SELECTOR -->
                 <div>
                   <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">Your Overall Rating</label>
                   <div class="flex items-center gap-2 text-2xl" id="star-rating-picker">
@@ -336,20 +366,17 @@
                   </div>
                 </div>
 
-                <!-- TESTIMONIAL MESSAGE -->
                 <div>
                   <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Your Story / Feedback</label>
                   <textarea id="testimonial-text" rows="4" maxlength="600" required placeholder="How has your experience been with Olympuz Affiliate? Share your journey, payouts, or favorite features..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 focus:outline-none focus:border-amber-500 transition"></textarea>
                 </div>
 
-                <!-- OPTIONAL ATTACHED PHOTO -->
                 <div>
                   <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Attach Photo (Optional)</label>
                   <input type="file" id="testimonial-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
                   <p class="text-xs text-slate-500 mt-1">Upload a payment screenshot, payout proof, or result graphic (PNG, JPG, max 5MB).</p>
                 </div>
 
-                <!-- ACTION BUTTONS -->
                 <div class="flex items-center gap-3 pt-2">
                   <button type="button" onclick="promptTestimonialConfirmation()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-6 py-2.5 rounded-xl transition">
                     Submit Testimonial
@@ -361,7 +388,6 @@
               </form>
             </div>
 
-            <!-- COMMUNITY TESTIMONIALS GRID -->
             <div>
               <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-comments text-amber-400"></i> What Our Affiliates Say
@@ -370,15 +396,33 @@
                 <div class="text-slate-400 text-sm py-6 col-span-full text-center">Loading community testimonials...</div>
               </div>
             </div>
-
           </div>
         </section>
 
-        <!-- TAB 5: ACCOUNT SETTINGS -->
+        <!-- TAB: POST & CHAT TEMPLATES -->
+        <section id="tab-templates" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Post & Chat Templates</h2>
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-lg space-y-4">
+            <p class="text-sm text-slate-300">Access pre-made posting scripts, response templates, and outreach messages to boost your referral conversions.</p>
+            <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition">
+              <i class="fa-solid fa-external-link"></i> Open Templates Folder
+            </a>
+          </div>
+        </section>
+
+        <!-- TAB: FEEDBACK -->
+        <section id="tab-feedback" class="tab-content hidden">
+          <h2 class="text-xl font-semibold mb-4">Send Us Feedback / Comments</h2>
+          <form id="feedback-form" class="max-w-lg space-y-4">
+            <textarea id="feedback-text" maxlength="500" rows="5" required placeholder="Write your comments here (Max 500 words)..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
+            <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-500 transition">Submit Feedback</button>
+          </form>
+        </section>
+
+        <!-- TAB: ACCOUNT SETTINGS -->
         <section id="tab-settings" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Account Settings</h2>
           
-          <!-- THEME PREFERENCE FORM -->
           <form id="theme-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 mb-6">
             <h3 class="font-semibold text-indigo-400 border-b border-slate-800 pb-2">Appearance / Theme</h3>
             <div>
@@ -391,7 +435,6 @@
             <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Apply Theme</button>
           </form>
 
-          <!-- PROFILE INFORMATION FORM -->
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 mb-6">
             <h3 class="font-semibold text-lg mb-4 text-indigo-400">Profile Information</h3>
             
@@ -469,13 +512,12 @@
           </form>
         </section>
 
-        <!-- TAB 6: ADMIN FEEDBACK -->
+        <!-- ADMIN TABS -->
         <section id="tab-admin-feedback" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Affiliate Feedback Submissions</h2>
           <div id="admin-feedback-list" class="space-y-3"></div>
         </section>
 
-        <!-- TAB 7: ADMIN CREATE ACCOUNT -->
         <section id="tab-admin-create" class="tab-content hidden max-w-lg">
           <h2 class="text-xl font-semibold mb-4">Create Affiliate Account</h2>
           <form id="admin-create-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
@@ -503,7 +545,6 @@
           </form>
         </section>
 
-        <!-- TAB 8: ADMIN DISBURSE PAYOUT -->
         <section id="tab-admin-disburse" class="tab-content hidden">
           <h2 class="text-xl font-semibold mb-4">Disburse Weekly Payout</h2>
           <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4 mb-8">
@@ -532,7 +573,6 @@
           <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
-        <!-- TAB 9: ADMIN CREATE ADS -->
         <section id="tab-admin-ads" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Create & Manage Ads / Announcements</h2>
           
@@ -575,25 +615,39 @@
     </main>
   </div>
 
+  <!-- FINAL CONFIRMATION MODAL FOR TESTIMONIAL -->
+  <div id="testimonial-confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-amber-500/50 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-center">
+      <div class="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mx-auto text-xl">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="text-xl font-bold text-white">Confirm Submission</h3>
+      <p class="text-sm text-slate-300">Are you sure this is your final testimonial? You can only submit <strong>once</strong>, and it will be visible to the entire affiliate community.</p>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <button onclick="closeConfirmModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-xl text-sm transition">
+          Go Back & Edit
+        </button>
+        <button onclick="executeTestimonialSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-sm transition">
+          Yes, Confirm & Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- POPUP AD MODAL CONTAINER -->
   <div id="ad-popup-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="relative bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/80 border border-indigo-500/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl shadow-indigo-500/20 transform transition-all duration-300 scale-100">
-      
-      <!-- Close Button -->
       <button onclick="dismissPopupAd()" class="absolute top-3 right-3 text-slate-400 hover:text-white bg-slate-800/80 border border-slate-700 w-8 h-8 rounded-full flex items-center justify-center transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <!-- Ad Badge -->
       <div class="inline-flex items-center gap-1.5 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold px-2.5 py-1 rounded-full mb-3">
         <i class="fa-solid fa-bolt text-amber-400"></i> Announcement
       </div>
 
-      <!-- Ad Content -->
       <h3 id="ad-popup-title" class="text-xl sm:text-2xl font-extrabold text-white mb-2 leading-tight"></h3>
       <p id="ad-popup-body" class="text-slate-300 text-sm mb-6 whitespace-pre-wrap leading-relaxed"></p>
 
-      <!-- Optional Action Button -->
       <a id="ad-popup-btn" href="#" target="_blank" onclick="dismissPopupAd()" class="hidden block w-full text-center bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition transform hover:-translate-y-0.5"></a>
     </div>
   </div>
@@ -655,6 +709,9 @@
     let activeAdsList = [];
     let adTimer = null;
 
+    let selectedRating = 5;
+    let hasUserSubmittedTestimonial = false;
+
     // Shuffle Array Helper
     function shuffleArray(array) {
       return array.sort(() => Math.random() - 0.5);
@@ -689,178 +746,6 @@
       }
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
     });
-
-    let selectedRating = 5;
-    let hasUserSubmittedTestimonial = false;
-
-    // Star Rating Selection Helper
-    window.setStarRating = (rating) => {
-      selectedRating = rating;
-      const stars = document.querySelectorAll('#star-rating-picker i');
-      stars.forEach((star, index) => {
-        if (index < rating) {
-          star.classList.remove('text-slate-600');
-          star.classList.add('text-amber-400');
-        } else {
-          star.classList.remove('text-amber-400');
-          star.classList.add('text-slate-600');
-        }
-      });
-      document.getElementById('star-rating-label').innerText = `${rating}.0 / 5 Stars`;
-    };
-
-    window.openTestimonialForm = () => {
-      if (hasUserSubmittedTestimonial) {
-        alert("You have already submitted a testimonial. Thank you for sharing your experience!");
-        return;
-      }
-      document.getElementById('testimonial-form-card').classList.remove('hidden');
-      document.getElementById('open-testimonial-btn').classList.add('hidden');
-    };
-
-    window.closeTestimonialForm = () => {
-      document.getElementById('testimonial-form-card').classList.add('hidden');
-      document.getElementById('open-testimonial-btn').classList.remove('hidden');
-    };
-
-    window.promptTestimonialConfirmation = () => {
-      const text = document.getElementById('testimonial-text').value.trim();
-      if (!text) {
-        alert("Please write a short testimonial before submitting.");
-        return;
-      }
-      document.getElementById('testimonial-confirm-modal').classList.remove('hidden');
-    };
-
-    window.closeConfirmModal = () => {
-      document.getElementById('testimonial-confirm-modal').classList.add('hidden');
-    };
-
-    window.executeTestimonialSubmit = async () => {
-      closeConfirmModal();
-      const text = document.getElementById('testimonial-text').value.trim();
-      const photoFile = document.getElementById('testimonial-photo-input').files[0];
-      const user = auth.currentUser;
-
-      if (!user) return alert("You must be logged in to submit a testimonial.");
-
-      try {
-        let photoURL = "";
-        let userDocData = {};
-
-        // Fetch User Info
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) userDocData = userDoc.data();
-
-        let authorName = `${userDocData.firstName || ''} ${userDocData.lastName || ''}`.trim();
-        if (!authorName) authorName = userDocData.username || user.email || "Affiliate User";
-
-        // Upload attached photo if present
-        if (photoFile) {
-          const fileRef = ref(storage, `testimonials/${user.uid}_${photoFile.name}`);
-          await uploadBytes(fileRef, photoFile);
-          photoURL = await getDownloadURL(fileRef);
-        }
-
-        // Save Testimonial Doc to Firestore
-        await addDoc(collection(db, "testimonials"), {
-          userId: user.uid,
-          userName: authorName,
-          userAvatar: userDocData.photoURL || "",
-          rating: selectedRating,
-          message: text,
-          attachmentUrl: photoURL,
-          createdAt: new Date().toISOString()
-        });
-
-        alert("Thank you! Your testimonial has been published.");
-        document.getElementById('testimonial-form').reset();
-        setStarRating(5);
-        closeTestimonialForm();
-        checkUserTestimonialStatus(user.uid);
-
-      } catch (error) {
-        alert("Error submitting testimonial: " + error.message);
-      }
-    };
-
-    // Check if affiliate has already submitted a testimonial
-    async function checkUserTestimonialStatus(uid) {
-      try {
-        const q = query(collection(db, "testimonials"), where("userId", "==", uid));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          hasUserSubmittedTestimonial = true;
-          const openBtn = document.getElementById('open-testimonial-btn');
-          if (openBtn) {
-            openBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> Testimonial Submitted`;
-            openBtn.classList.remove('from-amber-500', 'to-amber-600', 'hover:from-amber-400');
-            openBtn.classList.add('bg-slate-800', 'text-slate-400', 'cursor-not-allowed');
-          }
-        }
-      } catch (err) {
-        console.warn("Could not check testimonial status:", err);
-      }
-    }
-
-    // Listen to Community Testimonials Feed
-    function listenToTestimonials() {
-      const q = query(collection(db, "testimonials"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
-        const feedList = document.getElementById('testimonials-feed-list');
-        if (!feedList) return;
-        feedList.innerHTML = "";
-
-        if (snapshot.empty) {
-          feedList.innerHTML = `<div class="text-slate-400 text-sm py-6 col-span-full text-center">No community reviews yet. Be the first to share your experience!</div>`;
-          return;
-        }
-
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-          // Render Star Icons
-          let starsHTML = "";
-          for (let i = 1; i <= 5; i++) {
-            if (i <= (data.rating || 5)) {
-              starsHTML += `<i class="fa-solid fa-star text-amber-400"></i>`;
-            } else {
-              starsHTML += `<i class="fa-solid fa-star text-slate-700"></i>`;
-            }
-          }
-
-          feedList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between shadow-lg transition hover:border-amber-500/30">
-              <div>
-                <div class="flex items-center justify-between gap-3 mb-3 border-b border-slate-800/80 pb-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full border border-amber-500/40 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
-                      ${data.userAvatar ? `<img src="${data.userAvatar}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400"></i>`}
-                    </div>
-                    <div>
-                      <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
-                      <p class="text-[10px] text-slate-400">${formattedDate}</p>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1 text-xs">${starsHTML}</div>
-                </div>
-
-                <p class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed mb-3">"${data.message}"</p>
-              </div>
-
-              ${data.attachmentUrl ? `
-                <div class="mt-2 pt-2 border-t border-slate-800">
-                  <a href="${data.attachmentUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:underline">
-                    <i class="fa-solid fa-image"></i> View Attached Proof
-                  </a>
-                </div>
-              ` : ''}
-            </div>
-          `;
-        });
-      }, (error) => console.warn("Testimonials feed error:", error.message));
-    }
 
     // --- MONTHLY LEADERBOARD SYSTEM ---
     function listenToMonthlyLeaderboard() {
@@ -926,7 +811,6 @@
           });
         }
 
-        // Sort descending by total valid referrals
         leaderboardData.sort((a, b) => b.totalReferrals - a.totalReferrals);
         renderLeaderboard(leaderboardData);
       }, (error) => {
@@ -967,7 +851,6 @@
         { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 5" }
       ];
 
-      // Render Top 5 Podium Cards
       top5.forEach((item, index) => {
         const badge = rankBadges[index];
         const isCurrentUser = item.userId === currentUid;
@@ -984,8 +867,6 @@
             
             <div class="mt-2 text-xs text-slate-400 space-y-1">
               <div><span class="text-base font-extrabold ${badge.text}">${item.totalReferrals}</span> Valid Referrals</div>
-              
-              <!-- GREEN MONEY EARNINGS BADGE -->
               <div class="inline-block bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black px-2.5 py-1 rounded-lg text-xs mt-1 shadow-sm">
                 <i class="fa-solid fa-sack-dollar mr-1"></i>₱${item.totalEarnings.toFixed(2)}
               </div>
@@ -994,7 +875,6 @@
         `;
       });
 
-      // Render Rank 6+ List Items
       const extendedRanks = rankings.slice(5);
       if (extendedRanks.length === 0) {
         extendedList.innerHTML = `<div class="text-xs text-slate-500 py-2">All active participants are currently in the Top 5!</div>`;
@@ -1015,7 +895,6 @@
               
               <div class="flex items-center gap-4 text-right">
                 <span class="font-bold text-slate-300">${item.totalReferrals} Referrals</span>
-                <!-- GREEN MONEY BADGE -->
                 <span class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold px-2 py-0.5 rounded text-xs">
                   ₱${item.totalEarnings.toFixed(2)}
                 </span>
@@ -1025,6 +904,172 @@
         });
       }
     }
+
+    // --- TESTIMONIALS ENGINE ---
+    window.setStarRating = (rating) => {
+      selectedRating = rating;
+      const stars = document.querySelectorAll('#star-rating-picker i');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.remove('text-slate-600');
+          star.classList.add('text-amber-400');
+        } else {
+          star.classList.remove('text-amber-400');
+          star.classList.add('text-slate-600');
+        }
+      });
+      document.getElementById('star-rating-label').innerText = `${rating}.0 / 5 Stars`;
+    };
+
+    window.openTestimonialForm = () => {
+      if (hasUserSubmittedTestimonial) {
+        alert("You have already submitted a testimonial. Thank you for sharing your experience!");
+        return;
+      }
+      document.getElementById('testimonial-form-card').classList.remove('hidden');
+      document.getElementById('open-testimonial-btn').classList.add('hidden');
+    };
+
+    window.closeTestimonialForm = () => {
+      document.getElementById('testimonial-form-card').classList.add('hidden');
+      document.getElementById('open-testimonial-btn').classList.remove('hidden');
+    };
+
+    window.promptTestimonialConfirmation = () => {
+      const text = document.getElementById('testimonial-text').value.trim();
+      if (!text) {
+        alert("Please write a short testimonial before submitting.");
+        return;
+      }
+      document.getElementById('testimonial-confirm-modal').classList.remove('hidden');
+    };
+
+    window.closeConfirmModal = () => {
+      document.getElementById('testimonial-confirm-modal').classList.add('hidden');
+    };
+
+    window.executeTestimonialSubmit = async () => {
+      closeConfirmModal();
+      const text = document.getElementById('testimonial-text').value.trim();
+      const photoFile = document.getElementById('testimonial-photo-input').files[0];
+      const user = auth.currentUser;
+
+      if (!user) return alert("You must be logged in to submit a testimonial.");
+
+      try {
+        let photoURL = "";
+        let userDocData = {};
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) userDocData = userDoc.data();
+
+        let authorName = `${userDocData.firstName || ''} ${userDocData.lastName || ''}`.trim();
+        if (!authorName) authorName = userDocData.username || user.email || "Affiliate User";
+
+        if (photoFile) {
+          const fileRef = ref(storage, `testimonials/${user.uid}_${photoFile.name}`);
+          await uploadBytes(fileRef, photoFile);
+          photoURL = await getDownloadURL(fileRef);
+        }
+
+        await addDoc(collection(db, "testimonials"), {
+          userId: user.uid,
+          userName: authorName,
+          userAvatar: userDocData.photoURL || "",
+          rating: selectedRating,
+          message: text,
+          attachmentUrl: photoURL,
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Thank you! Your testimonial has been published.");
+        document.getElementById('testimonial-form').reset();
+        setStarRating(5);
+        closeTestimonialForm();
+        checkUserTestimonialStatus(user.uid);
+
+      } catch (error) {
+        alert("Error submitting testimonial: " + error.message);
+      }
+    };
+
+    async function checkUserTestimonialStatus(uid) {
+      try {
+        const q = query(collection(db, "testimonials"), where("userId", "==", uid));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          hasUserSubmittedTestimonial = true;
+          const openBtn = document.getElementById('open-testimonial-btn');
+          if (openBtn) {
+            openBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> Testimonial Submitted`;
+            openBtn.classList.remove('from-amber-500', 'to-amber-600', 'hover:from-amber-400');
+            openBtn.classList.add('bg-slate-800', 'text-slate-400', 'cursor-not-allowed');
+          }
+        }
+      } catch (err) {
+        console.warn("Could not check testimonial status silently:", err.message);
+      }
+    }
+
+    function listenToTestimonials() {
+      const q = query(collection(db, "testimonials"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snapshot) => {
+        const feedList = document.getElementById('testimonials-feed-list');
+        if (!feedList) return;
+        feedList.innerHTML = "";
+
+        if (snapshot.empty) {
+          feedList.innerHTML = `<div class="text-slate-400 text-sm py-6 col-span-full text-center">No community reviews yet. Be the first to share your experience!</div>`;
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          let starsHTML = "";
+          for (let i = 1; i <= 5; i++) {
+            if (i <= (data.rating || 5)) {
+              starsHTML += `<i class="fa-solid fa-star text-amber-400"></i>`;
+            } else {
+              starsHTML += `<i class="fa-solid fa-star text-slate-700"></i>`;
+            }
+          }
+
+          feedList.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between shadow-lg transition hover:border-amber-500/30">
+              <div>
+                <div class="flex items-center justify-between gap-3 mb-3 border-b border-slate-800/80 pb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border border-amber-500/40 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
+                      ${data.userAvatar ? `<img src="${data.userAvatar}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400"></i>`}
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
+                      <p class="text-[10px] text-slate-400">${formattedDate}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1 text-xs">${starsHTML}</div>
+                </div>
+
+                <p class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed mb-3">"${data.message}"</p>
+              </div>
+
+              ${data.attachmentUrl ? `
+                <div class="mt-2 pt-2 border-t border-slate-800">
+                  <a href="${data.attachmentUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:underline">
+                    <i class="fa-solid fa-image"></i> View Attached Proof
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      }, (error) => {
+        console.warn("Testimonials feed listener subscription handled silently:", error.message);
+      });
+    }
+
     // --- ADMIN: CREATE AD ---
     document.getElementById('admin-ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1350,15 +1395,12 @@
 
             updatePayoutDateRange();
             
-            // 🏆 SWITCH TO LEADERBOARD TAB ON LOGIN
+            // Switch to Leaderboard tab by default
             window.switchTab('leaderboard');
 
-            // Initialize Pop-up Ads Engine
+            // Initialize engines & listeners
             initUserAdsEngine();
-
-            // Initialize Monthly Leaderboard
             listenToMonthlyLeaderboard();
-            // Initialize Testimonials
             checkUserTestimonialStatus(user.uid);
             listenToTestimonials();
 

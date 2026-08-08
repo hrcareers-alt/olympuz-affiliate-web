@@ -8,74 +8,78 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* LIGHT MODE OVERRIDES */
+    /* CLASSY & TRENDY LIGHT MODE OVERRIDES */
     body.light-mode {
-      background-color: #f1f5f9 !important; /* slate-100 */
-      color: #0f172a !important; /* slate-900 */
+      background-color: #f8fafc !important; /* Soft Slate 50 background - easy on eyes */
+      color: #0f172a !important; /* Deep Slate 900 text */
     }
 
     body.light-mode #dashboard-screen,
     body.light-mode main {
-      background-color: #f1f5f9 !important;
+      background-color: #f8fafc !important;
       color: #0f172a !important;
     }
 
-    /* Cards, Sidebar, Header & Opacity Containers */
+    /* Cards, Sidebar, Header Containers */
     body.light-mode aside,
-    body.light-mode header,
+    body.light-mode header {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important; /* Soft slate 200 border */
+      color: #0f172a !important;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
+    }
+
     body.light-mode .bg-slate-900,
     body.light-mode .bg-slate-800,
     body.light-mode .bg-slate-900\/80 {
       background-color: #ffffff !important;
-      border-color: #cbd5e1 !important; /* slate-300 */
+      border-color: #e2e8f0 !important;
       color: #0f172a !important;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
     }
 
-    /* Form Controls, Inner Lists & Dark Containers */
+    /* Inputs & Form Controls */
     body.light-mode .bg-slate-950,
     body.light-mode input,
     body.light-mode select,
     body.light-mode textarea {
-      background-color: #f8fafc !important; /* slate-50 */
+      background-color: #f1f5f9 !important; /* Slate 100 */
       color: #0f172a !important;
       border-color: #cbd5e1 !important;
     }
 
-    /* Fix Faded / Faint Text Labels */
+    /* High Contrast Typography */
     body.light-mode .text-slate-400,
     body.light-mode .text-slate-300,
     body.light-mode .text-slate-500 {
-      color: #475569 !important; /* High-contrast slate-600 */
+      color: #475569 !important; /* Slate 600 - Rich contrast prose */
     }
 
     body.light-mode .text-slate-100,
     body.light-mode .text-slate-200,
     body.light-mode h1,
     body.light-mode h2,
-    body.light-mode h3 {
-      color: #0f172a !important; /* Crisp dark slate-900 */
+    body.light-mode h3,
+    body.light-mode h4 {
+      color: #0f172a !important; /* Slate 900 bold headings */
     }
 
-    /* Fix Hover States for Sidebar Buttons & Navigation */
+    /* Sidebar Navigation Hover & Active States */
     body.light-mode #sidebar-menu button:hover,
     body.light-mode #sidebar-menu a:hover,
     body.light-mode .hover\:bg-slate-800:hover,
     body.light-mode .hover\:bg-slate-700:hover {
-      background-color: #e2e8f0 !important; /* slate-200 hover background */
-      color: #0f172a !important;
+      background-color: #f1f5f9 !important;
+      color: #4f46e5 !important;
     }
 
-    /* Fix Pagination Controls */
-    body.light-mode #pagination-controls button:not(:disabled) {
-      background-color: #e2e8f0 !important;
-      color: #0f172a !important;
+    body.light-mode #main-sidebar .text-indigo-400,
+    body.light-mode .md\:hidden .text-indigo-400 {
+      color: #4338ca !important; /* Deep Indigo Brand Text */
+      font-weight: 800 !important;
     }
 
-    body.light-mode #pagination-controls button:not(:disabled):hover {
-      background-color: #cbd5e1 !important;
-    }
-
-    /* Accent Buttons */
+    /* Modern Buttons */
     body.light-mode .bg-indigo-600 {
       background-color: #4f46e5 !important;
       color: #ffffff !important;
@@ -84,60 +88,47 @@
       background-color: #4338ca !important;
     }
 
-    /* LIGHT MODE LEADERBOARD OVERRIDES */
+    /* ELEGANT LEADERBOARD LIGHT MODE OVERRIDES */
     body.light-mode #tab-leaderboard > div {
-      background: linear-gradient(to right, #e0e7ff, #ffffff, #f1f5f9) !important;
-      border-color: #a5b4fc !important;
-      color: #0f172a !important;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eff6ff 100%) !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
     }
 
-    body.light-mode #tab-leaderboard h2,
-    body.light-mode #tab-leaderboard h3,
-    body.light-mode #tab-leaderboard h4 {
-      color: #0f172a !important;
+    body.light-mode #tab-leaderboard .bg-amber-500\/20 {
+      background-color: #fef3c7 !important;
+      border-color: #fde047 !important;
+      color: #b45309 !important;
+    }
+
+    body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+      border-color: #3730a3 !important;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
+    }
+
+    body.light-mode #tab-leaderboard .bg-indigo-950\/80 span.text-indigo-300 {
+      color: #e0e7ff !important;
+    }
+
+    body.light-mode #tab-leaderboard .bg-indigo-950\/80 span#user-current-rank {
+      color: #fbbf24 !important;
     }
 
     body.light-mode #top-5-container > div {
       background-color: #ffffff !important;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
     }
 
     body.light-mode #extended-rankings-list > div {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
-      color: #0f172a !important;
-    }
-
-    body.light-mode #extended-rankings-list span.text-slate-200 {
-      color: #0f172a !important;
-    }
-
-    body.light-mode #extended-rankings-list span.text-slate-300 {
-      color: #334155 !important;
     }
 
     body.light-mode #tab-leaderboard .bg-slate-950\/60 {
-      background-color: #f8fafc !important;
+      background-color: #f1f5f9 !important;
       border-color: #cbd5e1 !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
-      background-color: #e0e7ff !important;
-      border-color: #818cf8 !important;
-    }
-
-    body.light-mode #tab-leaderboard .text-indigo-300 {
-      color: #3730a3 !important;
-    }
-    /* FIX SIDEBAR & HEADER BRANDING IN LIGHT MODE */
-    body.light-mode #main-sidebar .text-indigo-400,
-    body.light-mode .md\:hidden .text-indigo-400 {
-      color: #3730a3 !important; /* Deep Indigo for light background contrast */
-      font-weight: 800 !important;
-    }
-
-    body.light-mode #main-sidebar div.font-bold {
-      color: #0f172a !important;
     }
   </style>
 </head>
@@ -823,11 +814,11 @@
 
       const top5 = rankings.slice(0, 5);
       const rankBadges = [
-        { border: "border-amber-400", bg: "bg-amber-500/10", text: "text-amber-400", label: "🥇 Rank 1" },
-        { border: "border-slate-300", bg: "bg-slate-300/10", text: "text-slate-300", label: "🥈 Rank 2" },
-        { border: "border-amber-600", bg: "bg-amber-600/10", text: "text-amber-600", label: "🥉 Rank 3" },
-        { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 4" },
-        { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 5" }
+        { border: "border-amber-400", bg: "bg-amber-500/20", text: "text-amber-600 dark:text-amber-400", label: "🥇 Rank 1" },
+        { border: "border-slate-400", bg: "bg-slate-200 dark:bg-slate-300/10", text: "text-slate-700 dark:text-slate-300", label: "🥈 Rank 2" },
+        { border: "border-amber-700", bg: "bg-amber-700/20", text: "text-amber-800 dark:text-amber-600", label: "🥉 Rank 3" },
+        { border: "border-indigo-400", bg: "bg-indigo-50 dark:bg-slate-900", text: "text-indigo-600 dark:text-indigo-400", label: "Rank 4" },
+        { border: "border-indigo-400", bg: "bg-indigo-50 dark:bg-slate-900", text: "text-indigo-600 dark:text-indigo-400", label: "Rank 5" }
       ];
 
       top5.forEach((item, index) => {

@@ -1100,6 +1100,8 @@
 
             // Initialize User Pop-up Ad Engine
             initUserAdsEngine();
+            // Initialize Monthly Leaderboard
+            listenToMonthlyLeaderboard();
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');

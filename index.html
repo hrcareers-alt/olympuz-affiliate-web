@@ -248,7 +248,7 @@
                   <i class="fa-solid fa-trophy"></i> Monthly Leaderboard
                 </div>
                 <h2 class="text-xl sm:text-2xl font-extrabold text-white">Top Performing Affiliates (<span id="leaderboard-month-label">This Month</span>)</h2>
-                <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Climb the ranks and secure your spot at the top!</p>
+                <p class="text-xs text-slate-400 mt-1">Standings reset automatically on the 1st of every month. Maximize your valid referrals and climb to the top of the money ranks!</p>
               </div>
               <div class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl text-center md:text-right shrink-0">
                 <span class="text-xs text-indigo-300 block font-semibold uppercase tracking-wider">Your Current Standing</span>
@@ -623,7 +623,7 @@
       const q = query(collection(db, "payouts"), where("status", "==", "approved"));
 
       onSnapshot(q, async (payoutSnapshot) => {
-        const userReferralsMap = {};
+        const userStatsMap = {};
 
         payoutSnapshot.forEach((docSnap) => {
           const item = docSnap.data();
@@ -632,22 +632,25 @@
           if (createdAtDate.getFullYear() === currentYear && createdAtDate.getMonth() === currentMonth) {
             const uid = item.userId;
             const referrals = item.referrals || 0;
+            const amount = item.amount || 0;
 
-            if (!userReferralsMap[uid]) {
-              userReferralsMap[uid] = {
+            if (!userStatsMap[uid]) {
+              userStatsMap[uid] = {
                 userId: uid,
                 userName: item.userName || "Affiliate",
-                totalReferrals: 0
+                totalReferrals: 0,
+                totalEarnings: 0
               };
             }
-            userReferralsMap[uid].totalReferrals += referrals;
+            userStatsMap[uid].totalReferrals += referrals;
+            userStatsMap[uid].totalEarnings += amount;
           }
         });
 
         const leaderboardData = [];
-        for (const uid in userReferralsMap) {
+        for (const uid in userStatsMap) {
           let photoURL = "";
-          let fullName = userReferralsMap[uid].userName;
+          let fullName = userStatsMap[uid].userName;
 
           try {
             const userDoc = await getDoc(doc(db, "users", uid));
@@ -666,10 +669,12 @@
             userId: uid,
             userName: fullName,
             photoURL: photoURL,
-            totalReferrals: userReferralsMap[uid].totalReferrals
+            totalReferrals: userStatsMap[uid].totalReferrals,
+            totalEarnings: userStatsMap[uid].totalEarnings
           });
         }
 
+        // Sort descending by total valid referrals
         leaderboardData.sort((a, b) => b.totalReferrals - a.totalReferrals);
         renderLeaderboard(leaderboardData);
       }, (error) => {
@@ -710,6 +715,7 @@
         { border: "border-indigo-500/50", bg: "bg-slate-900", text: "text-indigo-400", label: "Rank 5" }
       ];
 
+      // Render Top 5 Podium Cards
       top5.forEach((item, index) => {
         const badge = rankBadges[index];
         const isCurrentUser = item.userId === currentUid;
@@ -723,13 +729,20 @@
               ${item.photoURL ? `<img src="${item.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-2xl text-slate-400"></i>`}
             </div>
             <h4 class="font-bold text-sm text-slate-100 truncate w-full ${isCurrentUser ? 'text-indigo-400' : ''}">${item.userName} ${isCurrentUser ? '(You)' : ''}</h4>
-            <div class="mt-2 text-xs text-slate-400">
-              <span class="text-lg font-extrabold ${badge.text}">${item.totalReferrals}</span> Referrals
+            
+            <div class="mt-2 text-xs text-slate-400 space-y-1">
+              <div><span class="text-base font-extrabold ${badge.text}">${item.totalReferrals}</span> Valid Referrals</div>
+              
+              <!-- GREEN MONEY EARNINGS BADGE -->
+              <div class="inline-block bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black px-2.5 py-1 rounded-lg text-xs mt-1 shadow-sm">
+                <i class="fa-solid fa-sack-dollar mr-1"></i>₱${item.totalEarnings.toFixed(2)}
+              </div>
             </div>
           </div>
         `;
       });
 
+      // Render Rank 6+ List Items
       const extendedRanks = rankings.slice(5);
       if (extendedRanks.length === 0) {
         extendedList.innerHTML = `<div class="text-xs text-slate-500 py-2">All active participants are currently in the Top 5!</div>`;
@@ -747,13 +760,19 @@
                 </div>
                 <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-indigo-400 font-bold' : ''}">${item.userName} ${isCurrentUser ? '(You)' : ''}</span>
               </div>
-              <span class="font-bold text-emerald-400">${item.totalReferrals} Valid Referrals</span>
+              
+              <div class="flex items-center gap-4 text-right">
+                <span class="font-bold text-slate-300">${item.totalReferrals} Referrals</span>
+                <!-- GREEN MONEY BADGE -->
+                <span class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold px-2 py-0.5 rounded text-xs">
+                  ₱${item.totalEarnings.toFixed(2)}
+                </span>
+              </div>
             </div>
           `;
         });
       }
     }
-
     // --- ADMIN: CREATE AD ---
     document.getElementById('admin-ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();

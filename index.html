@@ -153,6 +153,7 @@
             <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
             <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
+            <button onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
           </div>
         </nav>
       </div>
@@ -412,8 +413,70 @@
           <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
+        <!-- TAB 8: ADMIN CREATE ADS -->
+        <section id="tab-admin-ads" class="tab-content hidden max-w-xl">
+          <h2 class="text-xl font-semibold mb-4">Create & Manage Ads / Announcements</h2>
+          
+          <form id="admin-ad-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 mb-8">
+            <h3 class="font-semibold text-amber-400 border-b border-slate-800 pb-2">New Popup Advertisement</h3>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Ad Title</label>
+              <input type="text" id="ad-title" placeholder="e.g. 🔥 Special Referral Bonus Week!" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Ad Content / Message</label>
+              <textarea id="ad-content" rows="3" placeholder="Get an extra ₱500 bonus for every 5 hires this week!" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Button Title (Optional)</label>
+              <input type="text" id="ad-btn-title" placeholder="e.g. Claim Bonus Now 🚀" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Target URL Link (Optional - Opens in New Tab)</label>
+              <input type="url" id="ad-link" placeholder="https://linktr.ee/EarnPassiveWithUs" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+                <input type="date" id="ad-start-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">End Date</label>
+                <input type="date" id="ad-end-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition">Publish Ad</button>
+          </form>
+
+          <h3 class="text-lg font-semibold mb-2">Active & Scheduled Ads</h3>
+          <div id="admin-ads-list" class="space-y-3"></div>
+        </section>
+
       </div>
     </main>
+  </div>
+
+  <!-- POPUP AD MODAL CONTAINER -->
+  <div id="ad-popup-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="relative bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/80 border border-indigo-500/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl shadow-indigo-500/20 transform transition-all duration-300 scale-100">
+      
+      <!-- Close Button -->
+      <button onclick="dismissPopupAd()" class="absolute top-3 right-3 text-slate-400 hover:text-white bg-slate-800/80 border border-slate-700 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Ad Badge -->
+      <div class="inline-flex items-center gap-1.5 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold px-2.5 py-1 rounded-full mb-3">
+        <i class="fa-solid fa-bolt text-amber-400"></i> Announcement
+      </div>
+
+      <!-- Ad Content -->
+      <h3 id="ad-popup-title" class="text-xl sm:text-2xl font-extrabold text-white mb-2 leading-tight"></h3>
+      <p id="ad-popup-body" class="text-slate-300 text-sm mb-6 whitespace-pre-wrap leading-relaxed"></p>
+
+      <!-- Optional Action Button -->
+      <a id="ad-popup-btn" href="#" target="_blank" onclick="dismissPopupAd()" class="hidden block w-full text-center bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition transform hover:-translate-y-0.5"></a>
+    </div>
   </div>
 
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
@@ -448,7 +511,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -470,6 +533,14 @@
     let currentInvoicePage = 1;
     const itemsPerPage = 5;
 
+    let activeAdsList = [];
+    let adTimer = null;
+
+    // Shuffle Array Helper
+    function shuffleArray(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
     // --- THEME MANAGEMENT ---
     function applyTheme(theme) {
       if (theme === 'light') {
@@ -482,11 +553,9 @@
       if (themeSelect) themeSelect.value = theme;
     }
 
-    // Load saved theme from localStorage on initial load
     const savedTheme = localStorage.getItem('portalTheme') || 'dark';
     applyTheme(savedTheme);
 
-    // Save Theme Form Listener
     document.getElementById('theme-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const selectedTheme = document.getElementById('setting-theme').value;
@@ -501,6 +570,142 @@
       }
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
     });
+
+    // --- ADMIN: CREATE AD ---
+    document.getElementById('admin-ad-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.innerText = "Publishing...";
+      submitBtn.disabled = true;
+
+      try {
+        await addDoc(collection(db, "ads"), {
+          title: document.getElementById('ad-title').value.trim(),
+          content: document.getElementById('ad-content').value.trim(),
+          buttonTitle: document.getElementById('ad-btn-title').value.trim() || "",
+          linkUrl: document.getElementById('ad-link').value.trim() || "",
+          startDate: document.getElementById('ad-start-date').value,
+          endDate: document.getElementById('ad-end-date').value,
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Ad published successfully!");
+        e.target.reset();
+      } catch (error) {
+        alert("Error publishing ad: " + error.message);
+      } finally {
+        submitBtn.innerText = "Publish Ad";
+        submitBtn.disabled = false;
+      }
+    });
+
+    // --- ADMIN: LISTEN TO ADS ---
+    function listenToAdminAds() {
+      const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('admin-ads-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No ads created yet.</p>";
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-start mb-2">
+              <div>
+                <p class="font-bold text-amber-400">${data.title}</p>
+                <p class="text-xs text-slate-300 mt-1 mb-2">${data.content}</p>
+                ${data.linkUrl ? `<p class="text-xs text-indigo-400 mb-1"><i class="fa-solid fa-link"></i> ${data.buttonTitle || 'Link'}: ${data.linkUrl}</p>` : ''}
+                <p class="text-xs text-slate-500">📅 Active: ${data.startDate} to ${data.endDate}</p>
+              </div>
+              <button onclick="deleteAd('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded hover:bg-red-600/40 shrink-0">Delete</button>
+            </div>
+          `;
+        });
+      }, (error) => console.warn("Admin ads listener error:", error.message));
+    }
+
+    window.deleteAd = async (adId) => {
+      if (confirm("Are you sure you want to delete this ad?")) {
+        try {
+          await deleteDoc(doc(db, "ads", adId));
+        } catch (err) {
+          alert("Failed to delete ad: " + err.message);
+        }
+      }
+    };
+
+    // --- USER: POPUP AD ENGINE ---
+    function initUserAdsEngine() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const q = query(collection(db, "ads"));
+
+      onSnapshot(q, (snapshot) => {
+        activeAdsList = [];
+        snapshot.forEach((docSnap) => {
+          const data = { id: docSnap.id, ...docSnap.data() };
+          if (data.startDate <= todayStr && data.endDate >= todayStr) {
+            activeAdsList.push(data);
+          }
+        });
+
+        if (activeAdsList.length > 0) {
+          activeAdsList = shuffleArray(activeAdsList);
+          triggerAdRotation();
+        }
+      }, (error) => console.warn("User ads listener error:", error.message));
+    }
+
+    function triggerAdRotation() {
+      if (activeAdsList.length === 0) return;
+
+      const shownAds = JSON.parse(sessionStorage.getItem('shownAdsQueue') || '[]');
+      const availableAds = activeAdsList.filter(ad => !shownAds.includes(ad.id));
+
+      let adToShow = availableAds[0];
+      if (!adToShow) {
+        sessionStorage.setItem('shownAdsQueue', JSON.stringify([]));
+        adToShow = activeAdsList[0];
+      }
+
+      if (adToShow) {
+        displayAdModal(adToShow);
+      }
+    }
+
+    function displayAdModal(ad) {
+      document.getElementById('ad-popup-title').innerText = ad.title;
+      document.getElementById('ad-popup-body').innerText = ad.content;
+      
+      const btn = document.getElementById('ad-popup-btn');
+      if (ad.linkUrl) {
+        btn.innerText = ad.buttonTitle || "Learn More";
+        btn.href = ad.linkUrl;
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+
+      document.getElementById('ad-popup-modal').classList.remove('hidden');
+
+      const shownAds = JSON.parse(sessionStorage.getItem('shownAdsQueue') || '[]');
+      shownAds.push(ad.id);
+      sessionStorage.setItem('shownAdsQueue', JSON.stringify(shownAds));
+    }
+
+    window.dismissPopupAd = () => {
+      document.getElementById('ad-popup-modal').classList.add('hidden');
+      
+      // Delay next ad popup by 5 minutes (300,000 milliseconds)
+      if (adTimer) clearTimeout(adTimer);
+      adTimer = setTimeout(() => {
+        triggerAdRotation();
+      }, 300000);
+    };
 
     // --- PAYOUT SYSTEM (USER VIEW) WITH ERROR HANDLER ---
     function listenToUserPayouts(uid) {
@@ -664,7 +869,6 @@
           if (docSnap.exists()) {
             const userData = docSnap.data();
             
-            // Sync theme preference from Firestore profile
             if (userData.theme) {
               applyTheme(userData.theme);
             }
@@ -694,11 +898,15 @@
             updatePayoutDateRange();
             window.switchTab('payout');
 
+            // Initialize User Pop-up Ad Engine
+            initUserAdsEngine();
+
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
               loadAffiliates(); 
               listenToPendingPayouts(); 
               listenToAdminFeedback(); 
+              listenToAdminAds();
             }
 
             listenToUserPayouts(user.uid);

@@ -194,22 +194,32 @@
       </div>
 
       <form id="login-form" class="space-y-4">
+        <!-- EMAIL OR USERNAME FIELD WITH CLEAR LABEL -->
         <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Email or Username</label>
-          <input type="text" id="login-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+          <label for="login-email" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
+            <i class="fa-solid fa-user mr-1 text-indigo-400"></i> Email or Username
+          </label>
+          <input type="text" id="login-email" required placeholder="Enter your email address or username" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
         </div>
+
+        <!-- PASSWORD FIELD WITH CLEAR LABEL -->
         <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Password</label>
-          <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+          <label for="login-password" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
+            <i class="fa-solid fa-lock mr-1 text-indigo-400"></i> Password
+          </label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
         </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2 rounded-lg transition">Log In</button>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/20">Log In</button>
       </form>
+
       <div class="text-center mt-3">
-        <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline">Forgot Password?</button>
+        <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium">Forgot Password?</button>
       </div>
+      
       <div class="mt-4 text-center text-sm text-slate-400">
         Don't have an account? 
-        <a href="https://form.jotform.com/243515259342456" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">Register here</a>
+        <a href="https://form.jotform.com/243515259342456" target="_blank" class="text-indigo-400 underline hover:text-indigo-300 font-semibold">Register here</a>
       </div>
     </div>
   </div>

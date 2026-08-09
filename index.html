@@ -176,6 +176,40 @@
     body.light-mode #tab-channels h3 {
       color: #0f172a !important;
     }
+    /* LIGHT MODE TREATS & REWARDS OVERRIDES */
+    body.light-mode #tab-treats > div > div:first-child {
+      background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #eff6ff 100%) !important;
+      border-color: #fbcfe8 !important;
+      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.08) !important;
+    }
+
+    body.light-mode #tab-treats h2 {
+      color: #831843 !important; /* Deep Pink Headline */
+    }
+
+    body.light-mode #tab-treats p.text-slate-300 {
+      color: #be185d !important; /* High Contrast Pink Subtitle */
+    }
+
+    body.light-mode #tab-treats .bg-pink-500\/20 {
+      background-color: #fce7f3 !important;
+      border-color: #fbcfe8 !important;
+      color: #9d174d !important;
+    }
+
+    body.light-mode #user-rewards-list > div {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode #user-rewards-list h3 {
+      color: #0f172a !important;
+    }
+
+    body.light-mode #user-rewards-list p {
+      color: #475569 !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1402,9 +1436,10 @@
       const userId = document.getElementById('reward-user-select').value;
       const title = document.getElementById('reward-title').value.trim();
       const message = document.getElementById('reward-message').value.trim();
-      const photoFile = document.getElementById('reward-photo-input').files[0];
+      const photoInput = document.getElementById('reward-photo-input');
+      const photoFile = photoInput ? photoInput.files[0] : null;
 
-      if (!userId) return alert("Please select an affiliate.");
+      if (!userId) return alert("Please select an affiliate from the dropdown list.");
 
       submitBtn.innerText = "Disbursing...";
       submitBtn.disabled = true;
@@ -1426,12 +1461,12 @@
           title: title,
           message: message,
           rewardImageUrl: photoURL,
-          status: "unclaimed", // Options: unclaimed, claimed_pending, valid, invalid
+          status: "unclaimed",
           claimProofUrl: "",
           createdAt: new Date().toISOString()
         });
 
-        alert("Reward disbursed successfully!");
+        alert(`Reward successfully disbursed to ${affiliateName}!`);
         e.target.reset();
       } catch (err) {
         alert("Error disbursing reward: " + err.message);
@@ -1443,7 +1478,9 @@
 
     // --- ADMIN: TRACK DISBURSED REWARDS & VALIDATION ---
     function listenToAdminRewards() {
-      const q = query(collection(db, "rewards"), orderBy("createdAt", "desc"));
+      // Query without strict orderBy to avoid unindexed Firestore exceptions
+      const q = query(collection(db, "rewards"));
+      
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-rewards-track-list');
         if (!listDiv) return;
@@ -1454,9 +1491,16 @@
           return;
         }
 
+        const rewardsArray = [];
         snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const rewardId = docSnap.id;
+          rewardsArray.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Client-side sort by date
+        rewardsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        rewardsArray.forEach((data) => {
+          const rewardId = data.id;
           const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
           let statusBadge = `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-2 py-0.5 rounded-full font-bold">Unclaimed</span>`;
@@ -1504,21 +1548,13 @@
             </div>
           `;
         });
-      }, (err) => console.warn("Admin rewards listener subscription handled silently:", err.message));
+      }, (err) => console.warn("Admin rewards listener issue handled:", err.message));
     }
-
-    window.setRewardValidation = async (rewardId, status) => {
-      try {
-        await updateDoc(doc(db, "rewards", rewardId), { status: status });
-        alert(`Reward marked as ${status.toUpperCase()}!`);
-      } catch (err) {
-        alert("Failed to update status: " + err.message);
-      }
-    };
 
     // --- AFFILIATE: USER REWARDS FEED & LOGIN POPUP CHECK ---
     function listenToUserRewards(uid) {
       const q = query(collection(db, "rewards"), where("userId", "==", uid));
+      
       onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('user-rewards-list');
         if (!listDiv) return;
@@ -1564,96 +1600,17 @@
           `;
         });
 
-        // Show popup trigger if unclaimed/invalid rewards exist
+        // Trigger popup if unclaimed rewards exist
         if (hasUnclaimed && !sessionStorage.getItem('rewardPopupDismissed')) {
-          document.getElementById('reward-login-popup').classList.remove('hidden');
+          const popup = document.getElementById('reward-login-popup');
+          if (popup) popup.classList.remove('hidden');
         }
-      }, (err) => console.warn("User rewards listener subscription handled silently:", err.message));
+      }, (err) => {
+        console.warn("User rewards listener issue handled:", err.message);
+        const listDiv = document.getElementById('user-rewards-list');
+        if (listDiv) listDiv.innerHTML = `<div class="text-slate-400 text-sm py-6 col-span-full text-center">No treats or rewards assigned yet. Keep referring to earn perks!</div>`;
+      });
     }
-
-    // Modal Helpers
-    window.openRewardModal = (id, rawTitle, rawMessage, imgUrl, status) => {
-      currentSelectedRewardId = id;
-      document.getElementById('modal-reward-title').innerText = unescape(rawTitle);
-      document.getElementById('modal-reward-message').innerText = unescape(rawMessage);
-
-      const imgContainer = document.getElementById('modal-reward-image-container');
-      const imgTag = document.getElementById('modal-reward-img');
-
-      if (imgUrl) {
-        imgTag.src = imgUrl;
-        imgContainer.classList.remove('hidden');
-      } else {
-        imgContainer.classList.add('hidden');
-      }
-
-      const uploadSec = document.getElementById('modal-reward-upload-section');
-      if (status === 'valid') {
-        uploadSec.innerHTML = `<p class="text-xs text-emerald-400 font-bold text-center py-2"><i class="fa-solid fa-circle-check"></i> Reward claimed and verified by admin!</p>`;
-      } else {
-        uploadSec.innerHTML = `
-          <p class="text-xs text-amber-400 font-semibold leading-normal">
-            📸 <strong>Redemption Verification:</strong> Once you've redeemed this treat at the store/online, upload a photo with your reward to mark it as claimed!
-          </p>
-          <div>
-            <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Upload Store/Redemption Photo <span class="text-red-400">*</span></label>
-            <input type="file" id="claim-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer w-full">
-          </div>
-          <button id="modal-claim-submit-btn" onclick="submitRewardClaim()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl transition">
-            Submit & Mark as Claimed
-          </button>
-        `;
-      }
-
-      document.getElementById('reward-view-modal').classList.remove('hidden');
-    };
-
-    window.closeRewardModal = () => {
-      document.getElementById('reward-view-modal').classList.add('hidden');
-      currentSelectedRewardId = null;
-    };
-
-    window.submitRewardClaim = async () => {
-      const fileInput = document.getElementById('claim-photo-input');
-      const file = fileInput ? fileInput.files[0] : null;
-
-      if (!file) return alert("An image proof is required to mark this reward as claimed.");
-
-      const btn = document.getElementById('modal-claim-submit-btn');
-      btn.innerText = "Uploading Proof...";
-      btn.disabled = true;
-
-      try {
-        const fileRef = ref(storage, `reward_proofs/${auth.currentUser.uid}_${currentSelectedRewardId}_${file.name}`);
-        await uploadBytes(fileRef, file);
-        const proofURL = await getDownloadURL(fileRef);
-
-        await updateDoc(doc(db, "rewards", currentSelectedRewardId), {
-          status: "claimed_pending",
-          claimProofUrl: proofURL
-        });
-
-        alert("Proof submitted! Reward marked as claimed and sent for verification.");
-        closeRewardModal();
-      } catch (err) {
-        alert("Failed to submit proof: " + err.message);
-      } finally {
-        if (btn) {
-          btn.innerText = "Submit & Mark as Claimed";
-          btn.disabled = false;
-        }
-      }
-    };
-
-    window.dismissRewardLoginPopup = () => {
-      sessionStorage.setItem('rewardPopupDismissed', 'true');
-      document.getElementById('reward-login-popup').classList.add('hidden');
-    };
-
-    window.goToTreatsFromPopup = () => {
-      dismissRewardLoginPopup();
-      window.switchTab('treats');
-    };
     
     // --- AUTHENTICATION (EMAIL OR USERNAME LOGIN) ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {

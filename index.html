@@ -1504,7 +1504,7 @@
             </div>
           `;
         });
-      }, (err) => console.warn("Admin rewards listener error:", err.message));
+      }, (err) => console.warn("Admin rewards listener subscription handled silently:", err.message));
     }
 
     window.setRewardValidation = async (rewardId, status) => {
@@ -1568,7 +1568,7 @@
         if (hasUnclaimed && !sessionStorage.getItem('rewardPopupDismissed')) {
           document.getElementById('reward-login-popup').classList.remove('hidden');
         }
-      }, (err) => console.warn("User rewards listener error:", err.message));
+      }, (err) => console.warn("User rewards listener subscription handled silently:", err.message));
     }
 
     // Modal Helpers

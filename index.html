@@ -992,6 +992,102 @@
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
     });
 
+    // --- ATTACH MODAL FUNCTIONS TO WINDOW OBJECT ---
+    window.openRewardModal = (id, rawTitle, rawMessage, imgUrl, status) => {
+      currentSelectedRewardId = id;
+      document.getElementById('modal-reward-title').innerText = unescape(rawTitle);
+      document.getElementById('modal-reward-message').innerText = unescape(rawMessage);
+
+      const imgContainer = document.getElementById('modal-reward-image-container');
+      const imgTag = document.getElementById('modal-reward-img');
+
+      if (imgUrl) {
+        imgTag.src = imgUrl;
+        imgContainer.classList.remove('hidden');
+      } else {
+        imgContainer.classList.add('hidden');
+      }
+
+      const uploadSec = document.getElementById('modal-reward-upload-section');
+      if (status === 'valid') {
+        uploadSec.innerHTML = `<p class="text-xs text-emerald-400 font-bold text-center py-2"><i class="fa-solid fa-circle-check"></i> Reward claimed and verified by admin!</p>`;
+      } else {
+        uploadSec.innerHTML = `
+          <p class="text-xs text-amber-400 font-semibold leading-normal">
+            📸 <strong>Redemption Verification:</strong> Once you've redeemed this treat at the store/online, upload a photo with your reward to mark it as claimed!
+          </p>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Upload Store/Redemption Photo <span class="text-red-400">*</span></label>
+            <input type="file" id="claim-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer w-full">
+          </div>
+          <button id="modal-claim-submit-btn" onclick="submitRewardClaim()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl transition">
+            Submit & Mark as Claimed
+          </button>
+        `;
+      }
+
+      document.getElementById('reward-view-modal').classList.remove('hidden');
+    };
+
+    window.closeRewardModal = () => {
+      document.getElementById('reward-view-modal').classList.add('hidden');
+      currentSelectedRewardId = null;
+    };
+
+    window.submitRewardClaim = async () => {
+      const fileInput = document.getElementById('claim-photo-input');
+      const file = fileInput ? fileInput.files[0] : null;
+
+      if (!file) return alert("An image proof is required to mark this reward as claimed.");
+
+      const btn = document.getElementById('modal-claim-submit-btn');
+      btn.innerText = "Uploading Proof...";
+      btn.disabled = true;
+
+      try {
+        const fileRef = ref(storage, `reward_proofs/${auth.currentUser.uid}_${currentSelectedRewardId}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const proofURL = await getDownloadURL(fileRef);
+
+        await updateDoc(doc(db, "rewards", currentSelectedRewardId), {
+          status: "claimed_pending",
+          claimProofUrl: proofURL
+        });
+
+        alert("Proof submitted! Reward marked as claimed and sent for verification.");
+        closeRewardModal();
+      } catch (err) {
+        alert("Failed to submit proof: " + err.message);
+      } finally {
+        if (btn) {
+          btn.innerText = "Submit & Mark as Claimed";
+          btn.disabled = false;
+        }
+      }
+    };
+
+    window.dismissRewardLoginPopup = () => {
+      sessionStorage.setItem('rewardPopupDismissed', 'true');
+      const popup = document.getElementById('reward-login-popup');
+      if (popup) popup.classList.add('hidden');
+    };
+
+    window.goToTreatsFromPopup = () => {
+      dismissRewardLoginPopup();
+      window.switchTab('treats');
+    };
+
+    window.deleteReward = async (rewardId) => {
+      if (confirm("Are you sure you want to remove/delete this reward? The affiliate will no longer see it.")) {
+        try {
+          await deleteDoc(doc(db, "rewards", rewardId));
+          alert("Reward removed successfully!");
+        } catch (err) {
+          alert("Failed to delete reward: " + err.message);
+        }
+      }
+    };
+
     // --- MONTHLY LEADERBOARD SYSTEM ---
     function listenToMonthlyLeaderboard() {
       const now = new Date();
@@ -1573,6 +1669,7 @@
     });
 
     // --- ADMIN: TRACK DISBURSED REWARDS & VALIDATION ---
+    // --- ADMIN: TRACK & DELETE DISBURSED REWARDS ---
     function listenToAdminRewards() {
       const q = query(collection(db, "rewards"));
       
@@ -1591,6 +1688,7 @@
           rewardsArray.push({ id: docSnap.id, ...docSnap.data() });
         });
 
+        // Client-side sort by date
         rewardsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         rewardsArray.forEach((data) => {
@@ -1614,7 +1712,13 @@
                   <p class="text-xs text-indigo-400 font-semibold">Affiliate: ${data.userName}</p>
                   <p class="text-[10px] text-slate-500">${formattedDate}</p>
                 </div>
-                <div>${statusBadge}</div>
+                <div class="flex items-center gap-2">
+                  ${statusBadge}
+                  <!-- DELETE REWARD BUTTON -->
+                  <button onclick="deleteReward('${rewardId}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete Reward">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                  </button>
+                </div>
               </div>
 
               <p class="text-xs text-slate-300 whitespace-pre-wrap">${data.message}</p>
@@ -1644,6 +1748,18 @@
         });
       }, (err) => console.warn("Admin rewards listener issue handled:", err.message));
     }
+
+    // --- GLOBAL FUNCTION TO DELETE REWARD ---
+    window.deleteReward = async (rewardId) => {
+      if (confirm("Are you sure you want to remove/delete this reward? The affiliate will no longer see it.")) {
+        try {
+          await deleteDoc(doc(db, "rewards", rewardId));
+          alert("Reward removed successfully!");
+        } catch (err) {
+          alert("Failed to delete reward: " + err.message);
+        }
+      }
+    };
 
     window.setRewardValidation = async (rewardId, status) => {
       try {

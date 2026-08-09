@@ -1276,6 +1276,7 @@
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = user.email || userData.email || '';
             if (userData.paymentMethod) document.getElementById('setting-bank').value = userData.paymentMethod;
+            if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
             if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
           }
         } catch (error) {

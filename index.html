@@ -1621,6 +1621,117 @@
       }
     });
 
+    // --- 12-HOUR TIMEOUT CONSTANT ---
+    const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000; // 43,200,000 ms
+
+    // --- AUTO LOGIN, EXPIRATION CHECK & LOAD ---
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
+        const currentTime = Date.now();
+
+        // ⏳ CHECK IF 12 HOURS HAVE PASSED
+        if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
+          alert("Your 12-hour session has expired. Please log in again to continue.");
+          await signOut(auth);
+          localStorage.removeItem('loginTimestamp');
+          document.getElementById('auth-screen').classList.remove('hidden');
+          document.getElementById('dashboard-screen').classList.add('hidden');
+          return;
+        }
+
+        // If no timestamp was found (e.g. legacy session), initialize it now
+        if (!loginTime) {
+          localStorage.setItem('loginTimestamp', currentTime.toString());
+        }
+
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            
+            // Clear dismissed reward popup state so it fires on every refresh/login
+            sessionStorage.removeItem('rewardPopupDismissed');
+
+            if (userData.theme) {
+              applyTheme(userData.theme);
+            }
+
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
+
+            if (userData.photoURL) {
+              const profileImg = document.getElementById('profile-avatar-img');
+              const profileIcon = document.getElementById('profile-avatar-icon');
+              if (profileImg && profileIcon) {
+                profileImg.src = userData.photoURL;
+                profileImg.classList.remove('hidden');
+                profileIcon.classList.add('hidden');
+              }
+
+              const headerImg = document.getElementById('header-avatar-img');
+              const headerIcon = document.getElementById('header-avatar-icon');
+              if (headerImg && headerIcon) {
+                headerImg.src = userData.photoURL;
+                headerImg.classList.remove('hidden');
+                headerIcon.classList.add('hidden');
+              }
+            }
+
+            updatePayoutDateRange();
+            
+            // Switch to Leaderboard tab by default
+            window.switchTab('leaderboard');
+
+            // Initialize engines & listeners
+            initUserAdsEngine();
+            listenToMonthlyLeaderboard();
+            listenToUserRewards(user.uid);
+
+            if (userData.role === 'admin') {
+              document.getElementById('admin-menu').classList.remove('hidden');
+              loadAffiliates(); 
+              listenToPendingPayouts(); 
+              listenToAdminFeedback(); 
+              listenToAdminAds();
+              listenToAdminRewards();
+            }
+
+            listenToUserPayouts(user.uid);
+
+            document.getElementById('setting-firstname').value = userData.firstName || '';
+            document.getElementById('setting-lastname').value = userData.lastName || '';
+            document.getElementById('setting-email').value = user.email || userData.email || '';
+            
+            // Load saved payment method
+            if (userData.paymentMethod) {
+              const bankSelect = document.getElementById('setting-bank');
+              const defaultOptions = Array.from(bankSelect.options).map(opt => opt.value);
+
+              if (defaultOptions.includes(userData.paymentMethod) && userData.paymentMethod !== 'Others') {
+                bankSelect.value = userData.paymentMethod;
+              } else {
+                bankSelect.value = 'Others';
+                document.getElementById('setting-custom-bank').value = userData.paymentMethod;
+              }
+              toggleCustomBankInput();
+            }
+
+            if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
+            if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        document.getElementById('auth-screen').classList.remove('hidden');
+        document.getElementById('dashboard-screen').classList.add('hidden');
+      }
+    });
+
     // --- ADMIN: DISBURSE REWARD ---
     document.getElementById('admin-reward-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1668,7 +1779,7 @@
       }
     });
 
-    // --- ADMIN: TRACK DISBURSED REWARDS & VALIDATION ---
+ 
     // --- ADMIN: TRACK & DELETE DISBURSED REWARDS ---
     function listenToAdminRewards() {
       const q = query(collection(db, "rewards"));
@@ -1892,6 +2003,7 @@
 
         // Authenticate with Firebase using the resolved email
         await signInWithEmailAndPassword(auth, emailToUse, password);
+        localStorage.setItem('loginTimestamp', Date.now().toString());
 
       } catch (error) {
         console.error("Login Error:", error);
@@ -2300,6 +2412,7 @@
 
     window.logout = async () => {
       await signOut(auth);
+      localStorage.removeItem('loginTimestamp'); // 👈 CLEAR TIMESTAMP ON LOGOUT
       document.getElementById('admin-menu').classList.add('hidden');
       document.getElementById('login-form').reset();
     };

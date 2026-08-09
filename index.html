@@ -1993,18 +1993,33 @@
     });
 
     async function loadAffiliates() {
-      const q = query(collection(db, "users"), where("role", "==", "affiliate"));
-      const querySnapshot = await getDocs(q);
-      const select = document.getElementById('disburse-user-select');
-      select.innerHTML = '<option value="">-- Choose Affiliate --</option>';
-      allAffiliates = [];
+      try {
+        const q = query(collection(db, "users"), where("role", "==", "affiliate"));
+        const querySnapshot = await getDocs(q);
+        
+        const disburseSelect = document.getElementById('disburse-user-select');
+        const rewardSelect = document.getElementById('reward-user-select');
+        
+        const defaultOption = '<option value="">-- Choose Affiliate --</option>';
+        if (disburseSelect) disburseSelect.innerHTML = defaultOption;
+        if (rewardSelect) rewardSelect.innerHTML = defaultOption;
 
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        data.id = docSnap.id;
-        allAffiliates.push(data);
-        select.innerHTML += `<option value="${data.id}">${data.firstName} ${data.lastName}</option>`;
-      });
+        allAffiliates = [];
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          data.id = docSnap.id;
+          allAffiliates.push(data);
+
+          const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || data.email || 'Unnamed Affiliate';
+          const optionHTML = `<option value="${data.id}">${fullName}</option>`;
+
+          if (disburseSelect) disburseSelect.innerHTML += optionHTML;
+          if (rewardSelect) rewardSelect.innerHTML += optionHTML;
+        });
+      } catch (err) {
+        console.warn("Could not load affiliates list:", err.message);
+      }
     }
 
     window.loadUserDisburseDetails = () => {

@@ -176,6 +176,7 @@
     body.light-mode #tab-channels h3 {
       color: #0f172a !important;
     }
+
     /* LIGHT MODE TREATS & REWARDS OVERRIDES */
     body.light-mode #tab-treats > div > div:first-child {
       background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #eff6ff 100%) !important;
@@ -307,7 +308,7 @@
           <!-- Admin Panel Links -->
           <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
-            <button onclick="switchTab('admin-feedback')" clfass="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
+            <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
             <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
             <button onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards </button>
@@ -380,7 +381,7 @@
                 <textarea id="reward-message" rows="3" placeholder="Congratulations on reaching Top Referrer this week! Here is your gift code/voucher..." required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"></textarea>
               </div>
               <div>
-                <label class="block text-xs text-slate-400 mb-1 font-semibold">Attachment Photo (Voucher / Gift Card Graphic)</label>
+                <label class="block text-xs text-slate-400 mb-1 font-semibold font-semibold">Attachment Photo (Voucher / Gift Card Graphic)</label>
                 <input type="file" id="reward-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
               </div>
               <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-md">
@@ -396,6 +397,7 @@
             </div>
           </div>
         </section>
+
         <!-- TAB 1: WEEKLY PAYOUT -->
         <section id="tab-payout" class="tab-content w-full">
           <h2 id="weekly-payout-heading" class="text-lg md:text-xl font-semibold mb-4">Weekly Payout (Releasing Every Saturday)</h2>
@@ -646,7 +648,7 @@
               </select>
             </div>
 
-            <!-- ➕ CUSTOM BANK / E-WALLET NAME (DYNAMICALLY HIDDEN/SHOWN) -->
+            <!-- CUSTOM BANK / E-WALLET NAME -->
             <div id="custom-bank-container" class="hidden">
               <label class="block text-xs text-slate-400 mb-1">Bank / E-Wallet Name</label>
               <input type="text" id="setting-custom-bank" placeholder="e.g. UnionBank, Seabank, ShopeePay" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
@@ -788,6 +790,61 @@
     </div>
   </div>
 
+  <!-- AFFILIATE REWARD VIEW & CLAIM MODAL -->
+  <div id="reward-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="relative bg-slate-900 border border-pink-500/40 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeRewardModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white bg-slate-800 border border-slate-700 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="inline-flex items-center gap-1.5 bg-pink-500/20 text-pink-400 border border-pink-500/30 text-xs font-semibold px-2.5 py-1 rounded-full">
+        <i class="fa-solid fa-gift"></i> Treat & Reward
+      </div>
+
+      <h3 id="modal-reward-title" class="text-xl font-bold text-white"></h3>
+      <p id="modal-reward-message" class="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed"></p>
+
+      <div id="modal-reward-image-container" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+        <img id="modal-reward-img" src="" class="w-full h-auto max-h-60 object-contain mx-auto" alt="Reward Attachment">
+      </div>
+
+      <hr class="border-slate-800">
+
+      <!-- PROOF UPLOAD / REDEMPTION AREA -->
+      <div id="modal-reward-upload-section" class="space-y-3 pt-2">
+        <p class="text-xs text-amber-400 font-semibold leading-normal">
+          📸 <strong>Redemption Verification:</strong> Once you've redeemed this treat at the store/online, upload a photo with your reward to mark it as claimed!
+        </p>
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Upload Store/Redemption Photo <span class="text-red-400">*</span></label>
+          <input type="file" id="claim-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer w-full">
+        </div>
+        <button id="modal-claim-submit-btn" onclick="submitRewardClaim()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl transition">
+          Submit & Mark as Claimed
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN REWARD NOTIFICATION POPUP -->
+  <div id="reward-login-popup" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-slate-900 via-slate-900 to-pink-950/80 border border-pink-500/50 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
+      <div class="w-14 h-14 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-400 flex items-center justify-center mx-auto text-2xl animate-bounce">
+        <i class="fa-solid fa-gift"></i>
+      </div>
+      <h3 class="text-xl font-bold text-white">Unclaimed Reward Available! 🎁</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">You have available Treats & Rewards waiting for you. Head over to the <strong>Treats & Rewards</strong> tab to view and claim your gift!</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="dismissRewardLoginPopup()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition">
+          Dismiss
+        </button>
+        <button onclick="goToTreatsFromPopup()" class="flex-1 bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded-xl text-xs transition">
+          Check Rewards Now
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
     window.switchTab = function(tabName) {
@@ -844,6 +901,7 @@
 
     let activeAdsList = [];
     let adTimer = null;
+    let currentSelectedRewardId = null;
 
     // Shuffle Array Helper
     function shuffleArray(array) {
@@ -1385,6 +1443,7 @@
             // Initialize engines & listeners
             initUserAdsEngine();
             listenToMonthlyLeaderboard();
+            listenToUserRewards(user.uid);
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
@@ -1426,8 +1485,6 @@
         document.getElementById('dashboard-screen').classList.add('hidden');
       }
     });
-
-    let currentSelectedRewardId = null;
 
     // --- ADMIN: DISBURSE REWARD ---
     document.getElementById('admin-reward-form').addEventListener('submit', async (e) => {
@@ -1478,7 +1535,6 @@
 
     // --- ADMIN: TRACK DISBURSED REWARDS & VALIDATION ---
     function listenToAdminRewards() {
-      // Query without strict orderBy to avoid unindexed Firestore exceptions
       const q = query(collection(db, "rewards"));
       
       onSnapshot(q, (snapshot) => {
@@ -1496,7 +1552,6 @@
           rewardsArray.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        // Client-side sort by date
         rewardsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         rewardsArray.forEach((data) => {
@@ -1550,6 +1605,15 @@
         });
       }, (err) => console.warn("Admin rewards listener issue handled:", err.message));
     }
+
+    window.setRewardValidation = async (rewardId, status) => {
+      try {
+        await updateDoc(doc(db, "rewards", rewardId), { status: status });
+        alert(`Reward marked as ${status.toUpperCase()}!`);
+      } catch (err) {
+        alert("Failed to update status: " + err.message);
+      }
+    };
 
     // --- AFFILIATE: USER REWARDS FEED & LOGIN POPUP CHECK ---
     function listenToUserRewards(uid) {
@@ -1611,6 +1675,89 @@
         if (listDiv) listDiv.innerHTML = `<div class="text-slate-400 text-sm py-6 col-span-full text-center">No treats or rewards assigned yet. Keep referring to earn perks!</div>`;
       });
     }
+
+    window.openRewardModal = (id, rawTitle, rawMessage, imgUrl, status) => {
+      currentSelectedRewardId = id;
+      document.getElementById('modal-reward-title').innerText = unescape(rawTitle);
+      document.getElementById('modal-reward-message').innerText = unescape(rawMessage);
+
+      const imgContainer = document.getElementById('modal-reward-image-container');
+      const imgTag = document.getElementById('modal-reward-img');
+
+      if (imgUrl) {
+        imgTag.src = imgUrl;
+        imgContainer.classList.remove('hidden');
+      } else {
+        imgContainer.classList.add('hidden');
+      }
+
+      const uploadSec = document.getElementById('modal-reward-upload-section');
+      if (status === 'valid') {
+        uploadSec.innerHTML = `<p class="text-xs text-emerald-400 font-bold text-center py-2"><i class="fa-solid fa-circle-check"></i> Reward claimed and verified by admin!</p>`;
+      } else {
+        uploadSec.innerHTML = `
+          <p class="text-xs text-amber-400 font-semibold leading-normal">
+            📸 <strong>Redemption Verification:</strong> Once you've redeemed this treat at the store/online, upload a photo with your reward to mark it as claimed!
+          </p>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Upload Store/Redemption Photo <span class="text-red-400">*</span></label>
+            <input type="file" id="claim-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer w-full">
+          </div>
+          <button id="modal-claim-submit-btn" onclick="submitRewardClaim()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl transition">
+            Submit & Mark as Claimed
+          </button>
+        `;
+      }
+
+      document.getElementById('reward-view-modal').classList.remove('hidden');
+    };
+
+    window.closeRewardModal = () => {
+      document.getElementById('reward-view-modal').classList.add('hidden');
+      currentSelectedRewardId = null;
+    };
+
+    window.submitRewardClaim = async () => {
+      const fileInput = document.getElementById('claim-photo-input');
+      const file = fileInput ? fileInput.files[0] : null;
+
+      if (!file) return alert("An image proof is required to mark this reward as claimed.");
+
+      const btn = document.getElementById('modal-claim-submit-btn');
+      btn.innerText = "Uploading Proof...";
+      btn.disabled = true;
+
+      try {
+        const fileRef = ref(storage, `reward_proofs/${auth.currentUser.uid}_${currentSelectedRewardId}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const proofURL = await getDownloadURL(fileRef);
+
+        await updateDoc(doc(db, "rewards", currentSelectedRewardId), {
+          status: "claimed_pending",
+          claimProofUrl: proofURL
+        });
+
+        alert("Proof submitted! Reward marked as claimed and sent for verification.");
+        closeRewardModal();
+      } catch (err) {
+        alert("Failed to submit proof: " + err.message);
+      } finally {
+        if (btn) {
+          btn.innerText = "Submit & Mark as Claimed";
+          btn.disabled = false;
+        }
+      }
+    };
+
+    window.dismissRewardLoginPopup = () => {
+      sessionStorage.setItem('rewardPopupDismissed', 'true');
+      document.getElementById('reward-login-popup').classList.add('hidden');
+    };
+
+    window.goToTreatsFromPopup = () => {
+      dismissRewardLoginPopup();
+      window.switchTab('treats');
+    };
     
     // --- AUTHENTICATION (EMAIL OR USERNAME LOGIN) ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -2057,59 +2204,5 @@
       document.getElementById('login-form').reset();
     };
   </script>
-  <!-- AFFILIATE REWARD VIEW & CLAIM MODAL -->
-  <div id="reward-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="relative bg-slate-900 border border-pink-500/40 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeRewardModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white bg-slate-800 border border-slate-700 w-8 h-8 rounded-full flex items-center justify-center transition">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="inline-flex items-center gap-1.5 bg-pink-500/20 text-pink-400 border border-pink-500/30 text-xs font-semibold px-2.5 py-1 rounded-full">
-        <i class="fa-solid fa-gift"></i> Treat & Reward
-      </div>
-
-      <h3 id="modal-reward-title" class="text-xl font-bold text-white"></h3>
-      <p id="modal-reward-message" class="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed"></p>
-
-      <div id="modal-reward-image-container" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-        <img id="modal-reward-img" src="" class="w-full h-auto max-h-60 object-contain mx-auto" alt="Reward Attachment">
-      </div>
-
-      <hr class="border-slate-800">
-
-      <!-- PROOF UPLOAD / REDEMPTION AREA -->
-      <div id="modal-reward-upload-section" class="space-y-3 pt-2">
-        <p class="text-xs text-amber-400 font-semibold leading-normal">
-          📸 <strong>Redemption Verification:</strong> Once you've redeemed this treat at the store/online, upload a photo with your reward to mark it as claimed!
-        </p>
-        <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 font-semibold">Upload Store/Redemption Photo <span class="text-red-400">*</span></label>
-          <input type="file" id="claim-photo-input" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer w-full">
-        </div>
-        <button id="modal-claim-submit-btn" onclick="submitRewardClaim()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl transition">
-          Submit & Mark as Claimed
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- LOGIN REWARD NOTIFICATION POPUP -->
-  <div id="reward-login-popup" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-b from-slate-900 via-slate-900 to-pink-950/80 border border-pink-500/50 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
-      <div class="w-14 h-14 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-400 flex items-center justify-center mx-auto text-2xl animate-bounce">
-        <i class="fa-solid fa-gift"></i>
-      </div>
-      <h3 class="text-xl font-bold text-white">Unclaimed Reward Available! 🎁</h3>
-      <p class="text-xs text-slate-300 leading-relaxed">You have available Treats & Rewards waiting for you. Head over to the <strong>Treats & Rewards</strong> tab to view and claim your gift!</p>
-      <div class="flex gap-2 pt-2">
-        <button onclick="dismissRewardLoginPopup()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition">
-          Dismiss
-        </button>
-        <button onclick="goToTreatsFromPopup()" class="flex-1 bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded-xl text-xs transition">
-          Check Rewards Now
-        </button>
-      </div>
-    </div>
-  </div>
 </body>
 </html>

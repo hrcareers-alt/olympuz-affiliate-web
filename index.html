@@ -772,6 +772,21 @@
       if (themeSelect) themeSelect.value = theme;
     }
 
+    window.toggleCustomBankInput = () => {
+      const bankSelect = document.getElementById('setting-bank');
+      const customContainer = document.getElementById('custom-bank-container');
+      const customInput = document.getElementById('setting-custom-bank');
+
+      if (bankSelect.value === 'Others') {
+        customContainer.classList.remove('hidden');
+        customInput.required = true;
+      } else {
+        customContainer.classList.add('hidden');
+        customInput.required = false;
+        customInput.value = '';
+      }
+    };
+
     // Default to 'light' if no preference is saved in local storage
     const savedTheme = localStorage.getItem('portalTheme') || 'light';
     applyTheme(savedTheme);
@@ -1294,7 +1309,21 @@
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = user.email || userData.email || '';
-            if (userData.paymentMethod) document.getElementById('setting-bank').value = userData.paymentMethod;
+            
+            // Load saved payment method (handles standard dropdown choices or custom bank names)
+            if (userData.paymentMethod) {
+              const bankSelect = document.getElementById('setting-bank');
+              const defaultOptions = Array.from(bankSelect.options).map(opt => opt.value);
+
+              if (defaultOptions.includes(userData.paymentMethod) && userData.paymentMethod !== 'Others') {
+                bankSelect.value = userData.paymentMethod;
+              } else {
+                bankSelect.value = 'Others';
+                document.getElementById('setting-custom-bank').value = userData.paymentMethod;
+              }
+              toggleCustomBankInput();
+            }
+
             if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
             if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
           }
@@ -1306,7 +1335,6 @@
         document.getElementById('dashboard-screen').classList.add('hidden');
       }
     });
-
     // --- AUTHENTICATION (EMAIL OR USERNAME LOGIN) ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1366,9 +1394,16 @@
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
       submitBtn.innerText = "Saving...";
+
+      const selectedBank = document.getElementById('setting-bank').value;
+      const customBankName = document.getElementById('setting-custom-bank').value.trim();
+      
+      // Use custom specified bank name if "Others" is selected
+      const finalPaymentMethod = (selectedBank === 'Others' && customBankName) ? customBankName : selectedBank;
+
       try {
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
-          paymentMethod: document.getElementById('setting-bank').value,
+          paymentMethod: finalPaymentMethod,
           accountName: document.getElementById('setting-account-name').value.trim(),
           accountNumber: document.getElementById('setting-account-num').value.trim()
         });

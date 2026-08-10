@@ -240,6 +240,87 @@
       background-color: #e2e8f0 !important;
       color: #0f172a !important;
     }
+    
+    /* Light Mode Ad Unit Styling */
+:root {
+  --ad-bg: #f8fafc;                  /* Soft neutral surface matching light mode */
+  --ad-border: #e2e8f0;              /* Subtle border for structure */
+  --ad-text-primary: #0f172a;        /* High-contrast crisp header text */
+  --ad-text-secondary: #475569;      /* Readable body text */
+  --ad-badge-bg: #e0e7ff;            /* Subtle accent tag background */
+  --ad-badge-text: #4338ca;          /* Indigo tag text */
+  --ad-cta-bg: #2563eb;               /* Vibrant high-converting primary blue CTA */
+  --ad-cta-hover: #1d4ed8;
+  --ad-cta-text: #ffffff;
+  --ad-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --ad-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+.ad-card {
+  background-color: var(--ad-bg);
+  border: 1px solid var(--ad-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: var(--ad-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 728px;
+  margin: 16px 0;
+}
+
+.ad-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ad-shadow-hover);
+}
+
+/* Sponsored Tag - Subtitle framing keeps transparency clean */
+.ad-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: var(--ad-badge-bg);
+  color: var(--ad-badge-text);
+  margin-bottom: 6px;
+}
+
+.ad-title {
+  color: var(--ad-text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.ad-description {
+  color: var(--ad-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Enticing Action Button */
+.ad-cta {
+  background-color: var(--ad-cta-bg);
+  color: var(--ad-cta-text);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.ad-cta:hover {
+  background-color: var(--ad-cta-hover);
+}
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

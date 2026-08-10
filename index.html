@@ -1693,17 +1693,48 @@ body.light-mode div[id*="modal"] button:has(svg) {
       }
     }
 
-    // --- AUTO LOGIN & LOAD ---
+   // --- 12-HOUR TIMEOUT CONSTANT ---
+    const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000; // 43,200,000 ms
+
+    // --- AUTO LOGIN, EXPIRATION CHECK & LOAD ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
+        const currentTime = Date.now();
+
+        // ⏳ CHECK IF 12 HOURS HAVE PASSED
+        if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
+          // 1. Clear session timestamp immediately
+          localStorage.removeItem('loginTimestamp');
+          
+          // 2. Sign out from Firebase FIRST and wait for it to complete
+          await signOut(auth);
+
+          // 3. Reset the UI to login screen
+          document.getElementById('admin-menu').classList.add('hidden');
+          document.getElementById('dashboard-screen').classList.add('hidden');
+          document.getElementById('auth-screen').classList.remove('hidden');
+
+          // 4. Show alert AFTER sign-out is completely processed
+          alert("Your 12-hour session has expired. Please log in again to continue.");
+          return;
+        }
+
+        // If no timestamp was found, save current time
+        if (!loginTime) {
+          localStorage.setItem('loginTimestamp', currentTime.toString());
+        }
+
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            sessionStorage.removeItem('rewardPopupDismissed');
             
+            // Clear dismissed reward popup state so it fires on every refresh/login
+            sessionStorage.removeItem('rewardPopupDismissed');
+
             if (userData.theme) {
               applyTheme(userData.theme);
             }
@@ -1755,7 +1786,7 @@ body.light-mode div[id*="modal"] button:has(svg) {
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-email').value = user.email || userData.email || '';
             
-            // Load saved payment method (handles standard dropdown choices or custom bank names)
+            // Load saved payment method
             if (userData.paymentMethod) {
               const bankSelect = document.getElementById('setting-bank');
               const defaultOptions = Array.from(bankSelect.options).map(opt => opt.value);

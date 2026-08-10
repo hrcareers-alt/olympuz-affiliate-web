@@ -1693,9 +1693,6 @@ body.light-mode div[id*="modal"] button:has(svg) {
       }
     }
 
-   // --- 12-HOUR TIMEOUT CONSTANT ---
-    const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000; // 43,200,000 ms
-
     // --- AUTO LOGIN, EXPIRATION CHECK & LOAD ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {

@@ -322,6 +322,84 @@
       box-shadow: 0 14px 26px -4px rgba(79, 70, 229, 0.55) !important;
       transform: translateY(-2px) !important;
     }
+
+   /* ============================================================
+   FORCE ALL POPUPS / MODALS TO LIGHT MODE (CATCH-ALL)
+   ============================================================ */
+
+/* 1. Modal Container Backdrop - Keep background app visible */
+body.light-mode div[role="dialog"],
+body.light-mode .fixed.inset-0,
+body.light-mode div[id*="popup"],
+body.light-mode div[id*="modal"],
+body.light-mode div[class*="modal"] {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* 2. Modal Box Surface - Force Light Background */
+body.light-mode div[role="dialog"] > div,
+body.light-mode .fixed.inset-0 > div,
+body.light-mode div[id*="popup"] > div,
+body.light-mode div[id*="modal"] > div,
+body.light-mode div[class*="modal"] > div,
+body.light-mode div[id*="announcement"] {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+  border-radius: 20px !important;
+  color: #0f172a !important;
+}
+
+/* 3. Force All Text & Headlines Inside Popups to Dark Slate (Visible) */
+body.light-mode div[role="dialog"] *,
+body.light-mode div[id*="popup"] *,
+body.light-mode div[id*="modal"] *,
+body.light-mode div[class*="modal"] * {
+  color: #0f172a !important;
+}
+
+/* Preserve Muted Text Readability */
+body.light-mode div[role="dialog"] p,
+body.light-mode div[id*="popup"] p,
+body.light-mode div[id*="modal"] p {
+  color: #334155 !important;
+}
+
+/* 4. Enticing Primary CTA Button ("CLAIM YOUR BENEFIT NOW!") */
+body.light-mode div[role="dialog"] button:not([class*="close"]),
+body.light-mode div[id*="popup"] button:not(.absolute),
+body.light-mode div[id*="modal"] button:not(.absolute),
+body.light-mode div[class*="modal"] button:not(.absolute),
+body.light-mode div[id*="popup"] a[class*="button"],
+body.light-mode div[id*="popup"] a.block {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 24px !important;
+  box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.45) !important;
+  transition: all 0.25s ease !important;
+}
+
+body.light-mode div[id*="popup"] button:not(.absolute):hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  box-shadow: 0 14px 26px -4px rgba(79, 70, 229, 0.55) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 5. Close Button ("X") */
+body.light-mode div[id*="popup"] button.absolute,
+body.light-mode div[id*="popup"] button:has(svg),
+body.light-mode div[id*="modal"] button:has(svg) {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

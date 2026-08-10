@@ -206,88 +206,100 @@
     }
 
     /* ============================================================
-       LIGHT MODE ANNOUNCEMENT POPUP / MODAL OVERRIDES
+       LIGHT MODE POPUP / ANNOUNCEMENT MODAL OVERRIDES (FIXED)
        ============================================================ */
 
-    /* 1. Backdrop Overlay (Dark glass blur so background app stays visible) */
-    body.light-mode #reward-login-popup {
-      background-color: rgba(15, 23, 42, 0.55) !important;
+    /* 1. Modal Backdrop Overlay - Dark glass blur so page behind is visible */
+    body.light-mode #reward-login-popup,
+    body.light-mode div:has(> #reward-login-popup) {
+      background-color: rgba(15, 23, 42, 0.5) !important;
       backdrop-filter: blur(8px) !important;
       -webkit-backdrop-filter: blur(8px) !important;
     }
 
-    /* 2. Main Popup Card Container */
+    /* 2. Main Light Surface Card */
     body.light-mode #reward-login-popup > div {
       background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-      border: 1px solid #cbd5e1 !important;
-      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+      background-color: #ffffff !important;
+      border: 1px solid #c7d2fe !important;
+      box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
       border-radius: 20px !important;
+      padding: 24px !important;
     }
 
     /* 3. Badge Tag ("⚡ Announcement") */
     body.light-mode #reward-login-popup .bg-indigo-500\/20,
-    body.light-mode #reward-login-popup span:has(> svg) {
-      background: #e0e7ff !important;
-      color: #4338ca !important;
+    body.light-mode #reward-login-popup span:has(> svg),
+    body.light-mode #reward-login-popup .text-indigo-400 {
+      background-color: #e0e7ff !important;
+      color: #3730a3 !important;
       border: 1px solid #c7d2fe !important;
       font-weight: 700 !important;
     }
 
-    /* 4. Headline Callout Banner */
+    /* 4. Fix Invisible Headline & Messages */
+    body.light-mode #reward-login-popup h1,
     body.light-mode #reward-login-popup h2,
     body.light-mode #reward-login-popup h3,
+    body.light-mode #reward-login-popup h4,
+    body.light-mode #reward-login-popup div.font-bold,
+    body.light-mode #reward-login-popup .text-xl,
+    body.light-mode #reward-login-popup .text-2xl {
+      color: #0f172a !important; /* Sharp Slate 900 */
+      font-weight: 800 !important;
+    }
+
+    /* Highlight Banner for Headline */
     body.light-mode #reward-login-popup div:has(> h2),
     body.light-mode #reward-login-popup div:has(> h3) {
       background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%) !important;
       border-left: 4px solid #4f46e5 !important;
       border-radius: 12px !important;
-      color: #1e1b4b !important;
+      padding: 10px 14px !important;
+      margin: 8px 0 !important;
     }
 
-    body.light-mode #reward-login-popup h2,
-    body.light-mode #reward-login-popup h3 {
-      color: #0f172a !important;
-      font-weight: 800 !important;
-    }
-
-    /* 5. Subtitle & Body Typography */
+    /* 5. Subtitles & List Descriptions */
     body.light-mode #reward-login-popup p,
-    body.light-mode #reward-login-popup span {
+    body.light-mode #reward-login-popup span,
+    body.light-mode #reward-login-popup div {
       color: #334155 !important;
     }
 
-    body.light-mode #reward-login-popup p strong,
-    body.light-mode #reward-login-popup span.font-bold {
-      color: #0f172a !important;
+    body.light-mode #reward-login-popup .text-slate-400,
+    body.light-mode #reward-login-popup .text-slate-500,
+    body.light-mode #reward-login-popup .text-gray-400 {
+      color: #64748b !important;
     }
 
-    /* 6. Internal Benefit / Perk Card Section */
+    /* Internal Benefit / Perk Card Wrapper */
     body.light-mode #reward-login-popup div.bg-slate-900\/50,
     body.light-mode #reward-login-popup div.bg-slate-950,
     body.light-mode #reward-login-popup div.bg-slate-800,
-    body.light-mode #reward-login-popup ul,
     body.light-mode #reward-login-popup .space-y-2 {
       background-color: #f1f5f9 !important;
       border: 1px solid #e2e8f0 !important;
       border-radius: 12px !important;
+      padding: 12px !important;
     }
 
-    /* 7. Close Icon Button ("X") */
+    /* 6. Close Icon Button ("X") */
     body.light-mode #reward-login-popup button.absolute,
     body.light-mode #reward-login-popup button:has(svg) {
-      background-color: #e2e8f0 !important;
+      background-color: rgba(241, 245, 249, 0.9) !important;
       color: #475569 !important;
       border: 1px solid #cbd5e1 !important;
+      border-radius: 50% !important;
       transition: all 0.2s ease !important;
     }
 
     body.light-mode #reward-login-popup button.absolute:hover {
-      background-color: #cbd5e1 !important;
+      background-color: #e2e8f0 !important;
       color: #0f172a !important;
-      transform: scale(1.05) !important;
+      transform: scale(1.1) !important;
     }
 
-    /* 8. Vibrant Call-To-Action Button ("CLAIM YOUR BENEFIT NOW!") */
+    /* 7. Vibrant Call-To-Action Button ("CLAIM YOUR BENEFIT NOW!") */
     body.light-mode #reward-login-popup button:not(.absolute),
     body.light-mode #reward-login-popup a.block,
     body.light-mode #reward-login-popup .bg-indigo-600 {
@@ -298,6 +310,7 @@
       letter-spacing: 0.04em !important;
       border: none !important;
       border-radius: 12px !important;
+      padding: 14px 24px !important;
       box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.45), 0 4px 6px -2px rgba(79, 70, 229, 0.2) !important;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }

@@ -314,6 +314,87 @@ body.light-mode .ad-cta:hover {
   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35) !important;
   transform: scale(1.02) !important;
 }
+
+    /* LIGHT MODE ANNOUNCEMENT & REWARD MODAL OVERRIDES */
+body.light-mode #reward-login-popup,
+body.light-mode [id*="modal"],
+body.light-mode [class*="modal"],
+body.light-mode [id*="announcement"],
+body.light-mode [id*="popup"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15) !important;
+}
+
+/* Modal Inner Container (if nested) */
+body.light-mode #reward-login-popup > div,
+body.light-mode [id*="modal"] > div,
+body.light-mode [id*="popup"] > div {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Fix Hidden / Dark Headlines & Text */
+body.light-mode #reward-login-popup h1,
+body.light-mode #reward-login-popup h2,
+body.light-mode #reward-login-popup h3,
+body.light-mode #reward-login-popup h4,
+body.light-mode [id*="popup"] h1,
+body.light-mode [id*="popup"] h2,
+body.light-mode [id*="popup"] h3,
+body.light-mode [id*="popup"] h4 {
+  color: #0f172a !important;
+}
+
+body.light-mode #reward-login-popup p,
+body.light-mode #reward-login-popup span,
+body.light-mode #reward-login-popup div,
+body.light-mode [id*="popup"] p,
+body.light-mode [id*="popup"] span {
+  color: #334155 !important;
+}
+
+/* Target muted / secondary text like "Hi, Olympuz Affiliate!" & "OLYMPUZ" */
+body.light-mode #reward-login-popup .text-slate-400,
+body.light-mode #reward-login-popup .text-slate-500,
+body.light-mode #reward-login-popup .text-gray-400,
+body.light-mode [id*="popup"] .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Close Button Fix */
+body.light-mode #reward-login-popup button.absolute,
+body.light-mode [id*="popup"] button[aria-label*="close"],
+body.light-mode [id*="popup"] button:has(svg) {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-mode #reward-login-popup button.absolute:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* High-Converting CTA Button inside Modal */
+body.light-mode #reward-login-popup button.bg-indigo-600,
+body.light-mode #reward-login-popup a.bg-indigo-600,
+body.light-mode [id*="popup"] button:not(.absolute) {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+  border: none !important;
+}
+
+body.light-mode #reward-login-popup button.bg-indigo-600:hover,
+body.light-mode [id*="popup"] button:not(.absolute):hover {
+  background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%) !important;
+  transform: translateY(-1px) !important;
+}
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

@@ -400,6 +400,36 @@ body.light-mode div[id*="modal"] button:has(svg) {
   color: #475569 !important;
   border: 1px solid #cbd5e1 !important;
 }
+   /* LIGHT MODE RAW REFERRALS OVERRIDES */
+    body.light-mode #tab-raw-referrals > div > div:first-child {
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f1f5f9 100%) !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+    }
+
+    body.light-mode #tab-raw-referrals h2 {
+      color: #3730a3 !important;
+    }
+
+    body.light-mode #tab-raw-referrals p.text-slate-300 {
+      color: #4338ca !important;
+    }
+
+    body.light-mode #tab-raw-referrals select#raw-month-filter {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.light-mode #raw-leaderboard-list > div {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode #raw-leaderboard-list span {
+      color: #0f172a !important;
+    }
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1355,6 +1385,198 @@ body.light-mode div[id*="modal"] button:has(svg) {
       }
     };
 
+    let selectedRawMonthKey = "";
+
+    // --- POPULATE MONTH FILTER DROPDOWN ---
+    function initRawMonthFilter() {
+      const select = document.getElementById('raw-month-filter');
+      if (!select) return;
+
+      select.innerHTML = "";
+      const now = new Date();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+      // Generate options for the last 12 months
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const label = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+        select.innerHTML += `<option value="${monthKey}">${label}</option>`;
+      }
+
+      selectedRawMonthKey = select.value;
+    }
+
+    window.filterRawLeaderboardMonth = () => {
+      selectedRawMonthKey = document.getElementById('raw-month-filter').value;
+      listenToRawLeaderboard();
+    };
+
+    // --- LISTEN & RENDER RAW LEADERBOARD ---
+    function listenToRawLeaderboard() {
+      if (!selectedRawMonthKey) initRawMonthFilter();
+
+      const q = query(collection(db, "raw_referrals"));
+      
+      onSnapshot(q, async (snapshot) => {
+        const listDiv = document.getElementById('raw-leaderboard-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        const userMonthlyMap = {};
+        const userWeeklyMap = {};
+        
+        // Calculate weekly boundary (Current Monday 00:00 to Saturday)
+        const now = new Date();
+        const currentDay = now.getDay();
+        const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - daysToMonday);
+        monday.setHours(0, 0, 0, 0);
+
+        snapshot.forEach((docSnap) => {
+          const item = docSnap.data();
+          const docDate = new Date(item.timestamp || item.createdAt);
+          const itemMonthKey = item.monthKey || `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}`;
+
+          if (itemMonthKey === selectedRawMonthKey) {
+            userMonthlyMap[item.userId] = (userMonthlyMap[item.userId] || 0) + (item.count || 0);
+          }
+
+          if (docDate >= monday) {
+            userWeeklyMap[item.userId] = (userWeeklyMap[item.userId] || 0) + (item.count || 0);
+          }
+        });
+
+        // Map and rank all affiliates
+        const rankings = [];
+        for (const user of allAffiliates) {
+          rankings.push({
+            userId: user.id,
+            userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate',
+            photoURL: user.photoURL || '',
+            weeklyCount: userWeeklyMap[user.id] || 0,
+            monthlyCount: userMonthlyMap[user.id] || 0
+          });
+        }
+
+        rankings.sort((a, b) => b.monthlyCount - a.monthlyCount);
+
+        // Update Affiliate's Personal Standings
+        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+        const userIndex = rankings.findIndex(r => r.userId === currentUid);
+
+        const userRankEl = document.getElementById('user-raw-rank');
+        const userWeeklyEl = document.getElementById('user-raw-weekly');
+        const userMonthlyEl = document.getElementById('user-raw-monthly');
+
+        if (userRankEl) userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
+        if (userWeeklyEl) userWeeklyEl.innerText = userWeeklyMap[currentUid] || 0;
+        if (userMonthlyEl) userMonthlyEl.innerText = userMonthlyMap[currentUid] || 0;
+
+        // Render Leaderboard Uniform List (Sequential Rankings 1, 2, 3...)
+        if (rankings.length === 0 || rankings.every(r => r.monthlyCount === 0)) {
+          listDiv.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center">No raw referrals logged for this month yet.</div>`;
+          return;
+        }
+
+        rankings.forEach((item, index) => {
+          const rankNum = index + 1;
+          const isCurrentUser = item.userId === currentUid;
+
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border ${isCurrentUser ? 'border-indigo-500 bg-indigo-950/40' : 'border-slate-800'} p-3 rounded-xl flex items-center justify-between text-xs transition">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-slate-400 w-6 text-center text-sm">#${rankNum}</span>
+                <div class="w-8 h-8 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
+                  ${item.photoURL ? `<img src="${item.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-xs text-slate-400"></i>`}
+                </div>
+                <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-indigo-400 font-bold' : ''}">
+                  ${item.userName} ${isCurrentUser ? '(You)' : ''}
+                </span>
+              </div>
+              
+              <div class="flex items-center gap-4 text-right">
+                <span class="text-slate-400 hidden sm:inline">Weekly: <strong class="text-indigo-400">${item.weeklyCount}</strong></span>
+                <span class="bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-extrabold px-3 py-1 rounded-lg text-xs">
+                  ${item.monthlyCount} Raw Referrals
+                </span>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Raw referrals listener handled silently:", err.message));
+    }
+
+    // --- ADMIN: ADD DAILY RAW REFERRALS ---
+    document.getElementById('admin-daily-raw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const userId = document.getElementById('daily-raw-user-select').value;
+      const count = parseInt(document.getElementById('daily-raw-count').value, 10);
+
+      if (!userId || !count) return alert("Please select an affiliate and enter a valid count.");
+
+      submitBtn.innerText = "Adding...";
+      submitBtn.disabled = true;
+
+      try {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        await addDoc(collection(db, "raw_referrals"), {
+          userId: userId,
+          count: count,
+          monthKey: monthKey,
+          type: "daily",
+          timestamp: now.toISOString(),
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Daily raw referrals added successfully!");
+        e.target.reset();
+      } catch (err) {
+        alert("Error adding raw referrals: " + err.message);
+      } finally {
+        submitBtn.innerText = "Add Daily Raw Count";
+        submitBtn.disabled = false;
+      }
+    });
+
+    // --- ADMIN: ADD PAST / MONTHLY RAW REFERRALS ---
+    document.getElementById('admin-past-raw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const userId = document.getElementById('past-raw-user-select').value;
+      const monthInput = document.getElementById('past-raw-month').value;
+      const count = parseInt(document.getElementById('past-raw-count').value, 10);
+
+      if (!userId || !monthInput || !count) return alert("Please fill out all fields.");
+
+      submitBtn.innerText = "Saving...";
+      submitBtn.disabled = true;
+
+      try {
+        await addDoc(collection(db, "raw_referrals"), {
+          userId: userId,
+          count: count,
+          monthKey: monthInput,
+          type: "past",
+          timestamp: new Date(`${monthInput}-01T00:00:00`).toISOString(),
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Past monthly raw referrals saved successfully!");
+        e.target.reset();
+      } catch (err) {
+        alert("Error saving past raw referrals: " + err.message);
+      } finally {
+        submitBtn.innerText = "Save Past Monthly Raw Count";
+        submitBtn.disabled = false;
+      }
+    });
+
     // --- MONTHLY LEADERBOARD SYSTEM ---
     function listenToMonthlyLeaderboard() {
       const now = new Date();
@@ -1874,6 +2096,8 @@ body.light-mode div[id*="modal"] button:has(svg) {
             initUserAdsEngine();
             listenToMonthlyLeaderboard();
             listenToUserRewards(user.uid);
+            initRawMonthFilter();
+            listenToRawLeaderboard();
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
@@ -2610,10 +2834,16 @@ body.light-mode div[id*="modal"] button:has(svg) {
         
         const disburseSelect = document.getElementById('disburse-user-select');
         const rewardSelect = document.getElementById('reward-user-select');
+        // ➕ New Raw Referral Select Elements
+        const dailyRawSelect = document.getElementById('daily-raw-user-select');
+        const pastRawSelect = document.getElementById('past-raw-user-select');
         
         const defaultOption = '<option value="">-- Choose Affiliate --</option>';
         if (disburseSelect) disburseSelect.innerHTML = defaultOption;
         if (rewardSelect) rewardSelect.innerHTML = defaultOption;
+        // ➕ Reset New Select Dropdowns
+        if (dailyRawSelect) dailyRawSelect.innerHTML = defaultOption;
+        if (pastRawSelect) pastRawSelect.innerHTML = defaultOption;
 
         allAffiliates = [];
 
@@ -2627,6 +2857,9 @@ body.light-mode div[id*="modal"] button:has(svg) {
 
           if (disburseSelect) disburseSelect.innerHTML += optionHTML;
           if (rewardSelect) rewardSelect.innerHTML += optionHTML;
+          // ➕ Populate New Select Dropdowns
+          if (dailyRawSelect) dailyRawSelect.innerHTML += optionHTML;
+          if (pastRawSelect) pastRawSelect.innerHTML += optionHTML;
         });
       } catch (err) {
         console.warn("Could not load affiliates list:", err.message);

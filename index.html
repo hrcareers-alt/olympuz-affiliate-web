@@ -1387,20 +1387,22 @@ body.light-mode div[id*="modal"] button:has(svg) {
 
     let selectedRawMonthKey = "";
 
-    // --- POPULATE MONTH FILTER DROPDOWN ---
+    // --- POPULATE MONTH FILTER DROPDOWN (ONLY CURRENT YEAR MONTHS) ---
     function initRawMonthFilter() {
       const select = document.getElementById('raw-month-filter');
       if (!select) return;
 
       select.innerHTML = "";
       const now = new Date();
+      const currentYear = now.getFullYear(); // Automatically detects current year (2026, 2027, etc.)
+      const currentMonthIndex = now.getMonth(); // 0 = Jan, 1 = Feb, etc.
+
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-      // Generate options for the last 12 months
-      for (let i = 0; i < 12; i++) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        const label = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      // Populate only the elapsed/current months for the CURRENT year (starting from current month down to January)
+      for (let m = currentMonthIndex; m >= 0; m--) {
+        const monthKey = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+        const label = `${monthNames[m]} ${currentYear}`;
 
         select.innerHTML += `<option value="${monthKey}">${label}</option>`;
       }

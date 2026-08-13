@@ -475,7 +475,10 @@ body.light-mode div[id*="modal"] button:has(svg) {
         <nav id="sidebar-menu" class="space-y-1 text-sm pb-6">
           <!-- Standard User Links -->
           <button onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
-          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout</button>
+          <button onclick="switchTab('raw-referrals')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-simple text-indigo-400"></i> Daily Referrals (RAW)
+          </button>
+          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout (VALI)</button>
                     <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
           <button onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Must Join: UPDATES</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
@@ -508,6 +511,9 @@ body.light-mode div[id*="modal"] button:has(svg) {
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
             <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <button onclick="switchTab('admin-raw')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line"></i> Manage Raw Referrals
+            </button>
             <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
             <button onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards </button>
             <button onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
@@ -676,6 +682,107 @@ body.light-mode div[id*="modal"] button:has(svg) {
               </div>
             </div>
           </div>
+        </section>
+
+        <!-- TAB: STANDALONE RAW REFERRALS SECTION FOR AFFILIATES -->
+        <section id="tab-raw-referrals" class="tab-content hidden w-full">
+          <div class="max-w-4xl space-y-6">
+            
+            <!-- HEADER BANNER & MONTH FILTER -->
+            <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                  <i class="fa-solid fa-chart-simple"></i> Daily Raw Performance
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white">Raw Referrals Leaderboard</h2>
+                <p class="text-xs text-slate-300 mt-1">Track daily raw applicant volume. Standings update daily and reset monthly.</p>
+              </div>
+
+              <!-- MONTH FILTER DROPDOWN -->
+              <div class="flex items-center gap-2 shrink-0">
+                <label for="raw-month-filter" class="text-xs text-slate-300 font-semibold">Select Month:</label>
+                <select id="raw-month-filter" onchange="filterRawLeaderboardMonth()" class="bg-slate-950 border border-slate-800 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                  <!-- Dynamically populated via JS -->
+                </select>
+              </div>
+            </div>
+
+            <!-- AFFILIATE PERSONAL OVERVIEW CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center shadow-md">
+                <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Your Standing</span>
+                <span id="user-raw-rank" class="text-xl font-bold text-amber-400">#-</span>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center shadow-md">
+                <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Raw Referrals (This Week)</span>
+                <span id="user-raw-weekly" class="text-xl font-bold text-indigo-400">0</span>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center shadow-md">
+                <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Raw Referrals (Selected Month)</span>
+                <span id="user-raw-monthly" class="text-xl font-bold text-emerald-400">0</span>
+              </div>
+            </div>
+
+            <!-- RAW REFERRALS LIST (UNIFORM RANKING FROM 1 DOWNWARDS) -->
+            <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
+              <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-list-ol text-indigo-400"></i> Overall Raw Rankings
+              </h3>
+              <div id="raw-leaderboard-list" class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                <div class="text-xs text-slate-500 py-4 text-center">Loading raw referrals standings...</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB: ADMIN MANAGE RAW REFERRALS -->
+        <section id="tab-admin-raw" class="tab-content hidden max-w-xl space-y-6">
+          <h2 class="text-xl font-semibold mb-4 text-amber-400">Manage Raw Referrals</h2>
+
+          <!-- FORM 1: DAILY RAW REFERRALS (RESETS WEEKLY MON-SAT & SYNCS MONTHLY) -->
+          <form id="admin-daily-raw-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 shadow-lg">
+            <h3 class="font-semibold text-indigo-400 border-b border-slate-800 pb-2">Add Daily Raw Referrals</h3>
+            <p class="text-xs text-slate-400">Increments daily count (Mon–Sat) and automatically syncs to the current month's total.</p>
+            
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Select Affiliate</label>
+              <select id="daily-raw-user-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+                <option value="">-- Choose Affiliate --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Raw Referrals Count to Add</label>
+              <input type="number" id="daily-raw-count" min="1" required placeholder="e.g. 5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-2 rounded-lg transition">
+              Add Daily Raw Count
+            </button>
+          </form>
+
+          <!-- FORM 2: PAST / HISTORICAL MONTHLY RAW REFERRALS -->
+          <form id="admin-past-raw-form" class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4 shadow-lg">
+            <h3 class="font-semibold text-emerald-400 border-b border-slate-800 pb-2">Add Past / Monthly Raw Referrals</h3>
+            <p class="text-xs text-slate-400">Directly assign or adjust historical raw referral volume for any specific month.</p>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Select Affiliate</label>
+              <select id="past-raw-user-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+                <option value="">-- Choose Affiliate --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Select Target Month & Year</label>
+              <input type="month" id="past-raw-month" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Total Raw Referrals to Set / Add</label>
+              <input type="number" id="past-raw-count" min="1" required placeholder="e.g. 50" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded-lg transition">
+              Save Past Monthly Raw Count
+            </button>
+          </form>
         </section>
 
         <!-- TAB: JOIN CHAT CHANNELS -->

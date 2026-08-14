@@ -2033,6 +2033,103 @@ body.light-mode div[id*="modal"] button:has(svg) {
       }
     }
 
+    let currentEditingRawId = null;
+
+    // --- ADMIN: TRACK, EDIT & DELETE RAW REFERRALS ---
+    function listenToAdminRawReferrals() {
+      const q = query(collection(db, "raw_referrals"));
+      
+      onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('admin-raw-track-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No raw referral entries recorded yet.</p>";
+          return;
+        }
+
+        const rawArray = [];
+        snapshot.forEach((docSnap) => {
+          rawArray.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        rawArray.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
+
+        rawArray.forEach((data) => {
+          const targetUser = allAffiliates.find(u => u.id === data.userId);
+          const userName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : "Affiliate";
+          const formattedDate = new Date(data.createdAt || data.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
+              <div>
+                <h4 class="font-bold text-sm text-slate-100">${userName}</h4>
+                <p class="text-xs text-indigo-400 font-semibold">${data.count} Raw Referrals (${data.type === 'daily' ? 'Daily' : 'Past/Monthly'})</p>
+                <p class="text-[10px] text-slate-500">${formattedDate} | Month Key: ${data.monthKey || 'N/A'}</p>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="openEditRawModal('${data.id}', ${data.count})" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Modify Count">
+                  <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                </button>
+                <button onclick="deleteRawReferral('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete Entry">
+                  <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                </button>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Admin raw referrals listener subscription handled silently:", err.message));
+    }
+
+    // --- EDIT & DELETE HANDLERS ---
+    window.openEditRawModal = (rawId, currentCount) => {
+      currentEditingRawId = rawId;
+      document.getElementById('edit-raw-count-input').value = currentCount;
+      document.getElementById('raw-edit-modal').classList.remove('hidden');
+    };
+
+    window.closeEditRawModal = () => {
+      document.getElementById('raw-edit-modal').classList.add('hidden');
+      currentEditingRawId = null;
+    };
+
+    window.submitEditRawCount = async () => {
+      const newCount = parseInt(document.getElementById('edit-raw-count-input').value, 10);
+      if (!newCount || newCount < 1) return alert("Please enter a valid count.");
+
+      const btn = document.getElementById('save-edit-raw-btn');
+      btn.innerText = "Saving...";
+      btn.disabled = true;
+
+      try {
+        await updateDoc(doc(db, "raw_referrals", currentEditingRawId), {
+          count: newCount
+        });
+        alert("Raw referral count updated successfully!");
+        closeEditRawModal();
+      } catch (err) {
+        alert("Failed to update entry: " + err.message);
+      } finally {
+        if (btn) {
+          btn.innerText = "Save Changes";
+          btn.disabled = false;
+        }
+      }
+    };
+
+    window.deleteRawReferral = async (rawId) => {
+      if (confirm("Are you sure you want to delete this raw referral entry?")) {
+        try {
+          await deleteDoc(doc(db, "raw_referrals", rawId));
+          alert("Entry deleted successfully!");
+        } catch (err) {
+          alert("Failed to delete entry: " + err.message);
+        }
+      }
+    };
+
     // --- AUTO LOGIN, EXPIRATION CHECK & LOAD ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {

@@ -1282,10 +1282,13 @@
 
         const now = new Date();
         const nonWeeklyMonthlyDiff = Math.max(0, newMonthlyTotal - newWeeklyTotal);
+        const targetUser = allAffiliates.find(u => u.id === userId);
+        const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
 
         if (newWeeklyTotal > 0) {
           await addDoc(collection(db, "raw_referrals"), {
             userId: userId,
+            userName: affiliateName,
             count: newWeeklyTotal,
             monthKey: targetMonthKey,
             type: "override_weekly",
@@ -1298,6 +1301,7 @@
           const pastDate = new Date(`${targetMonthKey}-01T00:00:00`);
           await addDoc(collection(db, "raw_referrals"), {
             userId: userId,
+            userName: affiliateName,
             count: nonWeeklyMonthlyDiff,
             monthKey: targetMonthKey,
             type: "override_monthly_base",
@@ -1312,6 +1316,79 @@
         alert("Error syncing raw totals: " + err.message);
       } finally {
         submitBtn.innerText = "Sync & Save Overridden Totals";
+        submitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('admin-daily-raw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const userId = document.getElementById('daily-raw-user-select').value;
+      const count = parseInt(document.getElementById('daily-raw-count').value, 10);
+
+      if (!userId || !count) return alert("Please select an affiliate and enter a valid count.");
+
+      submitBtn.innerText = "Adding...";
+      submitBtn.disabled = true;
+
+      try {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const targetUser = allAffiliates.find(u => u.id === userId);
+        const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
+
+        await addDoc(collection(db, "raw_referrals"), {
+          userId: userId,
+          userName: affiliateName,
+          count: count,
+          monthKey: monthKey,
+          type: "daily",
+          timestamp: now.toISOString(),
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Daily raw referrals added successfully!");
+        e.target.reset();
+      } catch (err) {
+        alert("Error adding raw referrals: " + err.message);
+      } finally {
+        submitBtn.innerText = "Add Daily Raw Count";
+        submitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('admin-past-raw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const userId = document.getElementById('past-raw-user-select').value;
+      const monthInput = document.getElementById('past-raw-month').value;
+      const count = parseInt(document.getElementById('past-raw-count').value, 10);
+
+      if (!userId || !monthInput || !count) return alert("Please fill out all fields.");
+
+      submitBtn.innerText = "Saving...";
+      submitBtn.disabled = true;
+
+      try {
+        const targetUser = allAffiliates.find(u => u.id === userId);
+        const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
+
+        await addDoc(collection(db, "raw_referrals"), {
+          userId: userId,
+          userName: affiliateName,
+          count: count,
+          monthKey: monthInput,
+          type: "past",
+          timestamp: new Date(`${monthInput}-01T00:00:00`).toISOString(),
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Past monthly raw referrals saved successfully!");
+        e.target.reset();
+      } catch (err) {
+        alert("Error saving past raw referrals: " + err.message);
+      } finally {
+        submitBtn.innerText = "Save Past Monthly Raw Count";
         submitBtn.disabled = false;
       }
     });
@@ -1542,72 +1619,6 @@
         });
       }, (err) => console.warn("Raw referrals listener handled silently:", err.message));
     };
-
-    document.getElementById('admin-daily-raw-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button');
-      const userId = document.getElementById('daily-raw-user-select').value;
-      const count = parseInt(document.getElementById('daily-raw-count').value, 10);
-
-      if (!userId || !count) return alert("Please select an affiliate and enter a valid count.");
-
-      submitBtn.innerText = "Adding...";
-      submitBtn.disabled = true;
-
-      try {
-        const now = new Date();
-        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-        await addDoc(collection(db, "raw_referrals"), {
-          userId: userId,
-          count: count,
-          monthKey: monthKey,
-          type: "daily",
-          timestamp: now.toISOString(),
-          createdAt: new Date().toISOString()
-        });
-
-        alert("Daily raw referrals added successfully!");
-        e.target.reset();
-      } catch (err) {
-        alert("Error adding raw referrals: " + err.message);
-      } finally {
-        submitBtn.innerText = "Add Daily Raw Count";
-        submitBtn.disabled = false;
-      }
-    });
-
-    document.getElementById('admin-past-raw-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button');
-      const userId = document.getElementById('past-raw-user-select').value;
-      const monthInput = document.getElementById('past-raw-month').value;
-      const count = parseInt(document.getElementById('past-raw-count').value, 10);
-
-      if (!userId || !monthInput || !count) return alert("Please fill out all fields.");
-
-      submitBtn.innerText = "Saving...";
-      submitBtn.disabled = true;
-
-      try {
-        await addDoc(collection(db, "raw_referrals"), {
-          userId: userId,
-          count: count,
-          monthKey: monthInput,
-          type: "past",
-          timestamp: new Date(`${monthInput}-01T00:00:00`).toISOString(),
-          createdAt: new Date().toISOString()
-        });
-
-        alert("Past monthly raw referrals saved successfully!");
-        e.target.reset();
-      } catch (err) {
-        alert("Error saving past raw referrals: " + err.message);
-      } finally {
-        submitBtn.innerText = "Save Past Monthly Raw Count";
-        submitBtn.disabled = false;
-      }
-    });
 
     function listenToMonthlyLeaderboard() {
       const now = new Date();
@@ -2049,7 +2060,7 @@
     function listenToAdminRawReferrals() {
       const q = query(collection(db, "raw_referrals"));
       
-      onSnapshot(q, (snapshot) => {
+      onSnapshot(q, async (snapshot) => {
         const listDiv = document.getElementById('admin-raw-track-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -2066,15 +2077,34 @@
 
         rawArray.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
 
-        rawArray.forEach((data) => {
-          const targetUser = allAffiliates.find(u => u.id === data.userId);
-          const userName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : "Affiliate";
+        for (const data of rawArray) {
+          let displayName = data.userName;
+
+          if (!displayName || displayName === "Affiliate") {
+            const targetUser = allAffiliates.find(u => u.id === data.userId);
+            if (targetUser) {
+              displayName = `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() || targetUser.username || targetUser.email;
+            }
+          }
+
+          if (!displayName || displayName === "Affiliate") {
+            try {
+              const uDoc = await getDoc(doc(db, "users", data.userId));
+              if (uDoc.exists()) {
+                const uData = uDoc.data();
+                displayName = `${uData.firstName || ''} ${uData.lastName || ''}`.trim() || uData.username || uData.email || "Affiliate";
+              }
+            } catch (e) {
+              displayName = "Affiliate";
+            }
+          }
+
           const formattedDate = new Date(data.createdAt || data.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
           listDiv.innerHTML += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
-                <h4 class="font-bold text-sm text-slate-100">${userName}</h4>
+                <h4 class="font-bold text-sm text-slate-100">${displayName}</h4>
                 <p class="text-xs text-indigo-400 font-semibold">${data.count} Raw Referrals (${data.type === 'daily' ? 'Daily' : 'Past/Monthly'})</p>
                 <p class="text-[10px] text-slate-500">${formattedDate} | Month Key: ${data.monthKey || 'N/A'}</p>
               </div>
@@ -2089,7 +2119,7 @@
               </div>
             </div>
           `;
-        });
+        }
       }, (err) => console.warn("Admin raw referrals listener subscription handled silently:", err.message));
     }
 

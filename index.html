@@ -2324,7 +2324,8 @@ body.light-mode div[id*="modal"] button:has(svg) {
             listenToMonthlyLeaderboard();
             listenToUserRewards(user.uid);
             initRawMonthFilter();
-            listenToRawLeaderboard();
+            window.listenToRawLeaderboard();
+            
 
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');

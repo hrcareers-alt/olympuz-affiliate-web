@@ -1402,19 +1402,19 @@ body.light-mode div[id*="modal"] button:has(svg) {
 
     let selectedRawMonthKey = "";
 
-    // --- POPULATE MONTH FILTER DROPDOWN (ONLY CURRENT YEAR MONTHS) ---
+   // --- POPULATE MONTH FILTER DROPDOWN (STRICTLY CURRENT YEAR MONTHS) ---
     function initRawMonthFilter() {
       const select = document.getElementById('raw-month-filter');
       if (!select) return;
 
       select.innerHTML = "";
       const now = new Date();
-      const currentYear = now.getFullYear(); // Automatically detects current year (2026, 2027, etc.)
-      const currentMonthIndex = now.getMonth(); // 0 = Jan, 1 = Feb, etc.
+      const currentYear = now.getFullYear(); // e.g., 2026
+      const currentMonthIndex = now.getMonth(); // 0-based month index
 
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-      // Populate only the elapsed/current months for the CURRENT year (starting from current month down to January)
+      // Populate current year elapsed months from current month down to January
       for (let m = currentMonthIndex; m >= 0; m--) {
         const monthKey = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
         const label = `${monthNames[m]} ${currentYear}`;
@@ -1422,14 +1422,127 @@ body.light-mode div[id*="modal"] button:has(svg) {
         select.innerHTML += `<option value="${monthKey}">${label}</option>`;
       }
 
-      selectedRawMonthKey = select.value;
+      // Always default to the newest/current month (e.g., August 2026)
+      if (!selectedRawMonthKey) {
+        selectedRawMonthKey = select.value;
+      } else {
+        select.value = selectedRawMonthKey;
+      }
     }
 
     window.filterRawLeaderboardMonth = () => {
-      selectedRawMonthKey = document.getElementById('raw-month-filter').value;
-      listenToRawLeaderboard();
+      const select = document.getElementById('raw-month-filter');
+      if (select) {
+        selectedRawMonthKey = select.value;
+      }
+      window.listenToRawLeaderboard();
     };
 
+    // --- ATTACH LISTEN & RENDER RAW LEADERBOARD TO WINDOW ---
+    window.listenToRawLeaderboard = function() {
+      const select = document.getElementById('raw-month-filter');
+      
+      // Initialize dropdown if empty
+      if (!select || select.options.length === 0) {
+        initRawMonthFilter();
+      }
+
+      if (select && select.value) {
+        selectedRawMonthKey = select.value;
+      }
+
+      const q = query(collection(db, "raw_referrals"));
+      
+      onSnapshot(q, async (snapshot) => {
+        const listDiv = document.getElementById('raw-leaderboard-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        const userMonthlyMap = {};
+        const userWeeklyMap = {};
+        
+        // Calculate weekly boundary (Current Monday 00:00 to Saturday)
+        const now = new Date();
+        const currentDay = now.getDay();
+        const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - daysToMonday);
+        monday.setHours(0, 0, 0, 0);
+
+        snapshot.forEach((docSnap) => {
+          const item = docSnap.data();
+          const docDate = new Date(item.timestamp || item.createdAt);
+          const itemMonthKey = item.monthKey || `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}`;
+
+          if (itemMonthKey === selectedRawMonthKey) {
+            userMonthlyMap[item.userId] = (userMonthlyMap[item.userId] || 0) + (item.count || 0);
+          }
+
+          if (docDate >= monday) {
+            userWeeklyMap[item.userId] = (userWeeklyMap[item.userId] || 0) + (item.count || 0);
+          }
+        });
+
+        // Map and rank all affiliates
+        const rankings = [];
+        for (const user of allAffiliates) {
+          rankings.push({
+            userId: user.id,
+            userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate',
+            photoURL: user.photoURL || '',
+            weeklyCount: userWeeklyMap[user.id] || 0,
+            monthlyCount: userMonthlyMap[user.id] || 0
+          });
+        }
+
+        rankings.sort((a, b) => b.monthlyCount - a.monthlyCount);
+
+        // Update Affiliate's Personal Standings
+        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+        const userIndex = rankings.findIndex(r => r.userId === currentUid);
+
+        const userRankEl = document.getElementById('user-raw-rank');
+        const userWeeklyEl = document.getElementById('user-raw-weekly');
+        const userMonthlyEl = document.getElementById('user-raw-monthly');
+
+        if (userRankEl) userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
+        if (userWeeklyEl) userWeeklyEl.innerText = userWeeklyMap[currentUid] || 0;
+        if (userMonthlyEl) userMonthlyEl.innerText = userMonthlyMap[currentUid] || 0;
+
+        // Render Leaderboard List
+        if (rankings.length === 0 || rankings.every(r => r.monthlyCount === 0)) {
+          listDiv.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center">No raw referrals logged for this month yet.</div>`;
+          return;
+        }
+
+        rankings.forEach((item, index) => {
+          const rankNum = index + 1;
+          const isCurrentUser = item.userId === currentUid;
+
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border ${isCurrentUser ? 'border-indigo-500 bg-indigo-950/40' : 'border-slate-800'} p-3 rounded-xl flex items-center justify-between text-xs transition">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-slate-400 w-6 text-center text-sm">#${rankNum}</span>
+                <div class="w-8 h-8 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
+                  ${item.photoURL ? `<img src="${item.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-xs text-slate-400"></i>`}
+                </div>
+                <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-indigo-400 font-bold' : ''}">
+                  ${item.userName} ${isCurrentUser ? '(You)' : ''}
+                </span>
+              </div>
+              
+              <div class="flex items-center gap-4 text-right">
+                <span class="text-slate-400 hidden sm:inline">Weekly: <strong class="text-indigo-400">${item.weeklyCount}</strong></span>
+                <span class="bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-extrabold px-3 py-1 rounded-lg text-xs">
+                  ${item.monthlyCount} Raw Referrals
+                </span>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Raw referrals listener handled silently:", err.message));
+    };
+    
     // --- LISTEN & RENDER RAW LEADERBOARD ---
     function listenToRawLeaderboard() {
       if (!selectedRawMonthKey) initRawMonthFilter();

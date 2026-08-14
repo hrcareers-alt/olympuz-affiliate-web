@@ -1197,6 +1197,12 @@ body.light-mode div[id*="modal"] button:has(svg) {
       if (activeTab) {
         activeTab.classList.remove('hidden');
       }
+      
+      // 🔄 AUTO-LOAD RAW REFERRALS WHEN SWITCHING TO ITS TAB
+      if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
+        window.listenToRawLeaderboard();
+      }
+
       closeSidebarOnMobile();
     };
 

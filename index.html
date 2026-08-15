@@ -1127,8 +1127,7 @@
   reauthenticateWithCredential, 
   sendPasswordResetEmail, 
   updatePassword, 
-  updateEmail
-  verifyBeforeUpdateEmail,
+  verifyBeforeUpdateEmail 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
@@ -2586,11 +2585,12 @@
       submitBtn.disabled = true;
 
       try {
-        // 1. Re-authenticate user with current password before making sensitive changes
+        // 1. Re-authenticate user with current password
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
 
         let photoURL = "";
+        let emailVerificationSent = false;
 
         // 2. Upload avatar if selected
         if (avatarFile) {
@@ -2599,16 +2599,15 @@
           photoURL = await getDownloadURL(fileRef);
         }
 
-        // 3. Update Email in Firebase Authentication if changed
+        // 3. Send email verification link if email is changing
         if (newEmail && newEmail !== user.email) {
           await verifyBeforeUpdateEmail(user, newEmail);
-          alert(`A verification link has been sent to ${newEmail}. Please check your inbox and click the link to finalize your new email address!`);
+          emailVerificationSent = true;
         }
 
-        // 4. Update User Document in Firestore
+        // 4. Update Firestore user document (Avatar image)
         const updateData = {};
         if (photoURL) updateData.photoURL = photoURL;
-        if (newEmail) updateData.email = newEmail;
 
         if (Object.keys(updateData).length > 0) {
           await updateDoc(doc(db, "users", user.uid), updateData);
@@ -2635,12 +2634,17 @@
 
         document.getElementById('setting-confirm-pwd').value = ""; 
         document.getElementById('setting-avatar-input').value = "";
-        alert("Profile & Email updated successfully!");
+
+        if (emailVerificationSent) {
+          alert(`Verification email sent to ${newEmail}!\n\nPlease open your inbox and click the verification link to complete your email change.`);
+        } else {
+          alert("Profile updated successfully!");
+        }
 
       } catch (error) {
         console.error("Profile update error:", error);
         if (error.code === 'auth/requires-recent-login') {
-          alert("Your session requires fresh authentication. Please log out and log in again before changing your email.");
+          alert("Your session requires fresh authentication. Please log out and log back in before changing your email.");
         } else if (error.code === 'auth/email-already-in-use') {
           alert("This email address is already in use by another account.");
         } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -2653,6 +2657,7 @@
         submitBtn.disabled = false;
       }
     });
+    
     document.getElementById('change-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');

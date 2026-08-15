@@ -1117,7 +1117,18 @@
   <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged, 
+  createUserWithEmailAndPassword, 
+  EmailAuthProvider, 
+  reauthenticateWithCredential, 
+  sendPasswordResetEmail, 
+  updatePassword, 
+  updateEmail 
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
@@ -2554,42 +2565,54 @@
       submitBtn.innerText = "Save Payment Details";
     });
 
+    // --- PROFILE INFORMATION & EMAIL UPDATE HANDLER ---
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
       const currentPassword = document.getElementById('setting-confirm-pwd').value;
-      if (!currentPassword) return alert("Please enter your current password to save changes.");
+      
+      if (!currentPassword) {
+        return alert("Please enter your current password to save changes.");
+      }
 
       const newEmail = document.getElementById('setting-email').value.trim();
       const avatarFile = document.getElementById('setting-avatar-input').files[0];
-      
+      const user = auth.currentUser;
+
+      if (!user) return alert("No active user session found.");
+
       submitBtn.innerText = "Updating Profile...";
       submitBtn.disabled = true;
 
       try {
-        const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
-        await reauthenticateWithCredential(auth.currentUser, credential);
-        
+        // 1. Re-authenticate user with current password before making sensitive changes
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+
         let photoURL = "";
-        
+
+        // 2. Upload avatar if selected
         if (avatarFile) {
-          const fileRef = ref(storage, `avatars/${auth.currentUser.uid}_${avatarFile.name}`);
+          const fileRef = ref(storage, `avatars/${user.uid}_${avatarFile.name}`);
           await uploadBytes(fileRef, avatarFile);
           photoURL = await getDownloadURL(fileRef);
         }
 
-        if (newEmail && newEmail !== auth.currentUser.email) {
-          await updateEmail(auth.currentUser, newEmail);
+        // 3. Update Email in Firebase Authentication if changed
+        if (newEmail && newEmail !== user.email) {
+          await updateEmail(user, newEmail);
         }
 
+        // 4. Update User Document in Firestore
         const updateData = {};
         if (photoURL) updateData.photoURL = photoURL;
         if (newEmail) updateData.email = newEmail;
 
         if (Object.keys(updateData).length > 0) {
-          await updateDoc(doc(db, "users", auth.currentUser.uid), updateData);
+          await updateDoc(doc(db, "users", user.uid), updateData);
         }
-        
+
+        // 5. Instantly update UI avatar images
         if (photoURL) {
           const profileImg = document.getElementById('profile-avatar-img');
           const profileIcon = document.getElementById('profile-avatar-icon');
@@ -2610,16 +2633,24 @@
 
         document.getElementById('setting-confirm-pwd').value = ""; 
         document.getElementById('setting-avatar-input').value = "";
-        alert("Profile updated successfully!");
+        alert("Profile & Email updated successfully!");
 
       } catch (error) {
-        alert("Update failed: " + error.message);
+        console.error("Profile update error:", error);
+        if (error.code === 'auth/requires-recent-login') {
+          alert("Your session requires fresh authentication. Please log out and log in again before changing your email.");
+        } else if (error.code === 'auth/email-already-in-use') {
+          alert("This email address is already in use by another account.");
+        } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+          alert("The current password you entered is incorrect.");
+        } else {
+          alert("Update failed: " + error.message);
+        }
       } finally {
         submitBtn.innerText = "Update Profile";
         submitBtn.disabled = false;
       }
     });
-
     document.getElementById('change-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');

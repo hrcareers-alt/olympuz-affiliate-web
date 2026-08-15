@@ -1127,7 +1127,8 @@
   reauthenticateWithCredential, 
   sendPasswordResetEmail, 
   updatePassword, 
-  updateEmail 
+  updateEmail
+  verifyBeforeUpdateEmail,
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
@@ -2600,7 +2601,8 @@
 
         // 3. Update Email in Firebase Authentication if changed
         if (newEmail && newEmail !== user.email) {
-          await updateEmail(user, newEmail);
+          await verifyBeforeUpdateEmail(user, newEmail);
+          alert(`A verification link has been sent to ${newEmail}. Please check your inbox and click the link to finalize your new email address!`);
         }
 
         // 4. Update User Document in Firestore

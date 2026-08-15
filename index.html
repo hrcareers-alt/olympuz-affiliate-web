@@ -2636,19 +2636,25 @@
         document.getElementById('setting-avatar-input').value = "";
 
         if (emailVerificationSent) {
-          alert(`Verification email sent to ${newEmail}!\n\nPlease open your inbox and click the verification link to complete your email change.`);
+          alert(`Verification email sent to ${newEmail}!\n\nPlease open your inbox and click the link to finalize your new email address.`);
         } else {
           alert("Profile updated successfully!");
         }
 
       } catch (error) {
         console.error("Profile update error:", error);
-        if (error.code === 'auth/requires-recent-login') {
+        
+        // Handle incorrect password attempts specifically
+        if (
+          error.code === 'auth/invalid-credential' || 
+          error.code === 'auth/wrong-password' || 
+          error.message.includes('invalid-credential')
+        ) {
+          alert("Incorrect password! Please enter your correct current password to confirm changes.");
+        } else if (error.code === 'auth/requires-recent-login') {
           alert("Your session requires fresh authentication. Please log out and log back in before changing your email.");
         } else if (error.code === 'auth/email-already-in-use') {
           alert("This email address is already in use by another account.");
-        } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          alert("The current password you entered is incorrect.");
         } else {
           alert("Update failed: " + error.message);
         }

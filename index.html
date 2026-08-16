@@ -280,6 +280,75 @@
       background-color: #ffffff !important;
       border-color: #fde68a !important;
     }
+
+    /* 1. Modal Backdrops - Glassmorphic Blur for Light Mode */
+    body.light-mode #ad-popup-modal,
+    body.light-mode #reward-view-modal,
+    body.light-mode #raw-edit-modal,
+    body.light-mode #reward-login-popup {
+      background-color: rgba(15, 23, 42, 0.45) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    /* 2. Modal Card Surfaces - Force Light Backgrounds */
+    body.light-mode #ad-popup-modal > div,
+    body.light-mode #reward-view-modal > div,
+    body.light-mode #raw-edit-modal > div,
+    body.light-mode #reward-login-popup > div {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+      background-color: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.2) !important;
+      color: #0f172a !important;
+    }
+
+    /* 3. Modal Titles & Headings Text Color */
+    body.light-mode #ad-popup-modal h3,
+    body.light-mode #reward-view-modal h3,
+    body.light-mode #raw-edit-modal h3,
+    body.light-mode #reward-login-popup h3 {
+      color: #0f172a !important;
+      font-weight: 800 !important;
+    }
+
+    /* 4. Modal Body Text & Paragraphs */
+    body.light-mode #ad-popup-modal p,
+    body.light-mode #reward-view-modal p,
+    body.light-mode #reward-login-popup p,
+    body.light-mode #raw-edit-modal label {
+      color: #334155 !important;
+    }
+
+    /* 5. Close Icon ("X") Buttons */
+    body.light-mode #ad-popup-modal button.absolute,
+    body.light-mode #reward-view-modal button.absolute,
+    body.light-mode #raw-edit-modal button.absolute {
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    body.light-mode #ad-popup-modal button.absolute:hover,
+    body.light-mode #reward-view-modal button.absolute:hover,
+    body.light-mode #raw-edit-modal button.absolute:hover {
+      background-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+
+    /* 6. Image Containers inside Reward/Ad Modals */
+    body.light-mode #modal-reward-image-container {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* 7. Input Fields inside Modals */
+    body.light-mode #raw-edit-modal input,
+    body.light-mode #reward-view-modal input {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

@@ -1464,7 +1464,7 @@
       }
     };
 
-    // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
+// --- PUBLIC AFFILIATE SELF-REGISTRATION ---
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -1499,13 +1499,16 @@
           return;
         }
 
-        // 2. Register user using secondary Firebase app to preserve admin sessions if open
+        // 2. Register user using secondary app instance
         const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
         const secondaryAuth = getAuth(secondaryApp);
         const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
-        // 3. Create affiliate user document in Firestore
-        await setDoc(doc(db, "users", userCredential.user.uid), {
+        // 3. Get Firestore instance bound to secondary app to match request.auth
+        const secondaryDb = getFirestore(secondaryApp);
+
+        // 4. Create user document
+        await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
           firstName: firstName,
           lastName: lastName,
           username: username,
@@ -1514,17 +1517,25 @@
           createdAt: new Date().toISOString()
         });
 
-        // 4. Clean up secondary auth session
+        // 5. Clean up session & show success view
         await signOut(secondaryAuth);
-
-        // 5. Reset form and show success screen with NDA warning
         e.target.reset();
         window.toggleAuthView('success');
 
       } catch (error) {
         console.error("Registration error:", error);
+
+        // 💡 SPECIFIC HANDLING FOR DUPLICATE EMAIL
         if (error.code === 'auth/email-already-in-use') {
-          alert("This email address is already registered. Please log in or use another email.");
+          if (confirm(`The email "${email}" is already registered!\n\nWould you like to switch to the Log In screen?`)) {
+            // Fill email in login form & switch view
+            document.getElementById('login-email').value = email;
+            window.toggleAuthView('login');
+          }
+        } else if (error.code === 'auth/invalid-email') {
+          alert("Please enter a valid email address.");
+        } else if (error.code === 'auth/weak-password') {
+          alert("Password is too weak. Please use a stronger password.");
         } else {
           alert("Registration failed: " + error.message);
         }

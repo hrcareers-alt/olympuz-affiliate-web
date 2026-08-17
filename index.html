@@ -1554,7 +1554,10 @@
       submitBtn.innerText = "Registering Account...";
       submitBtn.disabled = true;
 
+      let secondaryApp = null;
+
       try {
+        // 1. Check if username is already taken in Firestore
         const qUsername = query(collection(db, "users"), where("username", "==", username));
         const usernameSnap = await getDocs(qUsername);
 
@@ -1565,12 +1568,15 @@
           return;
         }
 
-        const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+        // 2. Register user via secondary app instance to preserve current session
+        secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
         const secondaryAuth = getAuth(secondaryApp);
         const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
+        // 3. Obtain secondary Firestore instance matching secondary Auth context
         const secondaryDb = getFirestore(secondaryApp);
 
+        // 4. Save user document to Firestore ONLY if Auth creation succeeded
         await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
           firstName: firstName,
           lastName: lastName,
@@ -1580,6 +1586,32 @@
           createdAt: new Date().toISOString()
         });
 
+        // 5. Clean up secondary auth session
+        await signOut(secondaryAuth);
+        e.target.reset();
+        window.toggleAuthView('success');
+
+      } catch (error) {
+        console.error("Registration error:", error);
+
+        // 💡 SPECIFIC HANDLING FOR DUPLICATE EMAIL
+        if (error.code === 'auth/email-already-in-use') {
+          if (confirm(`The email "${email}" is already registered!\n\nWould you like to switch to the Log In screen?`)) {
+            document.getElementById('login-email').value = email;
+            window.toggleAuthView('login');
+          }
+        } else if (error.code === 'auth/invalid-email') {
+          alert("Please enter a valid email address.");
+        } else if (error.code === 'auth/weak-password') {
+          alert("Password is too weak. Please use a stronger password.");
+        } else {
+          alert("Registration failed: " + error.message);
+        }
+      } finally {
+        submitBtn.innerText = "Complete Registration";
+        submitBtn.disabled = false;
+      }
+    });
         await signOut(secondaryAuth);
         e.target.reset();
         window.toggleAuthView('success');

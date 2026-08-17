@@ -374,6 +374,41 @@
     body.light-mode #tab-treats .border-pink-500\/40 p {
       color: #be185d !important;
     }
+
+    /* 1. Container Background & Border */
+    body.light-mode .bg-amber-500\/10,
+    body.light-mode div:has(> .fa-triangle-exclamation) {
+      background-color: #fffbeb !important; /* Soft Cream Warm Background */
+      border-color: #fcd34d !important; /* Muted Warm Gold Border */
+    }
+
+    /* 2. Banner Header & Icons */
+    body.light-mode .text-amber-400,
+    body.light-mode .fa-triangle-exclamation {
+      color: #92400e !important; /* High-Contrast Deep Amber */
+      font-weight: 800 !important;
+    }
+
+    /* 3. Main Warning Text & Paragraphs */
+    body.light-mode .text-amber-200\/90,
+    body.light-mode .text-amber-300\/90,
+    body.light-mode .bg-amber-500\/10 p,
+    body.light-mode .bg-amber-500\/10 strong {
+      color: #78350f !important; /* Sharp Rich Dark Amber (Passes WCAG AAA) */
+    }
+
+    /* 4. "Fill Up NDA Form Here" Link Button */
+    body.light-mode .bg-amber-500\/10 a,
+    body.light-mode #auth-success-view a {
+      color: #b45309 !important; /* Deep Golden-Brown Link */
+      font-weight: 800 !important;
+      text-decoration: underline !important;
+    }
+
+    body.light-mode .bg-amber-500\/10 a:hover,
+    body.light-mode #auth-success-view a:hover {
+      color: #78350f !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

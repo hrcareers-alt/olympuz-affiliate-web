@@ -502,6 +502,7 @@
 
     </div>
   </div>
+
   <!-- MAIN DASHBOARD SCREEN -->
   <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
     
@@ -598,7 +599,6 @@
       <div class="w-full">
 
         <!-- TAB: AFFILIATE TREATS & REWARDS -->
-        <!-- TAB: AFFILIATE TREATS & REWARDS -->
         <section id="tab-treats" class="tab-content hidden w-full">
           <div class="max-w-4xl space-y-6">
             
@@ -690,7 +690,14 @@
 
           <!-- TOP CARDS: LATEST DISBURSEMENT -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Payout cards stay here... -->
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs md:text-sm">Weekly Valid Referrals / Endorsements (Latest)</div>
+              <div id="payout-referrals" class="text-2xl md:text-3xl font-bold text-indigo-400 mt-1">0</div>
+            </div>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs md:text-sm">Weekly Total Amount Credited (Latest)</div>
+              <div id="payout-amount" class="text-2xl md:text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -1317,23 +1324,37 @@
         overlay.classList.add('hidden');
       }
     };
+
+    window.toggleAuthView = function(view) {
+      const loginView = document.getElementById('auth-login-view');
+      const regView = document.getElementById('auth-register-view');
+      const successView = document.getElementById('auth-success-view');
+
+      if (loginView) loginView.classList.add('hidden');
+      if (regView) regView.classList.add('hidden');
+      if (successView) successView.classList.add('hidden');
+
+      if (view === 'login' && loginView) loginView.classList.remove('hidden');
+      if (view === 'register' && regView) regView.classList.remove('hidden');
+      if (view === 'success' && successView) successView.classList.remove('hidden');
+    };
   </script>
 
   <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged, 
-  createUserWithEmailAndPassword, 
-  EmailAuthProvider, 
-  reauthenticateWithCredential, 
-  sendPasswordResetEmail, 
-  updatePassword, 
-  verifyBeforeUpdateEmail 
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+      getAuth, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged, 
+      createUserWithEmailAndPassword, 
+      EmailAuthProvider, 
+      reauthenticateWithCredential, 
+      sendPasswordResetEmail, 
+      updatePassword, 
+      verifyBeforeUpdateEmail 
+    } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
@@ -1464,7 +1485,7 @@
       }
     };
 
-// --- PUBLIC AFFILIATE SELF-REGISTRATION ---
+    // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -1488,7 +1509,6 @@
       submitBtn.disabled = true;
 
       try {
-        // 1. Check if username is already taken in Firestore
         const qUsername = query(collection(db, "users"), where("username", "==", username));
         const usernameSnap = await getDocs(qUsername);
 
@@ -1499,15 +1519,12 @@
           return;
         }
 
-        // 2. Register user using secondary app instance
         const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
         const secondaryAuth = getAuth(secondaryApp);
         const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
-        // 3. Get Firestore instance bound to secondary app to match request.auth
         const secondaryDb = getFirestore(secondaryApp);
 
-        // 4. Create user document
         await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
           firstName: firstName,
           lastName: lastName,
@@ -1517,7 +1534,6 @@
           createdAt: new Date().toISOString()
         });
 
-        // 5. Clean up session & show success view
         await signOut(secondaryAuth);
         e.target.reset();
         window.toggleAuthView('success');
@@ -1525,10 +1541,8 @@
       } catch (error) {
         console.error("Registration error:", error);
 
-        // 💡 SPECIFIC HANDLING FOR DUPLICATE EMAIL
         if (error.code === 'auth/email-already-in-use') {
           if (confirm(`The email "${email}" is already registered!\n\nWould you like to switch to the Log In screen?`)) {
-            // Fill email in login form & switch view
             document.getElementById('login-email').value = email;
             window.toggleAuthView('login');
           }
@@ -1876,6 +1890,7 @@
         const currentUid = auth.currentUser ? auth.currentUser.uid : null;
         const userIndex = rankings.findIndex(r => r.userId === currentUid);
 
+        // SAFE NULL CHECKING
         const userRankEl = document.getElementById('user-raw-rank');
         const userWeeklyEl = document.getElementById('user-raw-weekly');
         const userMonthlyEl = document.getElementById('user-raw-monthly');
@@ -2218,10 +2233,17 @@
 
         if (snapshot.empty) {
           invoiceList.innerHTML = "No official invoices attached yet.";
-          document.getElementById('payout-referrals').innerText = "0";
-          document.getElementById('payout-amount').innerText = "₱0.00";
-          document.getElementById('ytd-referrals').innerText = "0";
-          document.getElementById('ytd-amount').innerText = "₱0.00";
+          
+          const pRef = document.getElementById('payout-referrals');
+          const pAmt = document.getElementById('payout-amount');
+          const yRef = document.getElementById('ytd-referrals');
+          const yAmt = document.getElementById('ytd-amount');
+          
+          if (pRef) pRef.innerText = "0";
+          if (pAmt) pAmt.innerText = "₱0.00";
+          if (yRef) yRef.innerText = "0";
+          if (yAmt) yAmt.innerText = "₱0.00";
+          
           document.getElementById('pagination-controls').classList.add('hidden');
           return;
         }
@@ -2244,16 +2266,21 @@
         yearlyPayouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         userPayoutsArray = yearlyPayouts;
 
-        document.getElementById('ytd-referrals').innerText = ytdReferrals;
-        document.getElementById('ytd-amount').innerText = `₱${ytdAmount.toFixed(2)}`;
+        const yRef = document.getElementById('ytd-referrals');
+        const yAmt = document.getElementById('ytd-amount');
+        if (yRef) yRef.innerText = ytdReferrals;
+        if (yAmt) yAmt.innerText = `₱${ytdAmount.toFixed(2)}`;
+
+        const pRef = document.getElementById('payout-referrals');
+        const pAmt = document.getElementById('payout-amount');
 
         if (yearlyPayouts.length > 0) {
           const latest = yearlyPayouts[0];
-          document.getElementById('payout-referrals').innerText = latest.referrals || 0;
-          document.getElementById('payout-amount').innerText = `₱${(latest.amount || 0).toFixed(2)}`;
+          if (pRef) pRef.innerText = latest.referrals || 0;
+          if (pAmt) pAmt.innerText = `₱${(latest.amount || 0).toFixed(2)}`;
         } else {
-          document.getElementById('payout-referrals').innerText = "0";
-          document.getElementById('payout-amount').innerText = "₱0.00";
+          if (pRef) pRef.innerText = "0";
+          if (pAmt) pAmt.innerText = "₱0.00";
         }
 
         currentInvoicePage = 1;
@@ -2871,27 +2898,23 @@
       submitBtn.disabled = true;
 
       try {
-        // 1. Re-authenticate user with current password
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
 
         let photoURL = "";
         let emailVerificationSent = false;
 
-        // 2. Upload avatar if selected
         if (avatarFile) {
           const fileRef = ref(storage, `avatars/${user.uid}_${avatarFile.name}`);
           await uploadBytes(fileRef, avatarFile);
           photoURL = await getDownloadURL(fileRef);
         }
 
-        // 3. Send email verification link if email is changing
         if (newEmail && newEmail !== user.email) {
           await verifyBeforeUpdateEmail(user, newEmail);
           emailVerificationSent = true;
         }
 
-        // 4. Update Firestore user document (Avatar image)
         const updateData = {};
         if (photoURL) updateData.photoURL = photoURL;
 
@@ -2899,7 +2922,6 @@
           await updateDoc(doc(db, "users", user.uid), updateData);
         }
 
-        // 5. Instantly update UI avatar images
         if (photoURL) {
           const profileImg = document.getElementById('profile-avatar-img');
           const profileIcon = document.getElementById('profile-avatar-icon');
@@ -2930,7 +2952,6 @@
       } catch (error) {
         console.error("Profile update error:", error);
         
-        // Handle incorrect password attempts specifically
         if (
           error.code === 'auth/invalid-credential' || 
           error.code === 'auth/wrong-password' || 
@@ -3256,20 +3277,6 @@
       localStorage.removeItem('loginTimestamp');
       document.getElementById('admin-menu').classList.add('hidden');
       document.getElementById('login-form').reset();
-    };
-
-    window.toggleAuthView = function(view) {
-      const loginView = document.getElementById('auth-login-view');
-      const regView = document.getElementById('auth-register-view');
-      const successView = document.getElementById('auth-success-view');
-
-      if (loginView) loginView.classList.add('hidden');
-      if (regView) regView.classList.add('hidden');
-      if (successView) successView.classList.add('hidden');
-
-      if (view === 'login' && loginView) loginView.classList.remove('hidden');
-      if (view === 'register' && regView) regView.classList.remove('hidden');
-      if (view === 'success' && successView) successView.classList.remove('hidden');
     };
   </script>
 </body>

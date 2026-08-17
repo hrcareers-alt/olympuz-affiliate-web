@@ -359,13 +359,28 @@
       color: #0f172a !important;
       border-color: #cbd5e1 !important;
     }
+
+    /* LIGHT MODE BIRTHDAY GIVEAWAY BANNER OVERRIDES */
+    body.light-mode #tab-treats .border-pink-500\/40 {
+      background-color: #ffffff !important;
+      border-color: #fbcfe8 !important;
+      box-shadow: 0 4px 12px -2px rgba(236, 72, 153, 0.1) !important;
+    }
+
+    body.light-mode #tab-treats .border-pink-500\/40 h4 {
+      color: #831843 !important;
+    }
+
+    body.light-mode #tab-treats .border-pink-500\/40 p {
+      color: #be185d !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
 
-  <!-- AUTH SCREEN -->
+  <!-- AUTH SCREEN CONTAINER -->
   <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden">
       
       <!-- LOGO & HEADING CONTAINER -->
       <div class="text-center mb-6">
@@ -374,35 +389,119 @@
         <p class="text-xs text-slate-400 mt-1 font-medium tracking-wide">Powered by Edward Belacse Career Consultancy Services</p>
       </div>
 
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label for="login-email" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
-            <i class="fa-solid fa-user mr-1 text-indigo-400"></i> Email or Username
-          </label>
-          <input type="text" id="login-email" required placeholder="Enter your email address or username" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+      <!-- 1. LOGIN FORM -->
+      <div id="auth-login-view">
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label for="login-email" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
+              <i class="fa-solid fa-user mr-1 text-indigo-400"></i> Email or Username
+            </label>
+            <input type="text" id="login-email" required placeholder="Enter your email address or username" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+          </div>
+
+          <div>
+            <label for="login-password" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
+              <i class="fa-solid fa-lock mr-1 text-indigo-400"></i> Password
+            </label>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/20">Log In</button>
+        </form>
+
+        <div class="text-center mt-3">
+          <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium">Forgot Password?</button>
+        </div>
+        
+        <div class="mt-4 text-center text-sm text-slate-400">
+          Don't have an account? 
+          <button type="button" onclick="toggleAuthView('register')" class="text-indigo-400 underline hover:text-indigo-300 font-semibold">Register here</button>
+        </div>
+      </div>
+
+      <!-- 2. REGISTRATION FORM -->
+      <div id="auth-register-view" class="hidden space-y-4">
+        <h3 class="text-lg font-bold text-white text-center">Create Your Affiliate Account</h3>
+
+        <form id="public-register-form" class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">First Name *</label>
+              <input type="text" id="reg-firstname" required placeholder="Juan" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Last Name *</label>
+              <input type="text" id="reg-lastname" required placeholder="Dela Cruz" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Email Address *</label>
+            <input type="email" id="reg-email" required placeholder="juan@gmail.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Username *</label>
+            <input type="text" id="reg-username" required placeholder="juandelacruz" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Password *</label>
+            <input type="password" id="reg-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Confirm Password *</label>
+            <input type="password" id="reg-confirm-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/20 text-xs">
+            Complete Registration
+          </button>
+        </form>
+
+        <div class="text-center pt-2 border-t border-slate-700/60">
+          <button type="button" onclick="toggleAuthView('login')" class="text-xs text-slate-400 hover:text-slate-200 underline font-medium">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Log In
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. THANK YOU / SUCCESS SCREEN WITH NDA WARNING -->
+      <div id="auth-success-view" class="hidden text-center space-y-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto text-3xl">
+          <i class="fa-solid fa-circle-check"></i>
         </div>
 
-        <div>
-          <label for="login-password" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
-            <i class="fa-solid fa-lock mr-1 text-indigo-400"></i> Password
-          </label>
-          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+        <h3 class="text-xl font-extrabold text-white">Thank You for Registering! 🎉</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Your account has been created successfully. You may now log in to access your portal.
+        </p>
+
+        <!-- ⚠️ IMPORTANT NDA WARNING BANNER -->
+        <div class="bg-amber-500/10 border border-amber-500/40 p-4 rounded-xl text-left space-y-2">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-xs">
+            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+            <span>IMPORTANT REQUIREMENT: NDA FORM</span>
+          </div>
+          <p class="text-[11px] text-amber-200/90 leading-relaxed">
+            Please make sure you have filled out and submitted the official <strong>NDA Form</strong>. If you have already completed it, you may disregard this notice. 
+            <br><br>
+            <strong class="text-amber-400">⚠️ NOTE:</strong> Your referral earnings and weekly payouts will <strong>NOT be credited or released</strong> unless your NDA registration is completed!
+          </p>
+          <a href="https://tinyurl.com/OlympuzNDA2026" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-bold hover:underline pt-1">
+            <span>Fill Up NDA Form Here</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
         </div>
 
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/20">Log In</button>
-      </form>
+        <button type="button" onclick="toggleAuthView('login')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+          Log In To Your Account Now
+        </button>
+      </div>
 
-      <div class="text-center mt-3">
-        <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium">Forgot Password?</button>
-      </div>
-      
-      <div class="mt-4 text-center text-sm text-slate-400">
-        Don't have an account? 
-        <a href="https://form.jotform.com/243515259342456" target="_blank" class="text-indigo-400 underline hover:text-indigo-300 font-semibold">Register here</a>
-      </div>
     </div>
   </div>
-
   <!-- MAIN DASHBOARD SCREEN -->
   <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
     
@@ -499,8 +598,11 @@
       <div class="w-full">
 
         <!-- TAB: AFFILIATE TREATS & REWARDS -->
+        <!-- TAB: AFFILIATE TREATS & REWARDS -->
         <section id="tab-treats" class="tab-content hidden w-full">
           <div class="max-w-4xl space-y-6">
+            
+            <!-- TOP GRADIENT TITLE CARD -->
             <div class="bg-gradient-to-r from-pink-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-pink-500/30 shadow-xl">
               <div class="inline-flex items-center gap-2 bg-pink-500/20 text-pink-400 border border-pink-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
                 <i class="fa-solid fa-gift"></i> Exclusive Perks
@@ -509,9 +611,28 @@
               <p class="text-xs text-slate-300 mt-1">Claim special rewards, performance treats, and exclusive gifts earned from your referrals!</p>
             </div>
 
+            <!-- 🎂 GIVEAWAYS & BIRTHDAY GIVEAWAYS BANNER -->
+            <div class="bg-slate-900 border border-pink-500/40 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-pink-500/20 border border-pink-500/30 text-pink-400 flex items-center justify-center text-lg shrink-0">
+                  <i class="fa-solid fa-cake-candles"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Join Our Giveaways & Birthday Special Perks! 🎁</h4>
+                  <p class="text-xs text-slate-300 mt-0.5">Want to qualify for special birthday treats and exclusive affiliate community giveaways?</p>
+                </div>
+              </div>
+              <a href="https://olympuz-org.com/bdaygiveaways" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md shadow-pink-600/20 shrink-0">
+                <span>Join Giveaways Now</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+
+            <!-- USER EARNED REWARDS LIST -->
             <div id="user-rewards-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="text-slate-400 text-sm py-6 col-span-full text-center">Loading your earned rewards...</div>
             </div>
+
           </div>
         </section>
 
@@ -1342,6 +1463,76 @@
         console.warn("Could not load user raw totals:", err.message);
       }
     };
+
+    // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
+    document.getElementById('public-register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+
+      const firstName = document.getElementById('reg-firstname').value.trim();
+      const lastName = document.getElementById('reg-lastname').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const username = document.getElementById('reg-username').value.trim().toLowerCase();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+      if (password !== confirmPassword) {
+        return alert("Passwords do not match! Please check and try again.");
+      }
+
+      if (password.length < 6) {
+        return alert("Password must be at least 6 characters long.");
+      }
+
+      submitBtn.innerText = "Registering Account...";
+      submitBtn.disabled = true;
+
+      try {
+        // 1. Check if username is already taken in Firestore
+        const qUsername = query(collection(db, "users"), where("username", "==", username));
+        const usernameSnap = await getDocs(qUsername);
+
+        if (!usernameSnap.empty) {
+          alert("This username is already taken. Please choose another username.");
+          submitBtn.innerText = "Complete Registration";
+          submitBtn.disabled = false;
+          return;
+        }
+
+        // 2. Register user using secondary Firebase app to preserve admin sessions if open
+        const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+        const secondaryAuth = getAuth(secondaryApp);
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+
+        // 3. Create affiliate user document in Firestore
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          email: email,
+          role: "affiliate",
+          createdAt: new Date().toISOString()
+        });
+
+        // 4. Clean up secondary auth session
+        await signOut(secondaryAuth);
+
+        // 5. Reset form and show success screen with NDA warning
+        e.target.reset();
+        window.toggleAuthView('success');
+
+      } catch (error) {
+        console.error("Registration error:", error);
+        if (error.code === 'auth/email-already-in-use') {
+          alert("This email address is already registered. Please log in or use another email.");
+        } else {
+          alert("Registration failed: " + error.message);
+        }
+      } finally {
+        submitBtn.innerText = "Complete Registration";
+        submitBtn.disabled = false;
+      }
+    });
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -3054,6 +3245,20 @@
       localStorage.removeItem('loginTimestamp');
       document.getElementById('admin-menu').classList.add('hidden');
       document.getElementById('login-form').reset();
+    };
+
+    window.toggleAuthView = function(view) {
+      const loginView = document.getElementById('auth-login-view');
+      const regView = document.getElementById('auth-register-view');
+      const successView = document.getElementById('auth-success-view');
+
+      if (loginView) loginView.classList.add('hidden');
+      if (regView) regView.classList.add('hidden');
+      if (successView) successView.classList.add('hidden');
+
+      if (view === 'login' && loginView) loginView.classList.remove('hidden');
+      if (view === 'register' && regView) regView.classList.remove('hidden');
+      if (view === 'success' && successView) successView.classList.remove('hidden');
     };
   </script>
 </body>

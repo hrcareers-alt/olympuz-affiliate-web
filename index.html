@@ -445,7 +445,7 @@
         </form>
 
         <div class="text-center mt-3">
-          <button type="button" onclick="forgotPassword()" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium">Forgot Password?</button>
+          <button type="button" onclick="toggleAuthView('forgot')" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium">Forgot Password?</button>
         </div>
         
         <div class="mt-4 text-center text-sm text-slate-400">
@@ -537,6 +537,36 @@
 
     </div>
   </div>
+
+  <!-- 4. FORGOT PASSWORD VIEW -->
+      <div id="auth-forgot-view" class="hidden space-y-4">
+        <div class="text-center">
+          <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto text-xl mb-2">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Reset Your Password</h3>
+          <p class="text-xs text-slate-400 mt-1">Enter your registered email address below and we'll send you a link to reset your password.</p>
+        </div>
+
+        <form id="public-forgot-form" class="space-y-4">
+          <div>
+            <label for="forgot-email" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
+              <i class="fa-solid fa-envelope mr-1 text-amber-400"></i> Email Address
+            </label>
+            <input type="email" id="forgot-email" required placeholder="juan@gmail.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition text-xs">
+          </div>
+
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-lg shadow-amber-600/20 text-xs">
+            Send Reset Link
+          </button>
+        </form>
+
+        <div class="text-center pt-2 border-t border-slate-700/60">
+          <button type="button" onclick="toggleAuthView('login')" class="text-xs text-slate-400 hover:text-slate-200 underline font-medium">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Log In
+          </button>
+        </div>
+      </div>
 
   <!-- MAIN DASHBOARD SCREEN -->
   <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
@@ -1360,18 +1390,21 @@
       }
     };
 
-    window.toggleAuthView = function(view) {
+   window.toggleAuthView = function(view) {
       const loginView = document.getElementById('auth-login-view');
       const regView = document.getElementById('auth-register-view');
       const successView = document.getElementById('auth-success-view');
+      const forgotView = document.getElementById('auth-forgot-view');
 
       if (loginView) loginView.classList.add('hidden');
       if (regView) regView.classList.add('hidden');
       if (successView) successView.classList.add('hidden');
+      if (forgotView) forgotView.classList.add('hidden');
 
       if (view === 'login' && loginView) loginView.classList.remove('hidden');
       if (view === 'register' && regView) regView.classList.remove('hidden');
       if (view === 'success' && successView) successView.classList.remove('hidden');
+      if (view === 'forgot' && forgotView) forgotView.classList.remove('hidden');
     };
   </script>
 
@@ -2903,16 +2936,40 @@
       }
     });
 
-    window.forgotPassword = async () => {
-      const emailInput = document.getElementById('login-email').value;
-      if (!emailInput) return alert("Please enter your email address in the box above first, then click 'Forgot Password?'.");
+   // --- FORGOT PASSWORD FORM HANDLER ---
+    document.getElementById('public-forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const emailInput = document.getElementById('forgot-email').value.trim();
+
+      if (!emailInput) return alert("Please enter your email address.");
+
+      submitBtn.innerText = "Sending Link...";
+      submitBtn.disabled = true;
+
       try {
         await sendPasswordResetEmail(auth, emailInput);
-        alert(`A password reset link has been sent to ${emailInput}.`);
+        alert(`A password reset link has been sent to ${emailInput}.\n\nPlease check your inbox/spam folder.`);
+        
+        // Auto pre-fill login email field and return user to login screen
+        document.getElementById('login-email').value = emailInput;
+        e.target.reset();
+        window.toggleAuthView('login');
+
       } catch (error) {
-        alert("Error sending reset email: " + error.message);
+        console.error("Forgot password error:", error);
+        if (error.code === 'auth/user-not-found') {
+          alert("No account found with this email address. Please check your spelling or register a new account.");
+        } else if (error.code === 'auth/invalid-email') {
+          alert("Please enter a valid email address.");
+        } else {
+          alert("Error sending reset email: " + error.message);
+        }
+      } finally {
+        submitBtn.innerText = "Send Reset Link";
+        submitBtn.disabled = false;
       }
-    };
+    });
 
     document.getElementById('payout-method-form').addEventListener('submit', async (e) => {
       e.preventDefault();

@@ -424,6 +424,18 @@
         <p class="text-xs text-slate-400 mt-1 font-medium tracking-wide">Powered by Edward Belacse Career Consultancy Services</p>
       </div>
 
+      <!-- AUTH SCREEN CONTAINER -->
+  <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+    <!-- MODAL CARD SURFACES CONTAINER -->
+    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden">
+      
+      <!-- LOGO & HEADING CONTAINER -->
+      <div class="text-center mb-6">
+        <img src="Logo New.png" alt="Olympuz Logo" class="w-20 h-20 mx-auto mb-3 object-contain drop-shadow-md">
+        <h2 class="text-2xl font-bold text-indigo-400">Olympuz Affiliate Portal</h2>
+        <p class="text-xs text-slate-400 mt-1 font-medium tracking-wide">Powered by Edward Belacse Career Consultancy Services</p>
+      </div>
+
       <!-- 1. LOGIN FORM -->
       <div id="auth-login-view">
         <form id="login-form" class="space-y-4">
@@ -535,17 +547,14 @@
         </button>
       </div>
 
-    </div>
-  </div>
-
-  <!-- 4. FORGOT PASSWORD VIEW -->
+      <!-- 4. 🔑 FORGOT PASSWORD VIEW (INSIDE THE CARD NOW!) -->
       <div id="auth-forgot-view" class="hidden space-y-4">
         <div class="text-center">
           <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto text-xl mb-2">
             <i class="fa-solid fa-key"></i>
           </div>
           <h3 class="text-lg font-bold text-white">Reset Your Password</h3>
-          <p class="text-xs text-slate-400 mt-1">Enter your registered email address below and we'll send you a link to reset your password.</p>
+          <p class="text-xs text-slate-300 mt-1">Enter your registered email address below and we'll send you a link to reset your password.</p>
         </div>
 
         <form id="public-forgot-form" class="space-y-4">
@@ -567,6 +576,9 @@
           </button>
         </div>
       </div>
+
+    </div> <!-- 👈 CLOSES bg-slate-800 MODAL CARD -->
+  </div> <!-- 👈 CLOSES #auth-screen CONTAINER -->
 
   <!-- MAIN DASHBOARD SCREEN -->
   <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">

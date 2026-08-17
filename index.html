@@ -1938,6 +1938,20 @@
         if (!listDiv) return;
         listDiv.innerHTML = "";
 
+        // 💡 FIX: If allAffiliates is empty (Regular Affiliate logged in), fetch affiliates list
+        let affiliateList = [...allAffiliates];
+        if (affiliateList.length === 0) {
+          try {
+            const qUsers = query(collection(db, "users"), where("role", "==", "affiliate"));
+            const usersSnap = await getDocs(qUsers);
+            usersSnap.forEach((uDoc) => {
+              affiliateList.push({ id: uDoc.id, ...uDoc.data() });
+            });
+          } catch (err) {
+            console.warn("Could not fetch affiliates for raw leaderboard:", err);
+          }
+        }
+
         const userMonthlyMap = {};
         const userWeeklyMap = {};
         
@@ -1963,7 +1977,7 @@
         });
 
         const rankings = [];
-        for (const user of allAffiliates) {
+        for (const user of affiliateList) {
           rankings.push({
             userId: user.id,
             userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate',

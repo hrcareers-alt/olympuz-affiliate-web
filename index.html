@@ -1531,7 +1531,7 @@
       }
     };
 
-    // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
+   // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -1554,10 +1554,8 @@
       submitBtn.innerText = "Registering Account...";
       submitBtn.disabled = true;
 
-      let secondaryApp = null;
-
       try {
-        // 1. Check if username is already taken in Firestore
+        // 1. Check if username is already taken
         const qUsername = query(collection(db, "users"), where("username", "==", username));
         const usernameSnap = await getDocs(qUsername);
 
@@ -1568,15 +1566,15 @@
           return;
         }
 
-        // 2. Register user via secondary app instance to preserve current session
-        secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+        // 2. Register user using secondary app instance
+        const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
         const secondaryAuth = getAuth(secondaryApp);
         const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
-        // 3. Obtain secondary Firestore instance matching secondary Auth context
+        // 3. Get Firestore instance bound to secondary app
         const secondaryDb = getFirestore(secondaryApp);
 
-        // 4. Save user document to Firestore ONLY if Auth creation succeeded
+        // 4. Create user document
         await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
           firstName: firstName,
           lastName: lastName,
@@ -1594,7 +1592,6 @@
       } catch (error) {
         console.error("Registration error:", error);
 
-        // 💡 SPECIFIC HANDLING FOR DUPLICATE EMAIL
         if (error.code === 'auth/email-already-in-use') {
           if (confirm(`The email "${email}" is already registered!\n\nWould you like to switch to the Log In screen?`)) {
             document.getElementById('login-email').value = email;

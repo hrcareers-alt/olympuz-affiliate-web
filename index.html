@@ -1417,6 +1417,7 @@
     let unsubRawLeaderboard = null;
     let unsubUserRewards = null;
     let unsubUserPayouts = null;
+    let unsubUserAds = null;
     let unsubAdminAds = null;
     let unsubAdminFeedback = null;
     let unsubAdminPendingPayouts = null;
@@ -2208,7 +2209,9 @@
       const todayStr = new Date().toISOString().split('T')[0];
       const q = query(collection(db, "ads"));
 
-      onSnapshot(q, (snapshot) => {
+      if (unsubUserAds) unsubUserAds(); // Clean up previous instance if any
+      
+      unsubUserAds = onSnapshot(q, (snapshot) => {
         activeAdsList = [];
         snapshot.forEach((docSnap) => {
           const data = { id: docSnap.id, ...docSnap.data() };
@@ -3332,6 +3335,7 @@
       if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
       if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
       if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
+      if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
       if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
       if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
       if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }

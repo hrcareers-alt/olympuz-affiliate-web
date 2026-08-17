@@ -1377,6 +1377,17 @@
     let currentInvoicePage = 1;
     const itemsPerPage = 5;
 
+    // Unsubscribe Listener Placeholders
+    let unsubLeaderboard = null;
+    let unsubRawLeaderboard = null;
+    let unsubUserRewards = null;
+    let unsubUserPayouts = null;
+    let unsubAdminAds = null;
+    let unsubAdminFeedback = null;
+    let unsubAdminPendingPayouts = null;
+    let unsubAdminRewards = null;
+    let unsubAdminRaw = null;
+
     let activeAdsList = [];
     let adTimer = null;
     let currentSelectedRewardId = null;
@@ -1845,7 +1856,8 @@
 
       const q = query(collection(db, "raw_referrals"));
       
-      onSnapshot(q, async (snapshot) => {
+      if (unsubRawLeaderboard) unsubRawLeaderboard();
+      unsubRawLeaderboard = onSnapshot(q, async (snapshot) => {
         const listDiv = document.getElementById('raw-leaderboard-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -1943,7 +1955,8 @@
 
       const q = query(collection(db, "payouts"), where("status", "==", "approved"));
 
-      onSnapshot(q, async (payoutSnapshot) => {
+      if (unsubLeaderboard) unsubLeaderboard();
+      unsubLeaderboard = onSnapshot(q, async (payoutSnapshot) => {
         const userStatsMap = {};
 
         payoutSnapshot.forEach((docSnap) => {
@@ -2118,7 +2131,8 @@
 
     function listenToAdminAds() {
       const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
+      if (unsubAdminAds) unsubAdminAds();
+      unsubAdminAds = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-ads-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -2224,7 +2238,8 @@
     function listenToUserPayouts(uid) {
       const q = query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"));
       
-      onSnapshot(q, (snapshot) => {
+      if (unsubUserPayouts) unsubUserPayouts();
+      unsubUserPayouts = onSnapshot(q, (snapshot) => {
         const invoiceList = document.getElementById('invoice-list');
         if (!invoiceList) return;
 
@@ -2292,7 +2307,8 @@
 
     function listenToAdminFeedback() {
       const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
+      if (unsubAdminFeedback) unsubAdminFeedback();
+      unsubAdminFeedback = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-feedback-list');
         if (!listDiv) return;
         listDiv.innerHTML = ""; 
@@ -2330,7 +2346,8 @@
 
     function listenToPendingPayouts() {
       const q = query(collection(db, "payouts"), where("status", "==", "pending"));
-      onSnapshot(q, (snapshot) => {
+      if (unsubAdminPendingPayouts) unsubAdminPendingPayouts();
+      unsubAdminPendingPayouts = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('pending-approval-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -2384,7 +2401,8 @@
     function listenToAdminRawReferrals() {
       const q = query(collection(db, "raw_referrals"));
       
-      onSnapshot(q, async (snapshot) => {
+      if (unsubAdminRaw) unsubAdminRaw();
+      unsubAdminRaw = onSnapshot(q, async (snapshot) => {
         const listDiv = document.getElementById('admin-raw-track-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -2496,7 +2514,8 @@
     function listenToUserRewards(uid) {
       const q = query(collection(db, "rewards"), where("userId", "==", uid));
       
-      onSnapshot(q, (snapshot) => {
+      if (unsubUserRewards) unsubUserRewards();
+      unsubUserRewards = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('user-rewards-list');
         const badgeSpan = document.getElementById('treats-unread-badge');
         
@@ -2569,7 +2588,8 @@
     function listenToAdminRewards() {
       const q = query(collection(db, "rewards"));
       
-      onSnapshot(q, (snapshot) => {
+      if (unsubAdminRewards) unsubAdminRewards();
+      unsubAdminRewards = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-rewards-track-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
@@ -3273,6 +3293,16 @@
     };
 
     window.logout = async () => {
+      if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
+      if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
+      if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
+      if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
+      if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
+      if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
+      if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }
+      if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
+      if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
+
       await signOut(auth);
       localStorage.removeItem('loginTimestamp');
       document.getElementById('admin-menu').classList.add('hidden');

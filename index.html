@@ -460,6 +460,21 @@
     .slide-text-overlay:hover {
       opacity: 1 !important;
     }
+
+    /* LIGHT MODE EVERY 30TH PAYOUT OVERRIDES */
+    body.light-mode #tab-payout-30th select#payout-30th-month-filter {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.light-mode #invoice-30th-list > div,
+    body.light-mode #admin-payout-30th-track-list > div,
+    body.light-mode #pending-approval-30th-list > div {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -652,6 +667,9 @@
             <i class="fa-solid fa-chart-simple text-indigo-400"></i> Daily Referrals (RAW)
           </button>
           <button id="nav-btn-payout" onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout (VALID)</button>
+          <button id="nav-btn-payout-30th" onclick="switchTab('payout-30th')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-emerald-400"></i> Every 30th (Hires for Payout)
+          </button>
           <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
           <button id="nav-btn-channels" onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Must Join: UPDATES</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
@@ -684,7 +702,10 @@
             <button id="nav-btn-admin-feedback" onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button id="nav-btn-admin-create" onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
             <button id="nav-btn-admin-raw" onclick="switchTab('admin-raw')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Manage Raw Referrals</button>
-            <button id="nav-btn-admin-disburse" onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
+            <button id="nav-btn-admin-disburse" onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Weekly Payout</button>
+            <button id="nav-btn-admin-disburse-30th" onclick="switchTab('admin-disburse-30th')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus"></i> Disburse Monthly Payout (Every 30th)
+          </button>
             <button id="nav-btn-admin-rewards" onclick="switchTab('nav-btn-admin-rewards')" onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards</button>
             <button id="nav-btn-admin-ads" onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
           </div>
@@ -758,6 +779,14 @@
               <i class="fa-solid fa-compass text-indigo-400"></i> Central Quick Navigation
             </h3>
             <div id="home-nav-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 morph-nav-anim">
+              <button onclick="handleMorphNav('payout-30th')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Every 30th (Hires)</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Monthly hire payout earnings</p>
+              </button>
+              
               <button onclick="handleMorphNav('leaderboard')" class="bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
                   <i class="fa-solid fa-trophy"></i>
@@ -781,6 +810,66 @@
                 <h4 class="font-bold text-white text-sm">Weekly Payout</h4>
                 <p class="text-[11px] text-slate-400 mt-0.5">Invoices & valid earnings</p>
               </button>
+
+              <!-- 💰 TAB: EVERY 30TH (HIRES FOR PAYOUT) AFFILIATE VIEW -->
+        <section id="tab-payout-30th" class="tab-content hidden w-full space-y-6">
+          <div class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                <i class="fa-solid fa-calendar-check"></i> Monthly Payout Cycle
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-white">Every 30th (Hires for Payout)</h2>
+              <p class="text-xs text-slate-300 mt-1">Monthly hire payout earnings reset and rollover every 30th of the month.</p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <label for="payout-30th-month-filter" class="text-xs text-slate-300 font-semibold">Select Period:</label>
+              <select id="payout-30th-month-filter" onchange="filter30thPayoutMonth()" class="bg-slate-950 border border-slate-800 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs md:text-sm">Monthly Valid Hires / Referrals (Selected Period)</div>
+              <div id="payout-30th-referrals" class="text-2xl md:text-3xl font-bold text-indigo-400 mt-1">0</div>
+            </div>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs md:text-sm">Monthly Total Amount Credited (Selected Period)</div>
+              <div id="payout-30th-amount" class="text-2xl md:text-3xl font-bold text-emerald-400 mt-1">₱0.00</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Monthly Hires This Year (<span class="current-year-label">2026</span>)</div>
+              <div id="ytd-30th-referrals" class="text-xl md:text-2xl font-bold text-indigo-300 mt-1">0</div>
+            </div>
+            <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Monthly Earnings This Year (<span class="current-year-label">2026</span>)</div>
+              <div id="ytd-30th-amount" class="text-xl md:text-2xl font-bold text-emerald-300 mt-1">₱0.00</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 rounded-xl p-4 border border-slate-800">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-slate-100">Monthly Invoices & Receipts</h3>
+              <span id="page-30th-indicator" class="text-xs text-slate-400">Page 1</span>
+            </div>
+            
+            <div id="invoice-30th-list" class="text-slate-400 text-sm min-h-[120px]">No payout records available for this period.</div>
+
+            <div id="pagination-30th-controls" class="hidden flex justify-between items-center mt-4 border-t border-slate-800 pt-3">
+              <button id="btn-prev-30th-page" onclick="change30thInvoicePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-chevron-left mr-1"></i> Prev
+              </button>
+              <div id="page-30th-numbers" class="flex gap-1 text-xs"></div>
+              <button id="btn-next-30th-page" onclick="change30thInvoicePage(1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                Next <i class="fa-solid fa-chevron-right ml-1"></i>
+              </button>
+            </div>
+          </div>
+        </section>
 
               <button onclick="handleMorphNav('treats')" class="bg-slate-900 border border-slate-800 hover:border-pink-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
                 <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
@@ -1423,6 +1512,60 @@
           <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
+        <!-- 🛠️ TAB: ADMIN DISBURSE EVERY 30TH PAYOUT -->
+        <section id="tab-admin-disburse-30th" class="tab-content hidden space-y-6">
+          <h2 class="text-xl font-semibold text-amber-400">Disburse Every 30th (Hires Payout)</h2>
+          
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4 shadow-lg">
+            <h3 class="font-bold text-amber-400 text-sm uppercase border-b border-slate-800 pb-2">Stage Monthly Payout Record</h3>
+            
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Select Affiliate</label>
+              <select id="disburse-30th-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200" onchange="loadUserDisburse30thDetails()">
+                <option value="">-- Choose Affiliate --</option>
+              </select>
+            </div>
+
+            <div id="disburse-30th-bank-info" class="text-sm text-slate-300 bg-slate-950/50 p-3 rounded-lg hidden">
+              <div><strong>Payment Method:</strong> <span id="disburse-30th-method">-</span></div>
+              <div><strong>Account Number:</strong> <span id="disburse-30th-account">-</span></div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Target Payout Month & Year</label>
+              <input type="month" id="disburse-30th-month" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Total Valid Hires</label>
+              <input type="number" id="disburse-30th-referrals" min="0" placeholder="e.g. 10" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Amount to Credited (PHP)</label>
+              <input type="number" id="disburse-30th-amount" min="0" step="0.01" placeholder="e.g. 5000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+
+            <button onclick="submit30thPreApproval()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold w-full py-2.5 rounded-lg transition text-xs">
+              Stage Monthly Payout for Approval
+            </button>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-3">Pending Monthly Approvals</h3>
+            <div id="pending-approval-30th-list" class="space-y-3">
+              <div class="text-slate-400 text-sm py-2">Loading pending monthly approvals...</div>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <h3 class="text-lg font-semibold text-white mb-3">Logged Every 30th Payout History</h3>
+            <div id="admin-payout-30th-track-list" class="space-y-3 max-w-3xl">
+              <div class="text-slate-400 text-sm py-2">Loading historical monthly records...</div>
+            </div>
+          </div>
+        </section>
+
         <section id="tab-admin-ads" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Create & Manage Ads / Announcements</h2>
           
@@ -1684,6 +1827,358 @@
     let currentSelectedRewardId = null;
     let currentEditingRawId = null;
     let selectedRawMonthKey = "";
+
+    // Global State Declarations
+    let user30thPayoutsArray = [];
+    let current30thInvoicePage = 1;
+    let unsubUser30thPayouts = null;
+    let unsubAdminPending30thPayouts = null;
+    let unsubAdmin30thTrack = null;
+    let selected30thMonthKey = "";
+
+    function init30thMonthFilter() {
+      const select = document.getElementById('payout-30th-month-filter');
+      if (!select) return;
+
+      select.innerHTML = "";
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonthIndex = now.getMonth();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+      for (let m = currentMonthIndex; m >= 0; m--) {
+        const monthKey = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+        const label = `${monthNames[m]} 30th, ${currentYear}`;
+
+        select.innerHTML += `<option value="${monthKey}">${label}</option>`;
+      }
+
+      if (!selected30thMonthKey) {
+        selected30thMonthKey = select.value;
+      } else {
+        select.value = selected30thMonthKey;
+      }
+    }
+
+    window.filter30thPayoutMonth = () => {
+      const select = document.getElementById('payout-30th-month-filter');
+      if (select) {
+        selected30thMonthKey = select.value;
+      }
+      if (window.currentUid) {
+        window.listenToUser30thPayouts(window.currentUid);
+      }
+    };
+
+    window.listenToUser30thPayouts = function(uid) {
+      window.currentUid = uid;
+      const select = document.getElementById('payout-30th-month-filter');
+      if (!select || select.options.length === 0) {
+        init30thMonthFilter();
+      }
+
+      if (select && select.value) {
+        selected30thMonthKey = select.value;
+      }
+
+      const q = query(collection(db, "payouts_30th"), where("userId", "==", uid), where("status", "==", "approved"));
+
+      if (unsubUser30thPayouts) unsubUser30thPayouts();
+      unsubUser30thPayouts = onSnapshot(q, (snapshot) => {
+        const invoiceList = document.getElementById('invoice-30th-list');
+        if (!invoiceList) return;
+
+        const currentYear = new Date().getFullYear();
+
+        if (snapshot.empty) {
+          invoiceList.innerHTML = "No payout records available for this period.";
+          
+          document.getElementById('payout-30th-referrals').innerText = "0";
+          document.getElementById('payout-30th-amount').innerText = "₱0.00";
+          document.getElementById('ytd-30th-referrals').innerText = "0";
+          document.getElementById('ytd-30th-amount').innerText = "₱0.00";
+          document.getElementById('pagination-30th-controls').classList.add('hidden');
+          return;
+        }
+
+        let yearlyPayouts = [];
+        let monthFilteredPayouts = [];
+        let ytdReferrals = 0;
+        let ytdAmount = 0;
+        let monthReferrals = 0;
+        let monthAmount = 0;
+
+        snapshot.forEach((docSnap) => {
+          const item = { id: docSnap.id, ...docSnap.data() };
+          const itemDate = new Date(item.monthKey ? `${item.monthKey}-01T00:00:00` : item.createdAt);
+          const itemMonthKey = item.monthKey || `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
+
+          if (itemDate.getFullYear() === currentYear) {
+            yearlyPayouts.push(item);
+            ytdReferrals += (item.referrals || 0);
+            ytdAmount += (item.amount || 0);
+          }
+
+          if (itemMonthKey === selected30thMonthKey) {
+            monthFilteredPayouts.push(item);
+            monthReferrals += (item.referrals || 0);
+            monthAmount += (item.amount || 0);
+          }
+        });
+
+        monthFilteredPayouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        user30thPayoutsArray = monthFilteredPayouts;
+
+        document.getElementById('payout-30th-referrals').innerText = monthReferrals;
+        document.getElementById('payout-30th-amount').innerText = `₱${monthAmount.toFixed(2)}`;
+        document.getElementById('ytd-30th-referrals').innerText = ytdReferrals;
+        document.getElementById('ytd-30th-amount').innerText = `₱${ytdAmount.toFixed(2)}`;
+
+        current30thInvoicePage = 1;
+        render30thInvoicePage();
+      }, (err) => console.warn("30th payout listener handled silently:", err.message));
+    };
+
+    function render30thInvoicePage() {
+      const invoiceList = document.getElementById('invoice-30th-list');
+      const paginationControls = document.getElementById('pagination-30th-controls');
+      const pageIndicator = document.getElementById('page-30th-indicator');
+      const pageNumbersDiv = document.getElementById('page-30th-numbers');
+
+      if (!user30thPayoutsArray || user30thPayoutsArray.length === 0) {
+        invoiceList.innerHTML = "No payout records available for this period.";
+        paginationControls.classList.add('hidden');
+        return;
+      }
+
+      const totalPages = Math.ceil(user30thPayoutsArray.length / itemsPerPage);
+      if (current30thInvoicePage > totalPages) current30thInvoicePage = totalPages;
+      if (current30thInvoicePage < 1) current30thInvoicePage = 1;
+
+      const startIndex = (current30thInvoicePage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageItems = user30thPayoutsArray.slice(startIndex, endIndex);
+
+      invoiceList.innerHTML = "";
+      pageItems.forEach((item) => {
+        const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        invoiceList.innerHTML += `
+          <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg mb-2 flex justify-between items-center">
+            <div>
+              <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
+              <p class="text-xs text-slate-400 mb-1">Period: ${item.monthKey || 'N/A'} (30th) | Credited: ${formattedDate}</p>
+              ${item.remarks ? `<p class="text-xs text-amber-400 italic">" ${item.remarks} "</p>` : ''}
+            </div>
+            <div class="text-right">
+              <p class="text-sm text-emerald-400 font-bold">₱${(item.amount || 0).toFixed(2)}</p>
+              <p class="text-xs text-slate-400">${item.referrals || 0} Hires</p>
+              ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      if (totalPages > 1) {
+        paginationControls.classList.remove('hidden');
+        pageIndicator.innerText = `Page ${current30thInvoicePage} of ${totalPages}`;
+        document.getElementById('btn-prev-30th-page').disabled = (current30thInvoicePage === 1);
+        document.getElementById('btn-next-30th-page').disabled = (current30thInvoicePage === totalPages);
+
+        pageNumbersDiv.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          pageNumbersDiv.innerHTML += `
+            <button onclick="goTo30thInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === current30thInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+              ${i}
+            </button>
+          `;
+        }
+      } else {
+        paginationControls.classList.add('hidden');
+        pageIndicator.innerText = `Showing 1–${user30thPayoutsArray.length} of ${user30thPayoutsArray.length}`;
+      }
+    }
+
+    window.change30thInvoicePage = (direction) => {
+      current30thInvoicePage += direction;
+      render30thInvoicePage();
+    };
+
+    window.goTo30thInvoicePage = (pageNum) => {
+      current30thInvoicePage = pageNum;
+      render30thInvoicePage();
+    };
+
+    // ADMIN EVERY 30TH MANAGEMENT FUNCTIONS
+    window.loadUserDisburse30thDetails = () => {
+      const selectedId = document.getElementById('disburse-30th-user-select').value;
+      const infoDiv = document.getElementById('disburse-30th-bank-info');
+      if (!selectedId) return infoDiv.classList.add('hidden');
+
+      const user = allAffiliates.find(u => u.id === selectedId);
+      document.getElementById('disburse-30th-method').innerText = user?.paymentMethod || 'Not Set';
+      document.getElementById('disburse-30th-account').innerText = user?.accountNumber || 'Not Set';
+      infoDiv.classList.remove('hidden');
+    };
+
+    window.submit30thPreApproval = async () => {
+      const selectedId = document.getElementById('disburse-30th-user-select').value;
+      const monthInput = document.getElementById('disburse-30th-month').value;
+      const referrals = document.getElementById('disburse-30th-referrals').value;
+      const amount = document.getElementById('disburse-30th-amount').value;
+
+      if (!selectedId || !monthInput || !referrals || !amount) return alert("Please fill in all fields.");
+
+      const user = allAffiliates.find(u => u.id === selectedId);
+      try {
+        await addDoc(collection(db, "payouts_30th"), {
+          userId: user.id,
+          userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email,
+          paymentMethod: user.paymentMethod || 'None',
+          accountNumber: user.accountNumber || 'None',
+          referrals: parseInt(referrals, 10),
+          amount: parseFloat(amount),
+          monthKey: monthInput,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+        alert("Monthly 30th payout staged for approval!");
+        document.getElementById('disburse-30th-user-select').value = "";
+        document.getElementById('disburse-30th-referrals').value = "";
+        document.getElementById('disburse-30th-amount').value = "";
+        document.getElementById('disburse-30th-bank-info').classList.add('hidden');
+      } catch (error) {
+        alert("Error staging monthly payout: " + error.message);
+      }
+    };
+
+    function listenToPending30thPayouts() {
+      const q = query(collection(db, "payouts_30th"), where("status", "==", "pending"));
+      if (unsubAdminPending30thPayouts) unsubAdminPending30thPayouts();
+
+      unsubAdminPending30thPayouts = onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('pending-approval-30th-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No pending monthly 30th approvals.</p>";
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-bold text-emerald-400 text-sm">${data.userName}</p>
+                  <p class="text-xs text-slate-400">Period: ${data.monthKey || 'N/A'} (30th) | ${data.paymentMethod} - ${data.accountNumber}</p>
+                  <p class="text-xs mt-1">Hires: <span class="font-bold text-white">${data.referrals}</span> | Amt: <span class="text-emerald-400 font-bold">₱${data.amount.toFixed(2)}</span></p>
+                </div>
+                <button onclick="decline30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-xs hover:bg-red-600/40">Decline</button>
+              </div>
+              <div class="border-t border-slate-800 pt-3 space-y-2">
+                <input type="text" id="remark-30th-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500">
+                <div class="flex items-center gap-2">
+                  <input type="file" id="receipt-30th-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
+                  <button onclick="approve30thPayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Approve & Upload</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Pending 30th payouts listener error:", err.message));
+    }
+
+    function listenToAdmin30thPayoutsTrack() {
+      const q = query(collection(db, "payouts_30th"), orderBy("createdAt", "desc"));
+      if (unsubAdmin30thTrack) unsubAdmin30thTrack();
+
+      unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('admin-payout-30th-track-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
+              <div>
+                <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
+                <p class="text-xs text-emerald-400 font-semibold">₱${(data.amount || 0).toFixed(2)} (${data.referrals || 0} Hires) | Status: ${data.status.toUpperCase()}</p>
+                <p class="text-[10px] text-slate-500">Period: ${data.monthKey || 'N/A'} (30th)</p>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="edit30thPayout('${docSnap.id}', ${data.referrals}, ${data.amount})" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-amber-600/40">Edit</button>
+                <button onclick="delete30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-red-600/40">Delete</button>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Admin 30th track listener error:", err.message));
+    }
+
+    window.approve30thPayout = async (payoutId, btn) => {
+      const remarkInput = document.getElementById(`remark-30th-${payoutId}`).value;
+      const fileInput = document.getElementById(`receipt-30th-${payoutId}`).files[0];
+
+      if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
+
+      btn.innerText = "Uploading...";
+      btn.disabled = true;
+      try {
+        let receiptUrl = "";
+        if (fileInput) {
+          const storageRef = ref(storage, `receipts_30th/${payoutId}_${fileInput.name}`);
+          await uploadBytes(storageRef, fileInput);
+          receiptUrl = await getDownloadURL(storageRef);
+        }
+        await updateDoc(doc(db, "payouts_30th", payoutId), { 
+          status: 'approved',
+          remarks: remarkInput || "",
+          receiptUrl: receiptUrl
+        });
+      } catch (error) {
+        alert("Error approving monthly payout: " + error.message);
+        btn.innerText = "Approve & Upload";
+        btn.disabled = false;
+      }
+    };
+
+    window.decline30thPayout = async (payoutId) => {
+      if (confirm("Are you sure you want to decline and remove this monthly payout record?")) {
+        await updateDoc(doc(db, "payouts_30th", payoutId), { status: 'declined' });
+      }
+    };
+
+    window.edit30thPayout = async (payoutId, currentHires, currentAmount) => {
+      const newHires = prompt("Enter new hires count:", currentHires);
+      if (newHires === null) return;
+      const newAmount = prompt("Enter new payout amount (PHP):", currentAmount);
+      if (newAmount === null) return;
+
+      try {
+        await updateDoc(doc(db, "payouts_30th", payoutId), {
+          referrals: parseInt(newHires, 10),
+          amount: parseFloat(newAmount)
+        });
+        alert("Monthly payout record updated successfully!");
+      } catch (err) {
+        alert("Failed to update record: " + err.message);
+      }
+    };
+
+    window.delete30thPayout = async (payoutId) => {
+      if (confirm("Are you sure you want to permanently delete this monthly payout record?")) {
+        try {
+          await deleteDoc(doc(db, "payouts_30th", payoutId));
+          alert("Record deleted successfully!");
+        } catch (err) {
+          alert("Failed to delete record: " + err.message);
+        }
+      }
+    };
 
     // SLIDESHOW STATE VARIABLES
     let slideshowList = [];
@@ -3259,8 +3754,10 @@
       }
     };
 
-    onAuthStateChanged(auth, async (user) => {
+   onAuthStateChanged(auth, async (user) => {
       if (user) {
+        window.currentUid = user.uid; // 👈 Set global currentUid at the very top
+        
         const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
         const currentTime = Date.now();
 
@@ -3326,6 +3823,10 @@
             initRawMonthFilter();
             window.listenToRawLeaderboard();
 
+            // 🟢 ADDED HERE: Initialize Every 30th Payout for all Affiliates
+            init30thMonthFilter();
+            window.listenToUser30thPayouts(user.uid);
+
             if (userData.role === 'admin') {
               document.getElementById('admin-menu').classList.remove('hidden');
               loadAffiliates(); 
@@ -3334,6 +3835,10 @@
               listenToAdminAds();
               listenToAdminRewards();
               listenToAdminRawReferrals();
+              
+              // 🟢 Admin-only Every 30th listeners
+              listenToPending30thPayouts();
+              listenToAdmin30thPayoutsTrack();
             }
 
             listenToUserPayouts(user.uid);
@@ -3362,6 +3867,7 @@
           console.error("Error fetching user data:", error);
         }
       } else {
+        window.currentUid = null;
         document.getElementById('auth-screen').classList.remove('hidden');
         document.getElementById('dashboard-screen').classList.add('hidden');
       }

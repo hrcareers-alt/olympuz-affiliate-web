@@ -1843,6 +1843,7 @@
         selected30thMonthKey = select.value;
       }
 
+      // Query collection directly
       const q = query(collection(db, "payouts_30th"));
 
       if (unsub30thLeaderboard) unsub30thLeaderboard();
@@ -1869,7 +1870,7 @@
 
         snapshot.forEach((docSnap) => {
           const item = docSnap.data();
-          if (item.monthKey === selected30thMonthKey) {
+          if (item.monthKey === selected30thMonthKey && item.status === "approved") {
             userHiresMap[item.userId] = (userHiresMap[item.userId] || 0) + (item.referrals || 0);
             userAmountMap[item.userId] = (userAmountMap[item.userId] || 0) + (item.amount || 0);
           }
@@ -1973,7 +1974,8 @@
     });
 
     function listenToAdmin30thPayoutsTrack() {
-      const q = query(collection(db, "payouts_30th"), orderBy("createdAt", "desc"));
+      // Fetch collection without orderBy to avoid index permission conflicts
+      const q = query(collection(db, "payouts_30th"));
       if (unsubAdmin30thTrack) unsubAdmin30thTrack();
 
       unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
@@ -1981,24 +1983,28 @@
         if (!listDiv) return;
         listDiv.innerHTML = "";
 
-        if (snapshot.empty) {
-          listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
-          return;
-        }
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
 
+        const records = [];
         snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
+          records.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Client-side sort by date
+        records.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        records.forEach((data) => {
           listDiv.innerHTML += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
                 <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
-                <p class="text-xs text-emerald-400 font-semibold">${data.referrals || 0} Hires | ₱${(data.amount || 0).toFixed(2)}</p>
+                <p class="text-xs text-emerald-400 font-semibold">₱${(data.amount || 0).toFixed(2)} (${data.referrals || 0} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
                 <p class="text-[10px] text-slate-500">Period: ${data.monthKey || 'N/A'} (30th)</p>
               </div>
 
               <div class="flex items-center gap-2 shrink-0">
-                <button onclick="edit30thPayout('${docSnap.id}', ${data.referrals}, ${data.amount})" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-amber-600/40">Edit</button>
-                <button onclick="delete30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-red-600/40">Delete</button>
+                <button onclick="edit30thPayout('${data.id}', ${data.referrals}, ${data.amount})" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-amber-600/40">Edit</button>
+                <button onclick="delete30thPayout('${data.id}')" class="bg-red-600/20 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-red-600/40">Delete</button>
               </div>
             </div>
           `;

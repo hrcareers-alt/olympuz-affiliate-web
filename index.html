@@ -1843,8 +1843,8 @@
         selected30thMonthKey = select.value;
       }
 
-      // Query collection directly
-      const q = query(collection(db, "payouts_30th"));
+      // Query only approved records for the public leaderboard
+      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
 
       if (unsub30thLeaderboard) unsub30thLeaderboard();
       unsub30thLeaderboard = onSnapshot(q, async (snapshot) => {
@@ -1870,7 +1870,7 @@
 
         snapshot.forEach((docSnap) => {
           const item = docSnap.data();
-          if (item.monthKey === selected30thMonthKey && item.status === "approved") {
+          if (item.monthKey === selected30thMonthKey) {
             userHiresMap[item.userId] = (userHiresMap[item.userId] || 0) + (item.referrals || 0);
             userAmountMap[item.userId] = (userAmountMap[item.userId] || 0) + (item.amount || 0);
           }
@@ -1930,7 +1930,9 @@
             </div>
           `;
         });
-      }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
+      }, (err) => {
+        console.warn("30th leaderboard listener error (handled):", err.message);
+      });
     };
 
     // --- ADMIN SUBMIT & TRACKING ---
@@ -1974,7 +1976,6 @@
     });
 
     function listenToAdmin30thPayoutsTrack() {
-      // Fetch collection without orderBy to avoid index permission conflicts
       const q = query(collection(db, "payouts_30th"));
       if (unsubAdmin30thTrack) unsubAdmin30thTrack();
 
@@ -1985,15 +1986,14 @@
 
         if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
 
-        const records = [];
+        const items = [];
         snapshot.forEach((docSnap) => {
-          records.push({ id: docSnap.id, ...docSnap.data() });
+          items.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        // Client-side sort by date
-        records.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
-        records.forEach((data) => {
+        items.forEach((data) => {
           listDiv.innerHTML += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
@@ -2009,7 +2009,9 @@
             </div>
           `;
         });
-      }, (err) => console.warn("Admin 30th track listener error:", err.message));
+      }, (err) => {
+        console.warn("Admin 30th track listener error (handled):", err.message);
+      });
     }
 
     window.edit30thPayout = async (payoutId, currentHires, currentAmount) => {

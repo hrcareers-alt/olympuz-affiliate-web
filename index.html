@@ -1834,6 +1834,8 @@
     };
 
     window.listenTo30thLeaderboard = function() {
+      if (!auth.currentUser) return; 
+
       const select = document.getElementById('payout-30th-month-filter');
       if (!select || select.options.length === 0) {
         init30thMonthFilter();
@@ -1843,8 +1845,7 @@
         selected30thMonthKey = select.value;
       }
 
-      // Query only approved records for the public leaderboard
-      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
+      const q = query(collection(db, "payouts_30th"));
 
       if (unsub30thLeaderboard) unsub30thLeaderboard();
       unsub30thLeaderboard = onSnapshot(q, async (snapshot) => {
@@ -1853,6 +1854,8 @@
         listDiv.innerHTML = "";
 
         let affiliateList = [...allAffiliates];
+        
+        // 🟢 SAFELY FETCH AFFILIATES WITHOUT THROWING PERMISSION ERRORS
         if (affiliateList.length === 0) {
           try {
             const qUsers = query(collection(db, "users"), where("role", "==", "affiliate"));
@@ -1861,7 +1864,7 @@
               affiliateList.push({ id: uDoc.id, ...uDoc.data() });
             });
           } catch (err) {
-            console.warn("Could not fetch affiliates for 30th leaderboard:", err);
+            console.warn("Non-admin user fallback for affiliate list:", err.message);
           }
         }
 
@@ -1876,20 +1879,31 @@
           }
         });
 
+        // Ensure logged-in user is always present in standings
+        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+        if (currentUid && !affiliateList.some(u => u.id === currentUid)) {
+          affiliateList.push({ id: currentUid, firstName: "You", lastName: "" });
+        }
+
         const rankings = [];
         for (const user of affiliateList) {
-          rankings.push({
-            userId: user.id,
-            userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate',
-            photoURL: user.photoURL || '',
-            hiresCount: userHiresMap[user.id] || 0,
-            amountCount: userAmountMap[user.id] || 0
-          });
+          const hires = userHiresMap[user.id] || 0;
+          const amount = userAmountMap[user.id] || 0;
+          
+          // Only show affiliates who have hires or if it's the current user
+          if (hires > 0 || user.id === currentUid) {
+            rankings.push({
+              userId: user.id,
+              userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate',
+              photoURL: user.photoURL || '',
+              hiresCount: hires,
+              amountCount: amount
+            });
+          }
         }
 
         rankings.sort((a, b) => b.hiresCount - a.hiresCount);
 
-        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
         const userIndex = rankings.findIndex(r => r.userId === currentUid);
 
         const userRankEl = document.getElementById('user-30th-rank');
@@ -3610,7 +3624,7 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        window.currentUid = user.uid; // Set global currentUid at the very top
+        window.currentUid = user.uid;
         
         const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
         const currentTime = Date.now();
@@ -3667,34 +3681,35 @@
             }
 
             updatePayoutDateRange();
-            
             window.switchTab('home');
 
+            // 1. Load basic user data first
+            initRawMonthFilter();
+            init30thMonthFilter();
+
+            // 2. Load Affiliates list if Admin
+            if (userData.role === 'admin') {
+              document.getElementById('admin-menu').classList.remove('hidden');
+              await loadAffiliates(); // 👈 Ensure affiliates array is populated BEFORE starting listeners
+            }
+
+            // 3. Start real-time listeners ONLY AFTER auth session & roles are confirmed
             listenToSlideshow();
             initUserAdsEngine();
             listenToMonthlyLeaderboard();
             listenToUserRewards(user.uid);
-            initRawMonthFilter();
             window.listenToRawLeaderboard();
-
-            // Initialize Every 30th Payout Leaderboard for all Affiliates
-            init30thMonthFilter();
-            window.listenTo30thLeaderboard();
+            window.listenToUserPayouts(user.uid);
+            window.listenTo30thLeaderboard(); // 👈 Safe to listen now
 
             if (userData.role === 'admin') {
-              document.getElementById('admin-menu').classList.remove('hidden');
-              loadAffiliates(); 
               listenToPendingPayouts(); 
               listenToAdminFeedback(); 
               listenToAdminAds();
               listenToAdminRewards();
               listenToAdminRawReferrals();
-              
-              // Admin-only Every 30th tracking listener
-              listenToAdmin30thPayoutsTrack();
+              listenToAdmin30thPayoutsTrack(); // 👈 Admin 30th tracking listener
             }
-
-            listenToUserPayouts(user.uid);
 
             document.getElementById('setting-firstname').value = userData.firstName || '';
             document.getElementById('setting-lastname').value = userData.lastName || '';
@@ -3725,7 +3740,7 @@
         document.getElementById('dashboard-screen').classList.add('hidden');
       }
     });
-
+    
     document.getElementById('admin-reward-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');

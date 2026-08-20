@@ -9,15 +9,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* LIGHT MODE PAYOUT SCHEME BANNER OVERRIDES */
-    body.light-mode #tab-payout .bg-indigo-950\/60 {
+    body.light-mode #tab-payout .bg-indigo-950\/60,
+    body.light-mode #tab-payout-30th .bg-indigo-950\/60 {
       background-color: #f0fdf4 !important;
       border-color: #c7d2fe !important;
     }
 
-    body.light-mode #tab-payout .bg-indigo-950\/60 span {
+    body.light-mode #tab-payout .bg-indigo-950\/60 span,
+    body.light-mode #tab-payout-30th .bg-indigo-950\/60 span {
       color: #1e1b4b !important;
       font-weight: 600 !important;
     }
+    
     /* CLASSY & TRENDY LIGHT MODE OVERRIDES */
     body.light-mode {
       background-color: #f8fafc !important; /* Soft Slate 50 background */
@@ -637,7 +640,6 @@
   <!-- MAIN DASHBOARD SCREEN -->
   <div id="dashboard-screen" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
     
-    <!-- MOBILE TOP BAR WITH BURGER MENU -->
     <div class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30">
       <div class="font-bold text-lg text-indigo-400">Olympuz Affiliate</div>
       <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="text-slate-200 text-xl p-2 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none">
@@ -645,7 +647,6 @@
       </button>
     </div>
 
-    <!-- BACKDROP OVERLAY FOR MOBILE SIDEBAR -->
     <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
     <!-- RESPONSIVE SIDEBAR -->
@@ -659,7 +660,6 @@
         </div>
         
         <nav id="sidebar-menu" class="space-y-1 text-sm pb-6">
-          <!-- 1. HOME OPTION -->
           <button id="nav-btn-home" onclick="switchTab('home')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2 font-bold text-indigo-400"><i class="fa-solid fa-house text-indigo-400"></i> Home</button>
           
           <button id="nav-btn-leaderboard" onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
@@ -670,11 +670,11 @@
           <button id="nav-btn-payout-30th" onclick="switchTab('payout-30th')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-calendar-check text-emerald-400"></i> Every 30th (Hires for Payout)
           </button>
+
           <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
           <button id="nav-btn-channels" onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Must Join: UPDATES</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
           
-          <!-- AFFILIATE: TREATS & REWARDS -->
           <button id="nav-btn-treats" onclick="switchTab('treats')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center justify-between group">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-gift text-pink-400"></i>
@@ -697,16 +697,15 @@
           <!-- Admin Panel Links -->
           <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
-            <!-- NEW ADMIN SLIDESHOW MANAGMENT LINK -->
             <button id="nav-btn-admin-slideshow" onclick="switchTab('admin-slideshow')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-images"></i> Modify Slideshow</button>
             <button id="nav-btn-admin-feedback" onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button id="nav-btn-admin-create" onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
             <button id="nav-btn-admin-raw" onclick="switchTab('admin-raw')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Manage Raw Referrals</button>
             <button id="nav-btn-admin-disburse" onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Weekly Payout</button>
             <button id="nav-btn-admin-disburse-30th" onclick="switchTab('admin-disburse-30th')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-calendar-plus"></i> Disburse Monthly Payout (Every 30th)
-          </button>
-            <button id="nav-btn-admin-rewards" onclick="switchTab('nav-btn-admin-rewards')" onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards</button>
+              <i class="fa-solid fa-calendar-plus"></i> Disburse Monthly Payout (Every 30th)
+            </button>
+            <button id="nav-btn-admin-rewards" onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards</button>
             <button id="nav-btn-admin-ads" onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
           </div>
         </nav>
@@ -723,7 +722,6 @@
     <!-- RIGHT MAIN CONTENT AREA -->
     <main class="flex-1 p-4 md:p-8 flex flex-col gap-6 overflow-y-auto">
       
-      <!-- DASHBOARD HEADER -->
       <header class="flex justify-between items-center pb-4 border-b border-slate-800 w-full shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-slate-800 border border-indigo-500 overflow-hidden flex justify-center items-center shrink-0">
@@ -738,28 +736,22 @@
       <!-- TAB CONTENTS CONTAINER -->
       <div class="w-full">
 
-        <!-- 🏠 TAB: HOME PAGE (DEFAULT LANDING) -->
+        <!-- 🏠 TAB: HOME PAGE -->
         <section id="tab-home" class="tab-content w-full space-y-8">
-          
-          <!-- HERO SLIDESHOW CONTAINER -->
           <div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-indigo-500/30 bg-slate-900 group">
-            
-            <!-- SLIDES WRAPPER -->
             <div id="slideshow-slides-container" class="relative w-full h-full">
-              <!-- Default Fallback Banner -->
               <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
                 <img src="Logo New.png" class="w-full h-full object-cover blur-sm brightness-50" alt="Olympuz Banner">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent flex flex-col justify-end p-6 md:p-10">
+                <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent flex flex-col justify-end p-6 md:p-10">
                   <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
                     Official Announcement
                   </span>
-                  <h2 class="text-xl md:text-3xl font-extrabold text-white">Welcome to Olympuz Affiliate Portal</h2>
-                  <p class="text-xs md:text-sm text-slate-300 mt-1 max-w-xl">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
+                  <h2 class="text-xl md:text-3xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
+                  <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
                 </div>
               </div>
             </div>
 
-            <!-- MANUAL NAVIGATION BUTTONS -->
             <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-950/60 hover:bg-indigo-600 text-white w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-md">
               <i class="fa-solid fa-chevron-left text-sm md:text-base"></i>
             </button>
@@ -767,13 +759,11 @@
               <i class="fa-solid fa-chevron-right text-sm md:text-base"></i>
             </button>
 
-            <!-- SLIDE INDICATOR DOTS -->
             <div id="slideshow-dots-container" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
               <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 transition-all"></span>
             </div>
           </div>
 
-          <!-- ANIMATED MORPHING QUICK NAVIGATION GRID -->
           <div>
             <h3 class="text-sm md:text-base font-extrabold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <i class="fa-solid fa-compass text-indigo-400"></i> Central Quick Navigation
@@ -786,7 +776,7 @@
                 <h4 class="font-bold text-white text-sm">Every 30th (Hires)</h4>
                 <p class="text-[11px] text-slate-400 mt-0.5">Monthly hire payout earnings</p>
               </button>
-              
+
               <button onclick="handleMorphNav('leaderboard')" class="bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
                   <i class="fa-solid fa-trophy"></i>
@@ -811,7 +801,50 @@
                 <p class="text-[11px] text-slate-400 mt-0.5">Invoices & valid earnings</p>
               </button>
 
-              <!-- 💰 TAB: EVERY 30TH (HIRES FOR PAYOUT) AFFILIATE VIEW -->
+              <button onclick="handleMorphNav('treats')" class="bg-slate-900 border border-slate-800 hover:border-pink-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-gift"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Treats & Rewards</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Claim special gifts</p>
+              </button>
+
+              <button onclick="handleMorphNav('channels')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-comments"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Official Channels</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Join updates GC</p>
+              </button>
+
+              <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Refer & Earn</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Get referral links</p>
+              </a>
+
+              <button onclick="handleMorphNav('feedback')" class="bg-slate-900 border border-slate-800 hover:border-purple-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-comment-dots"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Send Feedback</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Contact management</p>
+              </button>
+
+              <button onclick="handleMorphNav('settings')" class="bg-slate-900 border border-slate-800 hover:border-slate-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-gear"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Account Settings</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Theme & profile</p>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 💰 TAB: EVERY 30TH (HIRES FOR PAYOUT) AFFILIATE VIEW -->
         <section id="tab-payout-30th" class="tab-content hidden w-full space-y-6">
           <div class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -871,50 +904,7 @@
           </div>
         </section>
 
-              <button onclick="handleMorphNav('treats')" class="bg-slate-900 border border-slate-800 hover:border-pink-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
-                <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
-                  <i class="fa-solid fa-gift"></i>
-                </div>
-                <h4 class="font-bold text-white text-sm">Treats & Rewards</h4>
-                <p class="text-[11px] text-slate-400 mt-0.5">Claim special gifts</p>
-              </button>
-
-              <button onclick="handleMorphNav('channels')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
-                  <i class="fa-solid fa-comments"></i>
-                </div>
-                <h4 class="font-bold text-white text-sm">Official Channels</h4>
-                <p class="text-[11px] text-slate-400 mt-0.5">Join updates GC</p>
-              </button>
-
-              <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
-                  <i class="fa-solid fa-share-nodes"></i>
-                </div>
-                <h4 class="font-bold text-white text-sm">Refer & Earn</h4>
-                <p class="text-[11px] text-slate-400 mt-0.5">Get referral links</p>
-              </a>
-
-              <button onclick="handleMorphNav('feedback')" class="bg-slate-900 border border-slate-800 hover:border-purple-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
-                  <i class="fa-solid fa-comment-dots"></i>
-                </div>
-                <h4 class="font-bold text-white text-sm">Send Feedback</h4>
-                <p class="text-[11px] text-slate-400 mt-0.5">Contact management</p>
-              </button>
-
-              <button onclick="handleMorphNav('settings')" class="bg-slate-900 border border-slate-800 hover:border-slate-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
-                <div class="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
-                  <i class="fa-solid fa-gear"></i>
-                </div>
-                <h4 class="font-bold text-white text-sm">Account Settings</h4>
-                <p class="text-[11px] text-slate-400 mt-0.5">Theme & profile</p>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- 🖼️ TAB: ADMIN MODIFY SLIDESHOW (ADMIN ONLY) -->
+        <!-- 🖼️ TAB: ADMIN MODIFY SLIDESHOW -->
         <section id="tab-admin-slideshow" class="tab-content hidden max-w-4xl space-y-6">
           <div class="bg-gradient-to-r from-amber-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-amber-500/30 shadow-xl">
             <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
@@ -960,7 +950,6 @@
         <!-- TAB: AFFILIATE TREATS & REWARDS -->
         <section id="tab-treats" class="tab-content hidden w-full">
           <div class="max-w-4xl space-y-6">
-            
             <div class="bg-gradient-to-r from-pink-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-pink-500/30 shadow-xl">
               <div class="inline-flex items-center gap-2 bg-pink-500/20 text-pink-400 border border-pink-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
                 <i class="fa-solid fa-gift"></i> Exclusive Perks
@@ -988,7 +977,6 @@
             <div id="user-rewards-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="text-slate-400 text-sm py-6 col-span-full text-center">Loading your earned rewards...</div>
             </div>
-
           </div>
         </section>
 
@@ -1512,60 +1500,6 @@
           <div id="pending-approval-list" class="space-y-3"></div>
         </section>
 
-        <!-- 🛠️ TAB: ADMIN DISBURSE EVERY 30TH PAYOUT -->
-        <section id="tab-admin-disburse-30th" class="tab-content hidden space-y-6">
-          <h2 class="text-xl font-semibold text-amber-400">Disburse Every 30th (Hires Payout)</h2>
-          
-          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4 shadow-lg">
-            <h3 class="font-bold text-amber-400 text-sm uppercase border-b border-slate-800 pb-2">Stage Monthly Payout Record</h3>
-            
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Select Affiliate</label>
-              <select id="disburse-30th-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200" onchange="loadUserDisburse30thDetails()">
-                <option value="">-- Choose Affiliate --</option>
-              </select>
-            </div>
-
-            <div id="disburse-30th-bank-info" class="text-sm text-slate-300 bg-slate-950/50 p-3 rounded-lg hidden">
-              <div><strong>Payment Method:</strong> <span id="disburse-30th-method">-</span></div>
-              <div><strong>Account Number:</strong> <span id="disburse-30th-account">-</span></div>
-            </div>
-
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Target Payout Month & Year</label>
-              <input type="month" id="disburse-30th-month" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
-            </div>
-
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Total Valid Hires</label>
-              <input type="number" id="disburse-30th-referrals" min="0" placeholder="e.g. 10" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
-            </div>
-
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Amount to Credited (PHP)</label>
-              <input type="number" id="disburse-30th-amount" min="0" step="0.01" placeholder="e.g. 5000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
-            </div>
-
-            <button onclick="submit30thPreApproval()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold w-full py-2.5 rounded-lg transition text-xs">
-              Stage Monthly Payout for Approval
-            </button>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold text-white mb-3">Pending Monthly Approvals</h3>
-            <div id="pending-approval-30th-list" class="space-y-3">
-              <div class="text-slate-400 text-sm py-2">Loading pending monthly approvals...</div>
-            </div>
-          </div>
-
-          <div class="pt-4">
-            <h3 class="text-lg font-semibold text-white mb-3">Logged Every 30th Payout History</h3>
-            <div id="admin-payout-30th-track-list" class="space-y-3 max-w-3xl">
-              <div class="text-slate-400 text-sm py-2">Loading historical monthly records...</div>
-            </div>
-          </div>
-        </section>
-
         <section id="tab-admin-ads" class="tab-content hidden max-w-xl">
           <h2 class="text-xl font-semibold mb-4">Create & Manage Ads / Announcements</h2>
           
@@ -1709,7 +1643,6 @@
         activeTab.classList.remove('hidden');
       }
       
-      // Update sidebar active highlights
       document.querySelectorAll('#sidebar-menu button, #sidebar-menu a').forEach(btn => {
         btn.classList.remove('bg-slate-800', 'font-bold', 'text-indigo-400');
       });
@@ -1720,6 +1653,10 @@
 
       if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
         window.listenToRawLeaderboard();
+      }
+
+      if (tabName === 'payout-30th' && typeof window.listenToUser30thPayouts === 'function' && typeof window.currentUid === 'string') {
+        window.listenToUser30thPayouts(window.currentUid);
       }
 
       closeSidebarOnMobile();
@@ -1828,7 +1765,7 @@
     let currentEditingRawId = null;
     let selectedRawMonthKey = "";
 
-    // Global State Declarations
+    // Global State Declarations for Every 30th Payout
     let user30thPayoutsArray = [];
     let current30thInvoicePage = 1;
     let unsubUser30thPayouts = null;
@@ -2009,7 +1946,6 @@
       render30thInvoicePage();
     };
 
-    // ADMIN EVERY 30TH MANAGEMENT FUNCTIONS
     window.loadUserDisburse30thDetails = () => {
       const selectedId = document.getElementById('disburse-30th-user-select').value;
       const infoDiv = document.getElementById('disburse-30th-bank-info');
@@ -2187,16 +2123,13 @@
 
     const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
-    // ============================================================
-    // 🎠 SLIDESHOW CONTROLS (EXPONENTIALLY EXPOSED TO WINDOW GLOBAL)
-    // ============================================================
     function startSlideTimer() {
       if (slideshowTimer) clearInterval(slideshowTimer);
       if (slideshowList.length <= 1) return;
 
       slideshowTimer = setInterval(() => {
         window.nextSlide();
-      }, 8000); // 8-second rotation
+      }, 5000);
     }
 
     function updateSlideDisplay() {
@@ -2309,9 +2242,6 @@
       startSlideTimer();
     }
 
-    // ============================================================
-    // 🛠️ ADMIN SLIDESHOW MANAGEMENT FORM & LIST
-    // ============================================================
     document.getElementById('admin-slideshow-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -2366,7 +2296,6 @@
 
         listDiv.innerHTML += `
           <div class="bg-slate-900 border ${isFirst ? 'border-amber-500/60 ring-2 ring-amber-500/20' : 'border-slate-800'} rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between relative">
-            
             ${isFirst ? `
               <span class="absolute top-2 left-2 z-10 bg-amber-500 text-slate-950 font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full shadow-md flex items-center gap-1">
                 <i class="fa-solid fa-star"></i> Shows 1st (Cover)
@@ -2564,7 +2493,6 @@
       }
     };
 
-    // --- PUBLIC AFFILIATE SELF-REGISTRATION ---
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -3754,9 +3682,9 @@
       }
     };
 
-   onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        window.currentUid = user.uid; // 👈 Set global currentUid at the very top
+        window.currentUid = user.uid; // Set global currentUid at the very top
         
         const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
         const currentTime = Date.now();
@@ -3823,7 +3751,7 @@
             initRawMonthFilter();
             window.listenToRawLeaderboard();
 
-            // 🟢 ADDED HERE: Initialize Every 30th Payout for all Affiliates
+            // Initialize Every 30th Payout for all Affiliates
             init30thMonthFilter();
             window.listenToUser30thPayouts(user.uid);
 
@@ -3836,7 +3764,7 @@
               listenToAdminRewards();
               listenToAdminRawReferrals();
               
-              // 🟢 Admin-only Every 30th listeners
+              // Admin-only Every 30th listeners
               listenToPending30thPayouts();
               listenToAdmin30thPayoutsTrack();
             }
@@ -4302,6 +4230,7 @@
         const querySnapshot = await getDocs(q);
         
         const disburseSelect = document.getElementById('disburse-user-select');
+        const disburse30thSelect = document.getElementById('disburse-30th-user-select');
         const rewardSelect = document.getElementById('reward-user-select');
         const dailyRawSelect = document.getElementById('daily-raw-user-select');
         const pastRawSelect = document.getElementById('past-raw-user-select');
@@ -4309,6 +4238,7 @@
         
         const defaultOption = '<option value="">-- Choose Affiliate --</option>';
         if (disburseSelect) disburseSelect.innerHTML = defaultOption;
+        if (disburse30thSelect) disburse30thSelect.innerHTML = defaultOption;
         if (rewardSelect) rewardSelect.innerHTML = defaultOption;
         if (dailyRawSelect) dailyRawSelect.innerHTML = defaultOption;
         if (pastRawSelect) pastRawSelect.innerHTML = defaultOption;
@@ -4325,6 +4255,7 @@
           const optionHTML = `<option value="${data.id}">${fullName}</option>`;
 
           if (disburseSelect) disburseSelect.innerHTML += optionHTML;
+          if (disburse30thSelect) disburse30thSelect.innerHTML += optionHTML;
           if (rewardSelect) rewardSelect.innerHTML += optionHTML;
           if (dailyRawSelect) dailyRawSelect.innerHTML += optionHTML;
           if (pastRawSelect) pastRawSelect.innerHTML += optionHTML;
@@ -4403,7 +4334,7 @@
 
     window.declinePayout = async (payoutId) => {
       if(confirm("Are you sure you want to decline and remove this payout?")) {
-        await updateDoc(doc(doc(db, "payouts", payoutId)), { status: 'declined' });
+        await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
       }
     };
 
@@ -4413,11 +4344,14 @@
       if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
       if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
       if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
+      if (unsubUser30thPayouts) { unsubUser30thPayouts(); unsubUser30thPayouts = null; }
       if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
       if (unsubSlideshow) { unsubSlideshow(); unsubSlideshow = null; }
       if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
       if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
       if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }
+      if (unsubAdminPending30thPayouts) { unsubAdminPending30thPayouts(); unsubAdminPending30thPayouts = null; }
+      if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
       if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
       if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
 

@@ -188,11 +188,11 @@
     }
 
     body.light-mode #tab-treats h2 {
-      color: #831843 !important; /* Deep Pink Headline */
+      color: #831843 !important;
     }
 
     body.light-mode #tab-treats p.text-slate-300 {
-      color: #be185d !important; /* High Contrast Pink Subtitle */
+      color: #be185d !important;
     }
 
     body.light-mode #tab-treats .bg-pink-500\/20 {
@@ -291,7 +291,7 @@
       border-color: #fde68a !important;
     }
 
-    /* 1. Modal Backdrops - Glassmorphic Blur for Light Mode */
+    /* Modal Surface Overrides */
     body.light-mode #ad-popup-modal,
     body.light-mode #reward-view-modal,
     body.light-mode #raw-edit-modal,
@@ -301,7 +301,6 @@
       -webkit-backdrop-filter: blur(8px) !important;
     }
 
-    /* 2. Modal Card Surfaces - Force Light Backgrounds */
     body.light-mode #ad-popup-modal > div,
     body.light-mode #reward-view-modal > div,
     body.light-mode #raw-edit-modal > div,
@@ -313,7 +312,6 @@
       color: #0f172a !important;
     }
 
-    /* 3. Modal Titles & Headings Text Color */
     body.light-mode #ad-popup-modal h3,
     body.light-mode #reward-view-modal h3,
     body.light-mode #raw-edit-modal h3,
@@ -322,7 +320,6 @@
       font-weight: 800 !important;
     }
 
-    /* 4. Modal Body Text & Paragraphs */
     body.light-mode #ad-popup-modal p,
     body.light-mode #reward-view-modal p,
     body.light-mode #reward-login-popup p,
@@ -330,7 +327,6 @@
       color: #334155 !important;
     }
 
-    /* 5. Close Icon ("X") Buttons */
     body.light-mode #ad-popup-modal button.absolute,
     body.light-mode #reward-view-modal button.absolute,
     body.light-mode #raw-edit-modal button.absolute {
@@ -346,13 +342,11 @@
       color: #0f172a !important;
     }
 
-    /* 6. Image Containers inside Reward/Ad Modals */
     body.light-mode #modal-reward-image-container {
       background-color: #f1f5f9 !important;
       border-color: #cbd5e1 !important;
     }
 
-    /* 7. Input Fields inside Modals */
     body.light-mode #raw-edit-modal input,
     body.light-mode #reward-view-modal input {
       background-color: #f8fafc !important;
@@ -360,7 +354,6 @@
       border-color: #cbd5e1 !important;
     }
 
-    /* LIGHT MODE BIRTHDAY GIVEAWAY BANNER OVERRIDES */
     body.light-mode #tab-treats .border-pink-500\/40 {
       background-color: #ffffff !important;
       border-color: #fbcfe8 !important;
@@ -375,32 +368,28 @@
       color: #be185d !important;
     }
 
-    /* 1. Container Background & Border */
     body.light-mode .bg-amber-500\/10,
     body.light-mode div:has(> .fa-triangle-exclamation) {
-      background-color: #fffbeb !important; /* Soft Cream Warm Background */
-      border-color: #fcd34d !important; /* Muted Warm Gold Border */
+      background-color: #fffbeb !important;
+      border-color: #fcd34d !important;
     }
 
-    /* 2. Banner Header & Icons */
     body.light-mode .text-amber-400,
     body.light-mode .fa-triangle-exclamation {
-      color: #92400e !important; /* High-Contrast Deep Amber */
+      color: #92400e !important;
       font-weight: 800 !important;
     }
 
-    /* 3. Main Warning Text & Paragraphs */
     body.light-mode .text-amber-200\/90,
     body.light-mode .text-amber-300\/90,
     body.light-mode .bg-amber-500\/10 p,
     body.light-mode .bg-amber-500\/10 strong {
-      color: #78350f !important; /* Sharp Rich Dark Amber (Passes WCAG AAA) */
+      color: #78350f !important;
     }
 
-    /* 4. "Fill Up NDA Form Here" Link Button */
     body.light-mode .bg-amber-500\/10 a,
     body.light-mode #auth-success-view a {
-      color: #b45309 !important; /* Deep Golden-Brown Link */
+      color: #b45309 !important;
       font-weight: 800 !important;
       text-decoration: underline !important;
     }
@@ -410,11 +399,33 @@
       color: #78350f !important;
     }
 
-    /* LIGHT MODE AUTH CARD OVERRIDES */
     body.light-mode #auth-screen > div {
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* HOME HERO & ANIMATED NAVIGATION STYLES */
+    .slide-item {
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    body.light-mode #home-nav-grid button,
+    body.light-mode #home-nav-grid a {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode #home-nav-grid button:hover,
+    body.light-mode #home-nav-grid a:hover {
+      background-color: #f1f5f9 !important;
+      border-color: #818cf8 !important;
+    }
+
+    .morph-nav-anim {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
   </style>
 </head>
@@ -600,17 +611,20 @@
         </div>
         
         <nav id="sidebar-menu" class="space-y-1 text-sm pb-6">
-          <button onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
-          <button onclick="switchTab('raw-referrals')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2">
+          <!-- 1. HOME OPTION -->
+          <button id="nav-btn-home" onclick="switchTab('home')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2 font-bold text-indigo-400"><i class="fa-solid fa-house text-indigo-400"></i> Home</button>
+          
+          <button id="nav-btn-leaderboard" onclick="switchTab('leaderboard')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Leaderboard</button>
+          <button id="nav-btn-raw-referrals" onclick="switchTab('raw-referrals')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-chart-simple text-indigo-400"></i> Daily Referrals (RAW)
           </button>
-          <button onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout (VALID)</button>
+          <button id="nav-btn-payout" onclick="switchTab('payout')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Weekly Payout (VALID)</button>
           <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> FAQs</a>
-          <button onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Must Join: UPDATES</button>
+          <button id="nav-btn-channels" onclick="switchTab('channels')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments text-emerald-400"></i> Must Join: UPDATES</button>
           <a href="https://olympuz-org.com/remotejobs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-share-nodes"></i> Refer and Earn</a>
           
           <!-- AFFILIATE: TREATS & REWARDS -->
-          <button onclick="switchTab('treats')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center justify-between group">
+          <button id="nav-btn-treats" onclick="switchTab('treats')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center justify-between group">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-gift text-pink-400"></i>
               <span>Treats & Rewards</span>
@@ -626,20 +640,20 @@
           <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-store"></i> Affiliate Shop</a>
           <a href="https://docs.google.com/spreadsheets/d/1ZdW80D_gkfhxz9VeKzooiKrM-C89fScZWmKtbI1QMV4/edit?usp=sharing" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-star text-amber-400"></i> Testimonials</a>
           
-          <button onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
-          <button onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
+          <button id="nav-btn-feedback" onclick="switchTab('feedback')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Send Feedback</button>
+          <button id="nav-btn-settings" onclick="switchTab('settings')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</button>
 
           <!-- Admin Panel Links -->
           <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
-            <button onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
-            <button onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
-            <button onclick="switchTab('admin-raw')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-chart-line"></i> Manage Raw Referrals
-            </button>
-            <button onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
-            <button onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards </button>
-            <button onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
+            <!-- NEW ADMIN SLIDESHOW MANAGMENT LINK -->
+            <button id="nav-btn-admin-slideshow" onclick="switchTab('admin-slideshow')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-images"></i> Modify Slideshow</button>
+            <button id="nav-btn-admin-feedback" onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
+            <button id="nav-btn-admin-create" onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <button id="nav-btn-admin-raw" onclick="switchTab('admin-raw')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Manage Raw Referrals</button>
+            <button id="nav-btn-admin-disburse" onclick="switchTab('admin-disburse')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Disburse Payout</button>
+            <button id="nav-btn-admin-rewards" onclick="switchTab('nav-btn-admin-rewards')" onclick="switchTab('admin-rewards')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-gift"></i> Affiliate Rewards</button>
+            <button id="nav-btn-admin-ads" onclick="switchTab('admin-ads')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-rectangle-ad"></i> Create Ads</button>
           </div>
         </nav>
       </div>
@@ -670,11 +684,161 @@
       <!-- TAB CONTENTS CONTAINER -->
       <div class="w-full">
 
+        <!-- 🏠 TAB: HOME PAGE (DEFAULT LANDING) -->
+        <section id="tab-home" class="tab-content w-full space-y-8">
+          
+          <!-- HERO SLIDESHOW CONTAINER -->
+          <div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-indigo-500/30 bg-slate-900 group">
+            
+            <!-- SLIDES WRAPPER -->
+            <div id="slideshow-slides-container" class="relative w-full h-full">
+              <!-- Default Fallback Banner -->
+              <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
+                <img src="Logo New.png" class="w-full h-full object-cover blur-sm brightness-50" alt="Olympuz Banner">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent flex flex-col justify-end p-6 md:p-10">
+                  <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
+                    Official Announcement
+                  </span>
+                  <h2 class="text-xl md:text-3xl font-extrabold text-white">Welcome to Olympuz Affiliate Portal</h2>
+                  <p class="text-xs md:text-sm text-slate-300 mt-1 max-w-xl">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- MANUAL NAVIGATION BUTTONS -->
+            <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-950/60 hover:bg-indigo-600 text-white w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-md">
+              <i class="fa-solid fa-chevron-left text-sm md:text-base"></i>
+            </button>
+            <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-950/60 hover:bg-indigo-600 text-white w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-md">
+              <i class="fa-solid fa-chevron-right text-sm md:text-base"></i>
+            </button>
+
+            <!-- SLIDE INDICATOR DOTS -->
+            <div id="slideshow-dots-container" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 transition-all"></span>
+            </div>
+          </div>
+
+          <!-- ANIMATED MORPHING QUICK NAVIGATION GRID -->
+          <div>
+            <h3 class="text-sm md:text-base font-extrabold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-compass text-indigo-400"></i> Central Quick Navigation
+            </h3>
+            <div id="home-nav-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 morph-nav-anim">
+              <button onclick="handleMorphNav('leaderboard')" class="bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Leaderboard</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">View monthly standings</p>
+              </button>
+
+              <button onclick="handleMorphNav('raw-referrals')" class="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-chart-simple"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Daily Raw Referrals</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Track daily applicant count</p>
+              </button>
+
+              <button onclick="handleMorphNav('payout')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Weekly Payout</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Invoices & valid earnings</p>
+              </button>
+
+              <button onclick="handleMorphNav('treats')" class="bg-slate-900 border border-slate-800 hover:border-pink-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-gift"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Treats & Rewards</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Claim special gifts</p>
+              </button>
+
+              <button onclick="handleMorphNav('channels')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-comments"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Official Channels</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Join updates GC</p>
+              </button>
+
+              <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Refer & Earn</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Get referral links</p>
+              </a>
+
+              <button onclick="handleMorphNav('feedback')" class="bg-slate-900 border border-slate-800 hover:border-purple-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-comment-dots"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Send Feedback</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Contact management</p>
+              </button>
+
+              <button onclick="handleMorphNav('settings')" class="bg-slate-900 border border-slate-800 hover:border-slate-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-lg">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                  <i class="fa-solid fa-gear"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm">Account Settings</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Theme & profile</p>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 🖼️ TAB: ADMIN MODIFY SLIDESHOW (ADMIN ONLY) -->
+        <section id="tab-admin-slideshow" class="tab-content hidden max-w-4xl space-y-6">
+          <div class="bg-gradient-to-r from-amber-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-amber-500/30 shadow-xl">
+            <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+              <i class="fa-solid fa-shield-halved"></i> Admin Control
+            </div>
+            <h2 class="text-2xl font-extrabold text-white">Modify Hero Slideshow</h2>
+            <p class="text-xs text-slate-300 mt-1">Upload and manage landscape cover photos displayed prominently on the Home landing page.</p>
+          </div>
+
+          <form id="admin-slideshow-form" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+            <h3 class="font-bold text-amber-400 text-sm uppercase tracking-wider border-b border-slate-800 pb-2">Upload New Slide</h3>
+            
+            <div>
+              <label class="block text-xs text-slate-300 mb-1 font-semibold">Slide Headline / Caption Title *</label>
+              <input type="text" id="slide-title" placeholder="e.g. 🔥 Special Affiliate Bonus Month!" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-300 mb-1 font-semibold">Slide Subtitle / Description</label>
+              <input type="text" id="slide-subtitle" placeholder="e.g. Earn double incentives on all valid endorsements this week." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-300 mb-1 font-semibold">Landscape Photo (Recommended Proportions: 16:9 or 21:9) *</label>
+              <input type="file" id="slide-photo-input" accept="image/*" required class="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-semibold file:bg-amber-600 file:text-slate-950 hover:file:bg-amber-500 cursor-pointer w-full">
+            </div>
+
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl transition shadow-md text-xs">
+              Upload & Publish Slide
+            </button>
+          </form>
+
+          <div>
+            <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-images text-amber-400"></i> Active Slideshow Images
+            </h3>
+            <div id="admin-slides-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="text-slate-400 text-xs py-4 col-span-full">Loading slideshow images...</div>
+            </div>
+          </div>
+        </section>
+
         <!-- TAB: AFFILIATE TREATS & REWARDS -->
         <section id="tab-treats" class="tab-content hidden w-full">
           <div class="max-w-4xl space-y-6">
             
-            <!-- TOP GRADIENT TITLE CARD -->
             <div class="bg-gradient-to-r from-pink-950/80 via-slate-900 to-indigo-950/80 p-6 rounded-2xl border border-pink-500/30 shadow-xl">
               <div class="inline-flex items-center gap-2 bg-pink-500/20 text-pink-400 border border-pink-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
                 <i class="fa-solid fa-gift"></i> Exclusive Perks
@@ -683,7 +847,6 @@
               <p class="text-xs text-slate-300 mt-1">Claim special rewards, performance treats, and exclusive gifts earned from your referrals!</p>
             </div>
 
-            <!-- 🎂 GIVEAWAYS & BIRTHDAY GIVEAWAYS BANNER -->
             <div class="bg-slate-900 border border-pink-500/40 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-pink-500/20 border border-pink-500/30 text-pink-400 flex items-center justify-center text-lg shrink-0">
@@ -700,7 +863,6 @@
               </a>
             </div>
 
-            <!-- USER EARNED REWARDS LIST -->
             <div id="user-rewards-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="text-slate-400 text-sm py-6 col-span-full text-center">Loading your earned rewards...</div>
             </div>
@@ -746,10 +908,9 @@
         </section>
 
         <!-- TAB 1: WEEKLY PAYOUT -->
-        <section id="tab-payout" class="tab-content w-full">
+        <section id="tab-payout" class="tab-content hidden w-full">
           <h2 id="weekly-payout-heading" class="text-lg md:text-xl font-semibold mb-2">Weekly Payout (Releasing Every Saturday)</h2>
           
-          <!-- 💡 PAYOUT SCHEME NOTICE BANNER -->
           <div class="bg-indigo-950/60 border border-indigo-500/30 p-3.5 rounded-xl mb-4 flex items-center justify-between gap-3 flex-wrap">
             <div class="flex items-center gap-2.5 text-xs text-indigo-200">
               <i class="fa-solid fa-circle-info text-indigo-400 text-sm shrink-0"></i>
@@ -760,7 +921,6 @@
             </a>
           </div>
 
-          <!-- TOP CARDS: LATEST DISBURSEMENT -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
               <div class="text-slate-400 text-xs md:text-sm">Weekly Valid Referrals / Endorsements (Latest)</div>
@@ -854,7 +1014,6 @@
               </div>
             </div>
 
-            <!-- DISCLAIMER BANNER -->
             <div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex items-start gap-3">
               <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg shrink-0 mt-0.5"></i>
               <div class="text-xs text-amber-300/90 leading-relaxed">
@@ -1374,11 +1533,33 @@
         activeTab.classList.remove('hidden');
       }
       
+      // Update sidebar active highlights
+      document.querySelectorAll('#sidebar-menu button, #sidebar-menu a').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'font-bold', 'text-indigo-400');
+      });
+      const activeNavBtn = document.getElementById(`nav-btn-${tabName}`);
+      if (activeNavBtn) {
+        activeNavBtn.classList.add('bg-slate-800', 'font-bold', 'text-indigo-400');
+      }
+
       if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
         window.listenToRawLeaderboard();
       }
 
       closeSidebarOnMobile();
+    };
+
+    window.handleMorphNav = function(targetTab) {
+      const grid = document.getElementById('home-nav-grid');
+      if (grid) {
+        grid.classList.add('opacity-0', 'scale-95', '-translate-x-4');
+        setTimeout(() => {
+          grid.classList.remove('opacity-0', 'scale-95', '-translate-x-4');
+          window.switchTab(targetTab);
+        }, 300);
+      } else {
+        window.switchTab(targetTab);
+      }
     };
 
     window.toggleMobileSidebar = function() {
@@ -1397,7 +1578,7 @@
       }
     };
 
-   window.toggleAuthView = function(view) {
+    window.toggleAuthView = function(view) {
       const loginView = document.getElementById('auth-login-view');
       const regView = document.getElementById('auth-register-view');
       const successView = document.getElementById('auth-success-view');
@@ -1458,6 +1639,7 @@
     let unsubUserRewards = null;
     let unsubUserPayouts = null;
     let unsubUserAds = null;
+    let unsubSlideshow = null;
     let unsubAdminAds = null;
     let unsubAdminFeedback = null;
     let unsubAdminPendingPayouts = null;
@@ -1469,6 +1651,11 @@
     let currentSelectedRewardId = null;
     let currentEditingRawId = null;
     let selectedRawMonthKey = "";
+
+    // SLIDESHOW STATE VARIABLES
+    let slideshowList = [];
+    let currentSlideIndex = 0;
+    let slideshowTimer = null;
 
     const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
@@ -1519,6 +1706,195 @@
       }
       alert(`Theme updated to ${selectedTheme === 'light' ? 'Light Mode' : 'Dark Mode'}!`);
     });
+
+    // ============================================================
+    // 🎠 HERO SLIDESHOW LOGIC & LISTENERS
+    // ============================================================
+    function listenToSlideshow() {
+      const q = query(collection(db, "slideshow"), orderBy("createdAt", "desc"));
+      if (unsubSlideshow) unsubSlideshow();
+
+      unsubSlideshow = onSnapshot(q, (snapshot) => {
+        slideshowList = [];
+        snapshot.forEach((docSnap) => {
+          slideshowList.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        renderSlideshow();
+        renderAdminSlideshowList();
+      }, (err) => console.warn("Slideshow listener handled silently:", err.message));
+    }
+
+    function renderSlideshow() {
+      const slidesContainer = document.getElementById('slideshow-slides-container');
+      const dotsContainer = document.getElementById('slideshow-dots-container');
+
+      if (!slidesContainer || !dotsContainer) return;
+
+      slidesContainer.innerHTML = "";
+      dotsContainer.innerHTML = "";
+
+      if (slideshowList.length === 0) {
+        slidesContainer.innerHTML = `
+          <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
+            <img src="Logo New.png" class="w-full h-full object-cover blur-sm brightness-50" alt="Olympuz Banner">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent flex flex-col justify-end p-6 md:p-10">
+              <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
+                Official Announcement
+              </span>
+              <h2 class="text-xl md:text-3xl font-extrabold text-white">Welcome to Olympuz Affiliate Portal</h2>
+              <p class="text-xs md:text-sm text-slate-300 mt-1 max-w-xl">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
+            </div>
+          </div>
+        `;
+        dotsContainer.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>`;
+        return;
+      }
+
+      currentSlideIndex = 0;
+
+      slideshowList.forEach((slide, idx) => {
+        slidesContainer.innerHTML += `
+          <div class="slide-item absolute inset-0 ${idx === 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-800" data-index="${idx}">
+            <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Slide ${idx + 1}">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-6 md:p-10">
+              <h2 class="text-xl md:text-3xl font-extrabold text-white leading-tight">${slide.title || ''}</h2>
+              ${slide.subtitle ? `<p class="text-xs md:text-sm text-slate-300 mt-1 max-w-2xl">${slide.subtitle}</p>` : ''}
+            </div>
+          </div>
+        `;
+
+        dotsContainer.innerHTML += `
+          <button onclick="goToSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === 0 ? 'bg-indigo-500 w-6' : 'bg-slate-600 hover:bg-slate-400'}" data-dot="${idx}"></button>
+        `;
+      });
+
+      startSlideTimer();
+    }
+
+    function startSlideTimer() {
+      if (slideshowTimer) clearInterval(slideshowTimer);
+      if (slideshowList.length <= 1) return;
+
+      slideshowTimer = setInterval(() => {
+        window.nextSlide();
+      }, 2000);
+    }
+
+    window.nextSlide = function() {
+      if (slideshowList.length <= 1) return;
+      currentSlideIndex = (currentSlideIndex + 1) % slideshowList.length;
+      updateSlideDisplay();
+    };
+
+    window.prevSlide = function() {
+      if (slideshowList.length <= 1) return;
+      currentSlideIndex = (currentSlideIndex - 1 + slideshowList.length) % slideshowList.length;
+      updateSlideDisplay();
+    };
+
+    window.goToSlide = function(index) {
+      currentSlideIndex = index;
+      updateSlideDisplay();
+      startSlideTimer();
+    };
+
+    function updateSlideDisplay() {
+      document.querySelectorAll('#slideshow-slides-container .slide-item').forEach((el, idx) => {
+        if (idx === currentSlideIndex) {
+          el.classList.remove('opacity-0', 'pointer-events-none');
+          el.classList.add('opacity-100', 'pointer-events-auto');
+        } else {
+          el.classList.remove('opacity-100', 'pointer-events-auto');
+          el.classList.add('opacity-0', 'pointer-events-none');
+        }
+      });
+
+      document.querySelectorAll('#slideshow-dots-container button').forEach((dot, idx) => {
+        if (idx === currentSlideIndex) {
+          dot.className = "w-6 h-2.5 rounded-full bg-indigo-500 transition-all";
+        } else {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-all";
+        }
+      });
+    }
+
+    // ============================================================
+    // 🛠️ ADMIN SLIDESHOW MANAGEMENT FORM & LIST
+    // ============================================================
+    document.getElementById('admin-slideshow-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button');
+      const title = document.getElementById('slide-title').value.trim();
+      const subtitle = document.getElementById('slide-subtitle').value.trim();
+      const fileInput = document.getElementById('slide-photo-input');
+      const file = fileInput ? fileInput.files[0] : null;
+
+      if (!file) return alert("Please select a landscape image file to upload.");
+
+      submitBtn.innerText = "Uploading Slide...";
+      submitBtn.disabled = true;
+
+      try {
+        const fileRef = ref(storage, `slideshow/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const imageUrl = await getDownloadURL(fileRef);
+
+        await addDoc(collection(db, "slideshow"), {
+          title: title,
+          subtitle: subtitle,
+          imageUrl: imageUrl,
+          createdAt: new Date().toISOString()
+        });
+
+        alert("New slideshow image published successfully!");
+        e.target.reset();
+      } catch (err) {
+        alert("Failed to upload slide: " + err.message);
+      } finally {
+        submitBtn.innerText = "Upload & Publish Slide";
+        submitBtn.disabled = false;
+      }
+    });
+
+    function renderAdminSlideshowList() {
+      const listDiv = document.getElementById('admin-slides-list');
+      if (!listDiv) return;
+      listDiv.innerHTML = "";
+
+      if (slideshowList.length === 0) {
+        listDiv.innerHTML = `<div class="text-slate-400 text-xs py-4 col-span-full">No custom slideshow images uploaded yet.</div>`;
+        return;
+      }
+
+      slideshowList.forEach((slide) => {
+        listDiv.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+            <div class="relative w-full aspect-video bg-slate-950 overflow-hidden">
+              <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Slide Preview">
+            </div>
+            <div class="p-4 space-y-2">
+              <h4 class="font-bold text-white text-sm truncate">${slide.title}</h4>
+              <p class="text-xs text-slate-400 line-clamp-2">${slide.subtitle || 'No subtitle'}</p>
+              <button onclick="deleteSlide('${slide.id}')" class="w-full mt-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs font-bold py-1.5 rounded-xl transition">
+                <i class="fa-solid fa-trash-can mr-1"></i> Delete Slide
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    window.deleteSlide = async (slideId) => {
+      if (confirm("Are you sure you want to remove this slideshow image?")) {
+        try {
+          await deleteDoc(doc(db, "slideshow", slideId));
+          alert("Slide deleted successfully!");
+        } catch (err) {
+          alert("Failed to delete slide: " + err.message);
+        }
+      }
+    };
 
     window.loadUserRawTotalsForOverride = async () => {
       const userId = document.getElementById('override-raw-user-select').value;
@@ -1938,7 +2314,6 @@
         if (!listDiv) return;
         listDiv.innerHTML = "";
 
-        // 💡 FIX: If allAffiliates is empty (Regular Affiliate logged in), fetch affiliates list
         let affiliateList = [...allAffiliates];
         if (affiliateList.length === 0) {
           try {
@@ -1992,7 +2367,6 @@
         const currentUid = auth.currentUser ? auth.currentUser.uid : null;
         const userIndex = rankings.findIndex(r => r.userId === currentUid);
 
-        // SAFE NULL CHECKING
         const userRankEl = document.getElementById('user-raw-rank');
         const userWeeklyEl = document.getElementById('user-raw-weekly');
         const userMonthlyEl = document.getElementById('user-raw-monthly');
@@ -2263,7 +2637,7 @@
       const todayStr = new Date().toISOString().split('T')[0];
       const q = query(collection(db, "ads"));
 
-      if (unsubUserAds) unsubUserAds(); // Clean up previous instance if any
+      if (unsubUserAds) unsubUserAds();
       
       unsubUserAds = onSnapshot(q, (snapshot) => {
         activeAdsList = [];
@@ -2822,8 +3196,10 @@
 
             updatePayoutDateRange();
             
-            window.switchTab('leaderboard');
+            // 🏠 AUTOMATICALLY LAND ON HOME PAGE AFTER LOGIN
+            window.switchTab('home');
 
+            listenToSlideshow();
             initUserAdsEngine();
             listenToMonthlyLeaderboard();
             listenToUserRewards(user.uid);
@@ -2957,7 +3333,7 @@
       }
     });
 
-   // --- FORGOT PASSWORD FORM HANDLER ---
+    // --- FORGOT PASSWORD FORM HANDLER ---
     document.getElementById('public-forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');
@@ -2972,7 +3348,6 @@
         await sendPasswordResetEmail(auth, emailInput);
         alert(`A password reset link has been sent to ${emailInput}.\n\nPlease check your inbox/spam folder.`);
         
-        // Auto pre-fill login email field and return user to login screen
         document.getElementById('login-email').value = emailInput;
         e.target.reset();
         window.toggleAuthView('login');
@@ -3409,11 +3784,13 @@
     };
 
     window.logout = async () => {
+      if (slideshowTimer) { clearInterval(slideshowTimer); slideshowTimer = null; }
       if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
       if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
       if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
       if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
       if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
+      if (unsubSlideshow) { unsubSlideshow(); unsubSlideshow = null; }
       if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
       if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
       if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }

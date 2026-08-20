@@ -427,6 +427,20 @@
     .morph-nav-anim {
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    body.light-mode #slideshow-slides-container h2 {
+      color: #ffffff !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    body.light-mode #slideshow-slides-container p {
+      color: #f1f5f9 !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    body.light-mode #slideshow-slides-container .bg-gradient-to-t {
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%) !important;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1742,8 +1756,8 @@
               <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
                 Official Announcement
               </span>
-              <h2 class="text-xl md:text-3xl font-extrabold text-white">Welcome to Olympuz Affiliate Portal</h2>
-              <p class="text-xs md:text-sm text-slate-300 mt-1 max-w-xl">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
+              <h2 class="text-xl md:text-3xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
+              <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
             </div>
           </div>
         `;
@@ -1757,9 +1771,9 @@
         slidesContainer.innerHTML += `
           <div class="slide-item absolute inset-0 ${idx === 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-800" data-index="${idx}">
             <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Slide ${idx + 1}">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-6 md:p-10">
-              <h2 class="text-xl md:text-3xl font-extrabold text-white leading-tight">${slide.title || ''}</h2>
-              ${slide.subtitle ? `<p class="text-xs md:text-sm text-slate-300 mt-1 max-w-2xl">${slide.subtitle}</p>` : ''}
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent flex flex-col justify-end p-6 md:p-10">
+              <h2 class="text-xl md:text-3xl font-extrabold text-white leading-tight drop-shadow-md">${slide.title || ''}</h2>
+              ${slide.subtitle ? `<p class="text-xs md:text-sm text-slate-100 mt-1 max-w-2xl drop-shadow">${slide.subtitle}</p>` : ''}
             </div>
           </div>
         `;
@@ -1771,7 +1785,7 @@
 
       startSlideTimer();
     }
-
+    
     function startSlideTimer() {
       if (slideshowTimer) clearInterval(slideshowTimer);
       if (slideshowList.length <= 1) return;

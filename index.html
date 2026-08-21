@@ -2591,6 +2591,26 @@ body.light-mode #modal-user-created-at {
       }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
     };
 
+    window.showAuthView = (viewName) => {
+  const emailView = document.getElementById('auth-email-view');
+  const phoneView = document.getElementById('auth-phone-view');
+  const registerView = document.getElementById('register-view');
+
+  // Hide all views first
+  if (emailView) emailView.classList.add('hidden');
+  if (phoneView) phoneView.classList.add('hidden');
+  if (registerView) registerView.classList.add('hidden');
+
+  // Show only requested view
+  if (viewName === 'email' && emailView) {
+    emailView.classList.remove('hidden');
+  } else if (viewName === 'phone' && phoneView) {
+    phoneView.classList.remove('hidden');
+  } else if (viewName === 'register' && registerView) {
+    registerView.classList.remove('hidden');
+  }
+};
+
     window.fetchAffiliateDatabase = async () => {
       try {
         const q = query(collection(db, "users"));

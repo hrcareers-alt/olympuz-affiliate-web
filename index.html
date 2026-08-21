@@ -4405,7 +4405,7 @@ directoryList.innerHTML += `
       if (confirm("Are you sure you want to delete this raw referral entry?")) {
         try {
           await deleteDoc(doc(db, "raw_referrals", rawId));
-          alert("Entry deleted successfully!");
+          alert("Raw referral entry deleted successfully!");
         } catch (err) {
           alert("Failed to delete entry: " + err.message);
         }

@@ -2328,9 +2328,13 @@ body.light-mode #modal-user-created-at {
     const adminUsersPerPage = 10;
     let selectedInspectorUserId = null;
 
-    // NOTE: fixed - these were previously declared twice (duplicate "let" block +
-    // duplicate startOTPTimer function), which threw a fatal SyntaxError and broke
-    // this entire <script type="module"> block (nothing on the page worked as a result).
+    let isChatOpen = false;
+    let unreadChatCount = 0;
+    let unsubCommunityChat = null;
+    let currentUsername = "";
+    let currentUserRole = "affiliate";
+
+
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
@@ -2601,6 +2605,123 @@ body.light-mode #modal-user-created-at {
         });
       }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
     };
+
+    window.toggleCommunityChat = () => {
+  const chatContainer = document.getElementById('chat-box-container');
+  const badge = document.getElementById('chat-unread-badge');
+  
+  isChatOpen = !isChatOpen;
+  
+  if (isChatOpen) {
+    chatContainer.classList.remove('hidden');
+    unreadChatCount = 0;
+    if (badge) badge.classList.add('hidden');
+    
+    // Auto-scroll to bottom of chat
+    const listDiv = document.getElementById('chat-messages-list');
+    if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
+  } else {
+    chatContainer.classList.add('hidden');
+  }
+};
+
+// 2. Realtime Messages Listener (Renders Usernames)
+function listenToCommunityChat() {
+  const q = query(collection(db, "community_chat"), orderBy("createdAt", "asc"));
+  
+  if (unsubCommunityChat) unsubCommunityChat();
+  
+  unsubCommunityChat = onSnapshot(q, (snapshot) => {
+    const listDiv = document.getElementById('chat-messages-list');
+    const badge = document.getElementById('chat-unread-badge');
+    if (!listDiv) return;
+
+    if (snapshot.empty) {
+      listDiv.innerHTML = `<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation! 👋</div>`;
+      return;
+    }
+
+    listDiv.innerHTML = "";
+    const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+
+    snapshot.docs.forEach((docSnap) => {
+      const msg = docSnap.data();
+      const isMe = msg.userId === currentUid;
+      const formattedTime = msg.createdAt 
+        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : 'Just now';
+
+      // Username Display (@username format)
+      const usernameDisplay = `@${msg.username || 'user'}`;
+      const roleTag = msg.role === 'admin' ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` : '';
+
+      listDiv.innerHTML += `
+        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5">
+          <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
+            <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
+            ${roleTag}
+            <span class="text-slate-500 text-[9px]">${formattedTime}</span>
+          </div>
+          <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'} shadow-sm">
+            ${msg.text}
+          </div>
+        </div>
+      `;
+    });
+
+    // Handle Unread Notification Badge if Minimized
+    if (!isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
+      unreadChatCount++;
+      if (badge) {
+        badge.innerText = unreadChatCount > 99 ? '99+' : unreadChatCount;
+        badge.classList.remove('hidden');
+      }
+    }
+
+    // Auto-scroll to latest message
+    listDiv.scrollTop = listDiv.scrollHeight;
+  }, (err) => console.warn("Community chat error handled:", err.message));
+}
+
+// 3. Send Message Function
+window.sendCommunityChatMessage = async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('chat-message-input');
+  const text = input ? input.value.trim() : "";
+  const user = auth.currentUser;
+
+  if (!text || !user) return;
+
+  try {
+    input.value = "";
+
+    // Fetch user details if not cached
+    let senderUsername = currentUsername;
+    let senderRole = currentUserRole;
+
+    if (!senderUsername) {
+      const uDoc = await getDoc(doc(db, "users", user.uid));
+      if (uDoc.exists()) {
+        const uData = uDoc.data();
+        senderUsername = uData.username || 'user';
+        senderRole = uData.role || 'affiliate';
+        currentUsername = senderUsername;
+        currentUserRole = senderRole;
+      }
+    }
+
+    await addDoc(collection(db, "community_chat"), {
+      userId: user.uid,
+      username: senderUsername || 'user',
+      role: senderRole || 'affiliate',
+      text: text,
+      createdAt: new Date().toISOString()
+    });
+
+  } catch (err) {
+    alert("Failed to send message: " + err.message);
+  }
+};
 
     window.exportAffiliateDatabaseToExcel = () => {
   if (!affiliateDatabaseList || affiliateDatabaseList.length === 0) {
@@ -4750,6 +4871,13 @@ window.sendOTPCode = async () => {
               window.currentUid = docSnap.id;
             }
           }
+          if (docSnap.exists()) {
+          const userData = docSnap.data();
+          currentUsername = userData.username || 'user';
+          currentUserRole = userData.role || 'affiliate';
+
+          // 🟢 Start Realtime Community Chat
+          listenToCommunityChat();
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
@@ -5399,6 +5527,7 @@ window.sendOTPCode = async () => {
       if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
       if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
       if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
+      if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
 
       await signOut(auth);
       localStorage.removeItem('loginTimestamp');
@@ -5406,5 +5535,44 @@ window.sendOTPCode = async () => {
       document.getElementById('login-form').reset();
     };
   </script>
+  <!-- FLOATING COMMUNITY CHAT WIDGET -->
+<div id="community-chat-widget" class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+  
+  <!-- CHAT WINDOW BOX -->
+  <div id="chat-box-container" class="hidden w-80 sm:w-96 h-96 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-3 transition-all">
+    
+    <!-- HEADER -->
+    <div class="bg-indigo-600 text-white p-3.5 flex justify-between items-center shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-comments text-amber-300"></i>
+        <span class="font-bold text-sm">Affiliate Community Chat</span>
+      </div>
+      <button type="button" onclick="toggleCommunityChat()" class="text-indigo-200 hover:text-white text-base px-1">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+    </div>
+
+    <!-- MESSAGES CONTAINER -->
+    <div id="chat-messages-list" class="flex-1 p-3 overflow-y-auto space-y-3 bg-slate-950/60 text-xs">
+      <div class="text-center text-slate-500 py-8">Loading messages...</div>
+    </div>
+
+    <!-- INPUT FORM -->
+    <form id="chat-input-form" onsubmit="sendCommunityChatMessage(event)" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0">
+      <input type="text" id="chat-message-input" maxlength="300" required placeholder="Type a message as @username..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl transition text-xs shrink-0">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- FLOATING TOGGLE BUTTON -->
+  <button type="button" id="chat-toggle-btn" onclick="toggleCommunityChat()" class="relative bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 rounded-full border border-indigo-400/30 flex items-center justify-center shadow-xl transition transform hover:scale-105">
+    <i class="fa-solid fa-comments text-lg"></i>
+    <!-- UNREAD COUNTER BADGE -->
+    <span id="chat-unread-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-md">0</span>
+  </button>
+
+</div>
 </body>
 </html>

@@ -1906,6 +1906,7 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
     let selected30thMonthKey = "";
     let unsub30thLeaderboard = null;
     let unsubAdmin30thTrack = null;
+    let unsubAdminPending30thPayouts = null;
     let user30thPayoutsArray = [];
     let current30thInvoicePage = 1;
     let unsubUser30thInvoices = null;
@@ -2053,6 +2054,90 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
       render30thInvoicePage();
     };
 
+    // 🏆 PUBLIC "EVERY 30TH" LEADERBOARD LISTENER (was missing — this caused the error)
+    window.listenTo30thLeaderboard = function() {
+      const select = document.getElementById('payout-30th-month-filter');
+
+      if (!select || select.options.length === 0) {
+        init30thMonthFilter();
+      }
+
+      if (select && select.value) {
+        selected30thMonthKey = select.value;
+      }
+
+      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
+
+      if (unsub30thLeaderboard) unsub30thLeaderboard();
+      unsub30thLeaderboard = onSnapshot(q, (snapshot) => {
+        const userStatsMap = {};
+
+        snapshot.forEach((docSnap) => {
+          const item = docSnap.data();
+          if (item.monthKey === selected30thMonthKey) {
+            const uid = item.userId;
+            if (!userStatsMap[uid]) {
+              userStatsMap[uid] = {
+                userId: uid,
+                userName: item.userName || "Affiliate",
+                totalHires: 0,
+                totalAmount: 0
+              };
+            }
+            userStatsMap[uid].totalHires += (item.referrals || 0);
+            userStatsMap[uid].totalAmount += (item.amount || 0);
+          }
+        });
+
+        const rankings = Object.values(userStatsMap);
+        rankings.sort((a, b) => b.totalHires - a.totalHires);
+
+        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+        const userIndex = rankings.findIndex(r => r.userId === currentUid);
+
+        const userRankEl = document.getElementById('user-30th-rank');
+        const userHiresEl = document.getElementById('user-30th-monthly-hires');
+        const userAmountEl = document.getElementById('user-30th-monthly-amount');
+
+        if (userRankEl) userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
+        if (userHiresEl) userHiresEl.innerText = userStatsMap[currentUid] ? userStatsMap[currentUid].totalHires : 0;
+        if (userAmountEl) userAmountEl.innerText = `₱${(userStatsMap[currentUid] ? userStatsMap[currentUid].totalAmount : 0).toFixed(2)}`;
+
+        const listDiv = document.getElementById('payout-30th-leaderboard-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (rankings.length === 0) {
+          listDiv.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center">No verified hires recorded yet for this month.</div>`;
+          return;
+        }
+
+        rankings.forEach((item, index) => {
+          const rankNum = index + 1;
+          const isCurrentUser = item.userId === currentUid;
+
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border ${isCurrentUser ? 'border-emerald-500 bg-emerald-950/20' : 'border-slate-800'} p-3 rounded-xl flex items-center justify-between text-xs transition">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-slate-400 w-6 text-center text-sm">#${rankNum}</span>
+                <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-emerald-400 font-bold' : ''}">
+                  ${item.userName} ${isCurrentUser ? '(You)' : ''}
+                </span>
+              </div>
+              <div class="flex items-center gap-4 text-right">
+                <span class="bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-extrabold px-3 py-1 rounded-lg text-xs">
+                  ${item.totalHires} Hires
+                </span>
+                <span class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold px-3 py-1 rounded-lg text-xs">
+                  ₱${item.totalAmount.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          `;
+        });
+      }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
+    };
+
     // --- ADMIN DISBURSE & APPROVAL WORKFLOW ---
     window.loadUserDisburse30thDetails = () => {
       const selectedId = document.getElementById('disburse-30th-user-select').value;
@@ -2132,6 +2217,12 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
       }, (err) => console.warn("Pending 30th payouts error:", err.message));
     }
 
+    window.decline30thPayout = async (payoutId) => {
+      if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
+        await updateDoc(doc(db, "payouts_30th", payoutId), { status: 'declined' });
+      }
+    };
+
     window.approve30thPayout = async (payoutId, btn) => {
       const remarkInput = document.getElementById(`remark-30th-${payoutId}`).value;
       const fileInput = document.getElementById(`receipt-30th-${payoutId}`).files[0];
@@ -2159,6 +2250,40 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
         btn.disabled = false;
       }
     };
+
+    // 🧾 ADMIN "EVERY 30TH" LOGGED HISTORY LISTENER (was also missing)
+    function listenToAdmin30thPayoutsTrack() {
+      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
+      if (unsubAdmin30thTrack) unsubAdmin30thTrack();
+      unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
+        const listDiv = document.getElementById('admin-payout-30th-track-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        if (snapshot.empty) {
+          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No monthly hires payouts logged yet.</p>";
+          return;
+        }
+
+        const arr = [];
+        snapshot.forEach((docSnap) => arr.push({ id: docSnap.id, ...docSnap.data() }));
+        arr.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        arr.forEach((data) => {
+          const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          listDiv.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center gap-3">
+              <div>
+                <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
+                <p class="text-xs text-indigo-400 font-semibold">${data.referrals} Hires | ₱${(data.amount || 0).toFixed(2)}</p>
+                <p class="text-[10px] text-slate-500">${formattedDate} | Month Key: ${data.monthKey || 'N/A'}</p>
+              </div>
+              ${data.receiptUrl ? `<a href="${data.receiptUrl}" target="_blank" class="text-xs text-indigo-400 hover:underline shrink-0">View Receipt</a>` : ''}
+            </div>
+          `;
+        });
+      }, (err) => console.warn("Admin 30th track listener handled silently:", err.message));
+    }
 
     // SLIDESHOW STATE VARIABLES
     let slideshowList = [];
@@ -4392,6 +4517,7 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
       if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
       if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
       if (unsub30thLeaderboard) { unsub30thLeaderboard(); unsub30thLeaderboard = null; }
+      if (unsubUser30thInvoices) { unsubUser30thInvoices(); unsubUser30thInvoices = null; }
       if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
       if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
       if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
@@ -4399,6 +4525,7 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
       if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
       if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
       if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }
+      if (unsubAdminPending30thPayouts) { unsubAdminPending30thPayouts(); unsubAdminPending30thPayouts = null; }
       if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
       if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
       if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }

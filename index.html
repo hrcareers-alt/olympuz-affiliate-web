@@ -2335,10 +2335,98 @@ body.light-mode #modal-user-created-at {
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
- // State variables for tracking chat
+ // State variables for community chat
 let isChatOpen = false;
 let unreadChatCount = 0;
 let unsubCommunityChat = null;
+
+// Toggle Minimize / Expand Chat
+window.toggleCommunityChat = () => {
+  const chatContainer = document.getElementById('chat-box-container');
+  const badge = document.getElementById('chat-unread-badge');
+  
+  isChatOpen = !isChatOpen;
+  
+  if (isChatOpen) {
+    chatContainer.classList.remove('hidden');
+    unreadChatCount = 0;
+    if (badge) badge.classList.add('hidden');
+    
+    const listDiv = document.getElementById('chat-messages-list');
+    if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
+  } else {
+    chatContainer.classList.add('hidden');
+  }
+};
+
+// Realtime Messages Listener
+function listenToCommunityChat() {
+  const q = query(collection(db, "community_chat"));
+  
+  if (unsubCommunityChat) unsubCommunityChat();
+  
+  unsubCommunityChat = onSnapshot(q, (snapshot) => {
+    const listDiv = document.getElementById('chat-messages-list');
+    const badge = document.getElementById('chat-unread-badge');
+    if (!listDiv) return;
+
+    if (snapshot.empty) {
+      listDiv.innerHTML = `<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation! 👋</div>`;
+      return;
+    }
+
+    listDiv.innerHTML = "";
+    const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+
+    const docsArray = [];
+    snapshot.forEach((docSnap) => {
+      docsArray.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    docsArray.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+
+    docsArray.forEach((msg) => {
+      const isMe = msg.userId === currentUid;
+      const formattedTime = msg.createdAt 
+        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : 'Just now';
+
+      const usernameDisplay = `@${msg.username || 'user'}`;
+      const roleTag = msg.role === 'admin' 
+        ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
+        : '';
+
+      listDiv.innerHTML += `
+        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5">
+          <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
+            <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
+            ${roleTag}
+            <span class="text-slate-500 text-[9px]">${formattedTime}</span>
+          </div>
+          <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'} shadow-sm">
+            ${msg.text}
+          </div>
+        </div>
+      `;
+    });
+
+    if (!isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
+      unreadChatCount++;
+      if (badge) {
+        badge.innerText = unreadChatCount > 99 ? '99+' : unreadChatCount;
+        badge.classList.remove('hidden');
+      }
+    }
+
+    listDiv.scrollTop = listDiv.scrollHeight;
+  }, (err) => {
+    console.error("Community chat error:", err);
+    const listDiv = document.getElementById('chat-messages-list');
+    if (listDiv) {
+      listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Chat Error: ${err.message}</div>`;
+    }
+  });
+}
 
 // Send Message Handler
 window.sendCommunityChatMessage = async (e) => {
@@ -2384,71 +2472,6 @@ window.sendCommunityChatMessage = async (e) => {
 
   return false;
 };
-
-    // Formats 9123456789 or 09123456789 to E.164 standard (+639123456789)
-    function formatPHPhoneNumber(rawInput) {
-      let cleaned = rawInput.replace(/\D/g, '');
-      if (cleaned.startsWith('0')) {
-        cleaned = cleaned.substring(1);
-      }
-      if (cleaned.length !== 10 || !cleaned.startsWith('9')) {
-        return null;
-      }
-      return '+63' + cleaned;
-    }
-
-    function init30thMonthFilter() {
-      const select = document.getElementById('payout-30th-month-filter');
-      if (!select) return;
-
-      select.innerHTML = "";
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonthIndex = now.getMonth();
-
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-      for (let m = currentMonthIndex; m >= 0; m--) {
-        const monthKey = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
-        const label = `${monthNames[m]} 30th, ${currentYear}`;
-
-        select.innerHTML += `<option value="${monthKey}">${label}</option>`;
-      }
-
-      if (!selected30thMonthKey) {
-        selected30thMonthKey = select.value;
-      } else {
-        select.value = selected30thMonthKey;
-      }
-    }
-
-    window.filter30thPayoutMonth = () => {
-      const select = document.getElementById('payout-30th-month-filter');
-      if (select) {
-        selected30thMonthKey = select.value;
-      }
-      window.listenTo30thLeaderboard();
-      if (auth.currentUser) {
-        window.listenToUser30thInvoices(auth.currentUser.uid);
-      }
-    };
-
-    window.edit30thPayout = async (payoutId, currentHires, currentAmount) => {
-      const newHires = prompt("Enter new verified hires count:", currentHires);
-      if (newHires === null) return;
-      const newAmount = prompt("Enter new payout amount (PHP):", currentAmount);
-      if (newAmount === null) return;
-
-      try {
-        await updateDoc(doc(db, "payouts_30th", payoutId), {
-          referrals: parseInt(newHires, 10),
-          amount: parseFloat(newAmount)
-        });
-        alert("30th Monthly payout record updated successfully!");
-      } catch (err) {
-        alert("Failed to update record: " + err.message);
-      }
-    };
 
     // 🗑️ Delete 30th Monthly Payout (Exposed to Global Scope)
     window.delete30thPayout = async (payoutId) => {
@@ -5459,8 +5482,7 @@ window.sendOTPCode = async () => {
       document.getElementById('login-form').reset();
     };
   </script>
-</div>
-  <!-- FLOATING COMMUNITY CHAT WIDGET -->
+<!-- FLOATING COMMUNITY CHAT WIDGET -->
 <div id="community-chat-widget" class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
   
   <!-- CHAT WINDOW BOX -->
@@ -5483,12 +5505,13 @@ window.sendOTPCode = async () => {
     </div>
 
     <!-- INPUT FORM -->
-<form id="chat-input-form" onsubmit="sendCommunityChatMessage(event); return false;" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0">
-  <input type="text" id="chat-message-input" maxlength="300" required placeholder="Type a message as @username..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-  <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl transition text-xs shrink-0">
-    <i class="fa-solid fa-paper-plane"></i>
-  </button>
-</form>
+    <form id="chat-input-form" onsubmit="sendCommunityChatMessage(event); return false;" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0">
+      <input type="text" id="chat-message-input" maxlength="300" required placeholder="Type a message as @username..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl transition text-xs shrink-0">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
 
   <!-- FLOATING TOGGLE BUTTON -->
   <button type="button" id="chat-toggle-btn" onclick="toggleCommunityChat()" class="relative bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 rounded-full border border-indigo-400/30 flex items-center justify-center shadow-xl transition transform hover:scale-105">

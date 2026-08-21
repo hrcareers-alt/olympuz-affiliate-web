@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Olympuz Affiliate Portal</title>
@@ -1522,6 +1523,11 @@ body.light-mode #modal-user-created-at {
     
     <div class="flex items-center gap-2 text-xs text-slate-400 w-full sm:w-auto justify-between sm:justify-end">
       <span id="admin-users-page-indicator">Showing 1-10</span>
+
+      <button onclick="exportAffiliateDatabaseToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5 shrink-0">
+      <i class="fa-solid fa-file-excel text-sm"></i>
+      <span>Export Excel</span>
+    </button>
     </div>
   </div>
 
@@ -2592,6 +2598,50 @@ body.light-mode #modal-user-created-at {
         });
       }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
     };
+
+    window.exportAffiliateDatabaseToExcel = () => {
+  if (!affiliateDatabaseList || affiliateDatabaseList.length === 0) {
+    return alert("No affiliate data available to export.");
+  }
+
+  // 1. Format the data rows for clean spreadsheet columns
+  const reportData = affiliateDatabaseList.map((user, index) => {
+    return {
+      "No.": index + 1,
+      "Account ID": user.id || "N/A",
+      "First Name": user.firstName || "N/A",
+      "Last Name": user.lastName || "N/A",
+      "Full Name": `${user.firstName || ''} ${user.lastName || ''}`.trim() || "N/A",
+      "Username": user.username || "N/A",
+      "Email Address": user.email || "N/A",
+      "Phone Number": user.phoneNumber || "N/A",
+      "Role": (user.role || 'affiliate').toUpperCase(),
+      "Payment Method": user.paymentMethod || "Not Configured",
+      "Account Name": user.accountName || "N/A",
+      "Account Number": user.accountNumber || "N/A",
+      "Registration Date": user.createdAt 
+        ? new Date(user.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+        : "N/A"
+    };
+  });
+
+  // 2. Create SheetJS Workbook & Worksheet
+  const worksheet = XLSX.utils.json_to_sheet(reportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Affiliates Masterlist");
+
+  // 3. Auto-adjust column widths
+  const colWidths = Object.keys(reportData[0]).map(key => ({
+    wch: Math.max(key.length, 18)
+  }));
+  worksheet['!cols'] = colWidths;
+
+  // 4. Generate filename with date tag and download
+  const dateStr = new Date().toISOString().split('T')[0];
+  const filename = `Olympuz_Affiliate_Directory_${dateStr}.xlsx`;
+
+  XLSX.writeFile(workbook, filename);
+};
 
     window.fetchAffiliateDatabase = async () => {
       try {

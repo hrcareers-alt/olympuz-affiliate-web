@@ -2695,7 +2695,6 @@ window.sendCommunityChatMessage = async (e) => {
   try {
     input.value = "";
 
-    // Fetch user details if not cached
     let senderUsername = currentUsername;
     let senderRole = currentUserRole;
 
@@ -4502,28 +4501,26 @@ directoryList.innerHTML += `
     };
 
     window.submitEditRawCount = async () => {
-      const newCount = parseInt(document.getElementById('edit-raw-count-input').value, 10);
-      if (!newCount || newCount < 1) return alert("Please enter a valid count.");
+  const newCount = parseInt(document.getElementById('edit-raw-count-input').value, 10);
+  if (!newCount || newCount < 1) return alert("Please enter a valid count.");
 
-      const btn = document.getElementById('save-edit-raw-btn');
-      btn.innerText = "Saving...";
-      btn.disabled = true;
+  const btn = document.getElementById('save-edit-raw-btn');
+  btn.innerText = "Saving...";
+  btn.disabled = true;
 
-      try {
-        await updateDoc(doc(db, "raw_referrals", currentEditingRawId), {
-          count: newCount
-        });
-        alert("Raw referral count updated successfully!");
-        closeEditRawModal();
-      } catch (err) {
-        alert("Failed to update entry: " + err.message);
-      } finally {
-        if (btn) {
-          btn.innerText = "Save Changes";
-          btn.disabled = false;
-        }
-      }
-    };
+  try {
+    await updateDoc(doc(db, "raw_referrals", currentEditingRawId), { count: newCount });
+    alert("Raw referral count updated successfully!");
+    closeEditRawModal();
+  } catch (err) {
+    alert("Failed to update count: " + err.message);
+  } finally {
+    if (btn) {
+      btn.innerText = "Save Changes";
+      btn.disabled = false;
+    }
+  }
+};
 
     window.deleteRawReferral = async (rawId) => {
       if (confirm("Are you sure you want to delete this raw referral entry?")) {

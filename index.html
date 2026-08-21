@@ -549,6 +549,90 @@ body.light-mode #payout-30th-leaderboard-list span.text-slate-400 {
 body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
   color: #047857 !important;
 }
+    /* ============================================================
+   LIGHT MODE: EVERY 30TH (HIRES FOR PAYOUT) OVERRIDES
+   ============================================================ */
+
+/* Clean Card Backgrounds for Standings & Invoices */
+body.light-mode #tab-payout-30th .bg-slate-900,
+body.light-mode #tab-payout-30th .bg-slate-950\/60 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+/* Banner Hero Container (Matches Emerald Scheme Gracefully) */
+body.light-mode #tab-payout-30th > div > div:first-child {
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%, #f0fdf4 100%) !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
+}
+
+/* Banner Badge Override */
+body.light-mode #tab-payout-30th .bg-emerald-500\/20 {
+  background-color: #d1fae5 !important;
+  border-color: #6ee7b7 !important;
+  color: #065f46 !important;
+}
+
+/* Fix Unreadable Header & Subtitle Typography */
+body.light-mode #tab-payout-30th h2 {
+  color: #064e3b !important;
+}
+
+body.light-mode #tab-payout-30th p {
+  color: #047857 !important;
+}
+
+body.light-mode #tab-payout-30th label {
+  color: #0f172a !important;
+}
+
+/* Month Dropdown Selector */
+body.light-mode #tab-payout-30th select#payout-30th-month-filter {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Stat Cards (Standing, Hires, Payout Amount) */
+body.light-mode #tab-payout-30th .grid > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode #tab-payout-30th .grid span.text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Standings & Confidential Invoices Titles */
+body.light-mode #tab-payout-30th h3 {
+  color: #0f172a !important;
+}
+
+/* Item Row Styling in Light Mode */
+body.light-mode #payout-30th-leaderboard-list > div,
+body.light-mode #invoice-30th-list > div {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Current Logged-In User Active Highlight Row */
+body.light-mode #payout-30th-leaderboard-list > div.border-emerald-500 {
+  background-color: #ecfdf5 !important;
+  border-color: #10b981 !important;
+}
+
+body.light-mode #payout-30th-leaderboard-list span,
+body.light-mode #invoice-30th-list span,
+body.light-mode #invoice-30th-list p {
+  color: #0f172a !important;
+}
+
+body.light-mode #payout-30th-leaderboard-list span.text-slate-400,
+body.light-mode #invoice-30th-list p.text-slate-400 {
+  color: #64748b !important;
+}
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

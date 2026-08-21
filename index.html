@@ -4520,13 +4520,21 @@ body.light-mode #modal-user-created-at {
     let confirmationResult = null;
 
     function initRecaptcha() {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'invisible',
-          'callback': () => {}
-        });
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible',
+      'callback': (response) => {
+        // reCAPTCHA solved - allow signInWithPhoneNumber
+      },
+      'expired-callback': () => {
+        // Response expired - reset widget
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+        }
       }
-    }
+    });
+  }
+}
 
     function startOTPTimer() {
       const resendBtn = document.getElementById('btn-resend-otp');
@@ -4552,51 +4560,46 @@ body.light-mode #modal-user-created-at {
       }, 1000);
     }
 
-    window.sendOTPCode = async () => {
-      const sendBtn = document.getElementById('btn-send-otp');
-      const rawPhone = document.getElementById('otp-phone-input').value.trim();
-      const formattedPhone = formatPHPhoneNumber(rawPhone);
+    // Triggered on 'Send SMS Verification Code' button click
+window.sendOTPCode = async () => {
+  const sendBtn = document.getElementById('btn-send-otp');
+  const rawPhone = document.getElementById('otp-phone-input').value.trim();
+  const formattedPhone = formatPHPhoneNumber(rawPhone);
 
-      if (!formattedPhone) {
-        return alert("Please enter a valid 10-digit Philippine mobile number (e.g. 9123456789).");
-      }
+  if (!formattedPhone) {
+    return alert("Please enter a valid 10-digit Philippine mobile number starting with 9.");
+  }
 
-      try {
-        sendBtn.disabled = true;
-        sendBtn.innerText = "Sending SMS...";
+     try {
+    sendBtn.disabled = true;
+    sendBtn.innerText = "Sending SMS...";
 
-        const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhone));
-        const snap = await getDocs(q);
+    // 1. Initialize reCAPTCHA
+    initRecaptcha();
+    const appVerifier = window.recaptchaVerifier;
 
-        if (snap.empty) {
-          sendBtn.disabled = false;
-          sendBtn.innerText = "Send SMS Verification Code";
-          return alert("No account found registered with this phone number. Please check or register first.");
-        }
+    // 2. Request Verification SMS passing reCAPTCHA appVerifier
+    confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
 
-        initRecaptcha();
-        const appVerifier = window.recaptchaVerifier;
+    alert(`Verification code sent via SMS to ${formattedPhone}!`);
+    document.getElementById('otp-step-send').classList.add('hidden');
+    document.getElementById('otp-step-verify').classList.remove('hidden');
 
-        confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-        
-        alert(`Verification code sent via SMS to ${formattedPhone}!`);
-        document.getElementById('otp-step-send').classList.add('hidden');
-        document.getElementById('otp-step-verify').classList.remove('hidden');
+    // 3. Start 60-second countdown timer
+    startOTPTimer();
 
-        // Start 60-second timer
-        startOTPTimer();
+  } catch (error) {
+    console.error("OTP send error:", error);
+    alert("Failed to send OTP SMS: " + error.message);
+    sendBtn.disabled = false;
+    sendBtn.innerText = "Send SMS Verification Code";
 
-      } catch (error) {
-        console.error("OTP send error:", error);
-        alert("Failed to send OTP SMS: " + error.message);
-        sendBtn.disabled = false;
-        sendBtn.innerText = "Send SMS Verification Code";
-
-        if (window.recaptchaVerifier) {
-          window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
-        }
-      }
-    };
+    // Reset reCAPTCHA widget if token fails or expires
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+    }
+  }
+};
 
     window.resendOTPCode = async () => {
       if (otpCountdown > 0) return;

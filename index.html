@@ -2361,7 +2361,8 @@ window.toggleCommunityChat = () => {
 
 // Realtime Messages Listener (Renders @username handles)
 function listenToCommunityChat() {
-  const q = query(collection(db, "community_chat"), orderBy("createdAt", "asc"));
+  // Query without orderBy to prevent Firestore index requirements
+  const q = query(collection(db, "community_chat"));
   
   if (unsubCommunityChat) unsubCommunityChat();
   
@@ -2378,15 +2379,24 @@ function listenToCommunityChat() {
     listDiv.innerHTML = "";
     const currentUid = auth.currentUser ? auth.currentUser.uid : null;
 
-    snapshot.docs.forEach((docSnap) => {
-      const msg = docSnap.data();
+    // Convert docs to array and sort locally by createdAt timestamp
+    const docsArray = [];
+    snapshot.forEach((docSnap) => {
+      docsArray.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    docsArray.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+
+    docsArray.forEach((msg) => {
       const isMe = msg.userId === currentUid;
       const formattedTime = msg.createdAt 
         ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : 'Just now';
 
       const usernameDisplay = `@${msg.username || 'user'}`;
-      const roleTag = msg.role === 'admin' ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` : '';
+      const roleTag = msg.role === 'admin' 
+        ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
+        : '';
 
       listDiv.innerHTML += `
         <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5">
@@ -2411,48 +2421,14 @@ function listenToCommunityChat() {
     }
 
     listDiv.scrollTop = listDiv.scrollHeight;
-  }, (err) => console.warn("Community chat error handled:", err.message));
-}
-
-// Send Message Function
-window.sendCommunityChatMessage = async (e) => {
-  e.preventDefault();
-  const input = document.getElementById('chat-message-input');
-  const text = input ? input.value.trim() : "";
-  const user = auth.currentUser;
-
-  if (!text || !user) return;
-
-  try {
-    input.value = "";
-
-    let senderUsername = currentUsername;
-    let senderRole = currentUserRole;
-
-    if (!senderUsername) {
-      const uDoc = await getDoc(doc(db, "users", user.uid));
-      if (uDoc.exists()) {
-        const uData = uDoc.data();
-        senderUsername = uData.username || 'user';
-        senderRole = uData.role || 'affiliate';
-        currentUsername = senderUsername;
-        currentUserRole = senderRole;
-      }
+  }, (err) => {
+    console.error("Community chat error:", err);
+    const listDiv = document.getElementById('chat-messages-list');
+    if (listDiv) {
+      listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Chat Error: ${err.message}</div>`;
     }
-
-    await addDoc(collection(db, "community_chat"), {
-      userId: user.uid,
-      username: senderUsername || 'user',
-      role: senderRole || 'affiliate',
-      text: text,
-      createdAt: new Date().toISOString()
-    });
-
-  } catch (err) {
-    alert("Failed to send message: " + err.message);
-  }
-};
-
+  });
+}
 
     // Formats 9123456789 or 09123456789 to E.164 standard (+639123456789)
     function formatPHPhoneNumber(rawInput) {

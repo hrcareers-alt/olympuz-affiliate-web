@@ -850,6 +850,7 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
           <!-- Admin Panel Links -->
           <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
+            <button id="nav-btn-admin-users" onclick="switchTab('admin-users')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2 font-medium"><i class="fa-solid fa-users-gear"></i> Affiliate Database</button>
             <button id="nav-btn-admin-slideshow" onclick="switchTab('admin-slideshow')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-images"></i> Modify Slideshow</button>
             <button id="nav-btn-admin-feedback" onclick="switchTab('admin-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Admin Feedback</button>
             <button id="nav-btn-admin-create" onclick="switchTab('admin-create')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Create Account</button>
@@ -1317,6 +1318,117 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
             </div>
           </div>
         </section>
+        <!-- 👥 TAB: ADMIN AFFILIATE DATABASE -->
+<section id="tab-admin-users" class="tab-content hidden max-w-5xl space-y-6">
+  <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+        <i class="fa-solid fa-address-book"></i> HR Management Hub
+      </div>
+      <h2 class="text-2xl font-extrabold text-white">Affiliate Directory Database</h2>
+      <p class="text-xs text-slate-300 mt-1">Review affiliate profiles, monitor account registration dates, adjust credentials, and manage portal access.</p>
+    </div>
+    
+    <div class="bg-slate-950/80 border border-slate-800 px-4 py-2.5 rounded-xl text-right shrink-0">
+      <span class="text-[11px] text-slate-400 font-semibold block uppercase tracking-wider">Total Registered Affiliates</span>
+      <span id="admin-total-users-count" class="text-xl font-extrabold text-indigo-400">0</span>
+    </div>
+  </div>
+
+  <!-- SEARCH & FILTER CONTROL BAR -->
+  <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="relative w-full sm:w-80">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+      <input type="text" id="admin-user-search-input" onkeyup="filterAffiliateDatabase()" placeholder="Search by name, email, or username..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+    </div>
+    
+    <div class="flex items-center gap-2 text-xs text-slate-400 w-full sm:w-auto justify-between sm:justify-end">
+      <span id="admin-users-page-indicator">Showing 1-10</span>
+    </div>
+  </div>
+
+  <!-- DIRECTORY LIST CONTAINER -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+    <div id="admin-users-directory-list" class="space-y-2.5 min-h-[300px]">
+      <div class="text-xs text-slate-500 py-8 text-center">Loading affiliate directory...</div>
+    </div>
+
+    <!-- PAGINATION CONTROLS -->
+    <div id="admin-users-pagination" class="hidden flex justify-between items-center border-t border-slate-800 pt-3 mt-2">
+      <button id="btn-prev-users-page" onclick="changeAdminUserPage(-1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3.5 py-1.5 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold">
+        <i class="fa-solid fa-chevron-left mr-1"></i> Prev
+      </button>
+      <div id="admin-users-page-numbers" class="flex gap-1 text-xs"></div>
+      <button id="btn-next-users-page" onclick="changeAdminUserPage(1)" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3.5 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold">
+        Next <i class="fa-solid fa-chevron-right ml-1"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- 📋 HR AFFILIATE PROFILE DETAILED INSPECTOR MODAL -->
+<div id="admin-user-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+  <div class="relative bg-slate-900 border border-indigo-500/40 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+    <button onclick="closeAdminUserModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 border border-slate-700 w-8 h-8 rounded-full flex items-center justify-center transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="flex items-center gap-4 border-b border-slate-800 pb-4">
+      <div class="w-16 h-16 rounded-full border-2 border-indigo-500 overflow-hidden bg-slate-800 flex justify-center items-center shrink-0">
+        <img id="modal-user-avatar" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+        <i id="modal-user-avatar-icon" class="fa-solid fa-user text-2xl text-slate-400"></i>
+      </div>
+      <div>
+        <h3 id="modal-user-fullname" class="text-lg font-bold text-white leading-tight"></h3>
+        <p id="modal-user-email" class="text-xs text-indigo-400 font-medium"></p>
+        <span id="modal-user-role-badge" class="inline-block mt-1 bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full"></span>
+      </div>
+    </div>
+
+    <!-- METRICS GRID -->
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <span class="text-slate-400 text-[11px] block font-semibold">Username</span>
+        <span id="modal-user-username" class="font-bold text-slate-200 text-sm"></span>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <span class="text-slate-400 text-[11px] block font-semibold">Account ID</span>
+        <span id="modal-user-id" class="font-mono text-[10px] text-slate-300 truncate block"></span>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <span class="text-slate-400 text-[11px] block font-semibold">Preferred Payment Method</span>
+        <span id="modal-user-payment-method" class="font-bold text-emerald-400"></span>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <span class="text-slate-400 text-[11px] block font-semibold">Account Number</span>
+        <span id="modal-user-account-num" class="font-bold text-slate-200"></span>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
+        <span class="text-slate-400 text-[11px] block font-semibold">Account Created On</span>
+        <span id="modal-user-created-at" class="font-bold text-amber-400"></span>
+      </div>
+    </div>
+
+    <!-- HR ACTIONS: CHANGE PASSWORD -->
+    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
+      <h4 class="font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-key"></i> HR Administrative Reset
+      </h4>
+      <p class="text-[11px] text-slate-400">Send an official Firebase password reset link to this affiliate's registered email address.</p>
+      <button id="modal-send-reset-btn" onclick="sendAdminPasswordReset()" class="w-full bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 font-bold py-2 rounded-xl text-xs transition">
+        <i class="fa-solid fa-paper-plane mr-1"></i> Send Password Reset Email
+      </button>
+    </div>
+
+    <!-- HR ACTIONS: DANGER ZONE -->
+    <div class="pt-2 border-t border-slate-800">
+      <button id="modal-delete-user-btn" onclick="triggerAdminDeleteUser()" class="w-full bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-user-xmark"></i> Delete Affiliate Record
+      </button>
+    </div>
+  </div>
+</div>
+        
 
         <!-- TAB: ADMIN MANAGE RAW REFERRALS -->
         <section id="tab-admin-raw" class="tab-content hidden max-w-xl space-y-6">
@@ -1863,6 +1975,7 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
         activeTab.classList.remove('hidden');
       }
       
+      // Update sidebar highlight
       document.querySelectorAll('#sidebar-menu button, #sidebar-menu a').forEach(btn => {
         btn.classList.remove('bg-slate-800', 'font-bold', 'text-indigo-400');
       });
@@ -1871,12 +1984,21 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
         activeNavBtn.classList.add('bg-slate-800', 'font-bold', 'text-indigo-400');
       }
 
+      // Tab triggers
       if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
         window.listenToRawLeaderboard();
       }
 
       if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
         window.listenTo30thLeaderboard();
+        if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
+          window.listenToUser30thInvoices(window.currentUid);
+        }
+      }
+
+      // 🟢 TRIGGER AFFILIATE DATABASE DIRECTORY
+      if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
+        window.fetchAffiliateDatabase();
       }
 
       closeSidebarOnMobile();
@@ -1993,6 +2115,12 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
     let user30thPayoutsArray = [];
     let current30thInvoicePage = 1;
     let unsubUser30thInvoices = null;
+
+    let affiliateDatabaseList = [];
+    let filteredDatabaseList = [];
+    let currentAdminUserPage = 1;
+    const adminUsersPerPage = 10;
+    let selectedInspectorUserId = null;
 
     function init30thMonthFilter() {
       const select = document.getElementById('payout-30th-month-filter');
@@ -2248,6 +2376,213 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
           `;
         });
       }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
+    };
+
+    window.fetchAffiliateDatabase = async () => {
+      try {
+        const q = query(collection(db, "users"));
+        const querySnapshot = await getDocs(q);
+
+        affiliateDatabaseList = [];
+        querySnapshot.forEach((docSnap) => {
+          affiliateDatabaseList.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Sort Newest to Oldest by createdAt date
+        affiliateDatabaseList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        const countEl = document.getElementById('admin-total-users-count');
+        if (countEl) countEl.innerText = affiliateDatabaseList.length;
+
+        filterAffiliateDatabase();
+      } catch (err) {
+        console.warn("Error loading affiliate database:", err.message);
+      }
+    };
+
+    window.filterAffiliateDatabase = () => {
+      const searchInput = document.getElementById('admin-user-search-input');
+      const term = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+      if (!term) {
+        filteredDatabaseList = [...affiliateDatabaseList];
+      } else {
+        filteredDatabaseList = affiliateDatabaseList.filter((user) => {
+          const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+          const email = (user.email || '').toLowerCase();
+          const username = (user.username || '').toLowerCase();
+          return fullName.includes(term) || email.includes(term) || username.includes(term);
+        });
+      }
+
+      currentAdminUserPage = 1;
+      renderAdminUserPage();
+    };
+
+    function renderAdminUserPage() {
+      const directoryList = document.getElementById('admin-users-directory-list');
+      const paginationControls = document.getElementById('admin-users-pagination');
+      const pageIndicator = document.getElementById('admin-users-page-indicator');
+      const pageNumbersDiv = document.getElementById('admin-users-page-numbers');
+
+      if (!directoryList) return;
+      directoryList.innerHTML = "";
+
+      if (!filteredDatabaseList || filteredDatabaseList.length === 0) {
+        directoryList.innerHTML = `<div class="text-xs text-slate-500 py-8 text-center">No affiliate accounts found matching search criteria.</div>`;
+        if (paginationControls) paginationControls.classList.add('hidden');
+        if (pageIndicator) pageIndicator.innerText = "Showing 0 accounts";
+        return;
+      }
+
+      const totalPages = Math.ceil(filteredDatabaseList.length / adminUsersPerPage);
+      if (currentAdminUserPage > totalPages) currentAdminUserPage = totalPages;
+      if (currentAdminUserPage < 1) currentAdminUserPage = 1;
+
+      const startIndex = (currentAdminUserPage - 1) * adminUsersPerPage;
+      const endIndex = startIndex + adminUsersPerPage;
+      const pageItems = filteredDatabaseList.slice(startIndex, endIndex);
+
+      pageItems.forEach((user) => {
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate User';
+        const formattedDate = user.createdAt 
+          ? new Date(user.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+          : 'Registration N/A';
+
+        const roleBadge = user.role === 'admin' 
+          ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Admin</span>`
+          : `<span class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Affiliate</span>`;
+
+        directoryList.innerHTML += `
+          <div onclick="openAdminUserModal('${user.id}')" class="bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-indigo-500/50 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition cursor-pointer group shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                ${user.photoURL ? `<img src="${user.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-sm text-slate-400"></i>`}
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-sm text-slate-100 group-hover:text-indigo-400 transition">${fullName}</h4>
+                  ${roleBadge}
+                </div>
+                <p class="text-xs text-slate-400">${user.email || 'No email registered'} | Username: <span class="text-slate-300 font-semibold">${user.username || '-'}</span></p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end gap-4 text-right shrink-0">
+              <div class="text-left sm:text-right">
+                <span class="text-[10px] text-slate-500 uppercase font-bold block">Joined On</span>
+                <span class="text-xs text-amber-400/90 font-semibold">${formattedDate}</span>
+              </div>
+              <button class="bg-indigo-600/20 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-id-card"></i> Inspect
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      if (paginationControls) {
+        if (totalPages > 1) {
+          paginationControls.classList.remove('hidden');
+          document.getElementById('btn-prev-users-page').disabled = (currentAdminUserPage === 1);
+          document.getElementById('btn-next-users-page').disabled = (currentAdminUserPage === totalPages);
+
+          pageNumbersDiv.innerHTML = "";
+          for (let i = 1; i <= totalPages; i++) {
+            pageNumbersDiv.innerHTML += `
+              <button onclick="changeAdminUserPage(${i})" class="px-2.5 py-1 rounded-lg ${i === currentAdminUserPage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+                ${i}
+              </button>
+            `;
+          }
+        } else {
+          paginationControls.classList.add('hidden');
+        }
+      }
+
+      if (pageIndicator) {
+        pageIndicator.innerText = `Showing ${startIndex + 1}–${Math.min(endIndex, filteredDatabaseList.length)} of ${filteredDatabaseList.length}`;
+      }
+    }
+
+    window.changeAdminUserPage = (direction) => {
+      currentAdminUserPage += direction;
+      renderAdminUserPage();
+    };
+
+    window.openAdminUserModal = (userId) => {
+      const user = affiliateDatabaseList.find(u => u.id === userId);
+      if (!user) return;
+
+      selectedInspectorUserId = userId;
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email || 'Affiliate User';
+      const formattedDate = user.createdAt 
+        ? new Date(user.createdAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })
+        : 'Registration N/A';
+
+      document.getElementById('modal-user-fullname').innerText = fullName;
+      document.getElementById('modal-user-email').innerText = user.email || 'No email';
+      document.getElementById('modal-user-role-badge').innerText = (user.role || 'affiliate').toUpperCase();
+      document.getElementById('modal-user-username').innerText = user.username || 'Not set';
+      document.getElementById('modal-user-id').innerText = user.id;
+      document.getElementById('modal-user-payment-method').innerText = user.paymentMethod || 'Not Configured';
+      document.getElementById('modal-user-account-num').innerText = user.accountNumber || 'Not Configured';
+      document.getElementById('modal-user-created-at').innerText = formattedDate;
+
+      const avatarImg = document.getElementById('modal-user-avatar');
+      const avatarIcon = document.getElementById('modal-user-avatar-icon');
+      if (user.photoURL) {
+        avatarImg.src = user.photoURL;
+        avatarImg.classList.remove('hidden');
+        avatarIcon.classList.add('hidden');
+      } else {
+        avatarImg.classList.add('hidden');
+        avatarIcon.classList.remove('hidden');
+      }
+
+      document.getElementById('admin-user-modal').classList.remove('hidden');
+    };
+
+    window.closeAdminUserModal = () => {
+      document.getElementById('admin-user-modal').classList.add('hidden');
+      selectedInspectorUserId = null;
+    };
+
+    window.sendAdminPasswordReset = async () => {
+      const user = affiliateDatabaseList.find(u => u.id === selectedInspectorUserId);
+      if (!user || !user.email) return alert("This account does not have a valid email address configured.");
+
+      const btn = document.getElementById('modal-send-reset-btn');
+      btn.innerText = "Sending Link...";
+      btn.disabled = true;
+
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        alert(`Password reset link dispatched to ${user.email}!`);
+      } catch (err) {
+        alert("Failed to send reset link: " + err.message);
+      } finally {
+        btn.innerText = "Send Password Reset Email";
+        btn.disabled = false;
+      }
+    };
+
+    window.triggerAdminDeleteUser = async () => {
+      const user = affiliateDatabaseList.find(u => u.id === selectedInspectorUserId);
+      if (!user) return;
+
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email;
+      
+      if (confirm(`⚠️ PERMANENT DELETE WARNING:\n\nAre you sure you want to permanently remove ${fullName}'s account record from Firestore?\n\nThis action cannot be undone.`)) {
+        try {
+          await deleteDoc(doc(db, "users", selectedInspectorUserId));
+          alert(`Account record for ${fullName} removed successfully.`);
+          closeAdminUserModal();
+          fetchAffiliateDatabase();
+        } catch (err) {
+          alert("Failed to delete user record: " + err.message);
+        }
+      }
     };
 
     // --- ADMIN DISBURSE & APPROVAL WORKFLOW ---
@@ -4043,9 +4378,10 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
 
             // 2. Load Affiliates list if Admin BEFORE running real-time listeners
             if (userData.role === 'admin') {
-              document.getElementById('admin-menu').classList.remove('hidden');
-              await loadAffiliates();
-            }
+      document.getElementById('admin-menu').classList.remove('hidden');
+      await loadAffiliates();
+      await fetchAffiliateDatabase(); // 👈 Pre-fetch affiliate directory for admin
+    }
 
             // 3. Start real-time listeners ONLY AFTER auth session & roles are confirmed
             listenToSlideshow();

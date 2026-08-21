@@ -3355,68 +3355,86 @@ body.light-mode #modal-user-created-at {
       }
     };
 
-    document.getElementById('public-register-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button');
+   const regForm = document.getElementById('public-register-form') || document.getElementById('register-form');
 
-      const firstName = document.getElementById('reg-firstname').value.trim();
-      const lastName = document.getElementById('reg-lastname').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const rawPhone = document.getElementById('reg-phone').value.trim();
-      const username = document.getElementById('reg-username').value.trim().toLowerCase();
-      const password = document.getElementById('reg-password').value;
-      const confirmPassword = document.getElementById('reg-confirm-password').value;
+    if (regForm) {
+      regForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]') || e.target.querySelector('button');
 
-      const formattedPhone = formatPHPhoneNumber(rawPhone);
-      if (!formattedPhone) {
-        return alert("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9123456789).");
-      }
+        const firstName = document.getElementById('reg-firstname')?.value.trim() || '';
+        const lastName = document.getElementById('reg-lastname')?.value.trim() || '';
+        const email = document.getElementById('reg-email')?.value.trim() || '';
+        const rawPhone = document.getElementById('reg-phone')?.value.trim() || '';
+        const username = document.getElementById('reg-username')?.value.trim().toLowerCase() || '';
+        const password = document.getElementById('reg-password')?.value || '';
+        const confirmPassword = document.getElementById('reg-confirm-password')?.value || '';
 
-      if (password !== confirmPassword) {
-        return alert("Passwords do not match!");
-      }
-
-      submitBtn.innerText = "Registering Account...";
-      submitBtn.disabled = true;
-
-      try {
-        const qUsername = query(collection(db, "users"), where("username", "==", username));
-        const usernameSnap = await getDocs(qUsername);
-
-        if (!usernameSnap.empty) {
-          alert("This username is already taken. Please choose another username.");
-          submitBtn.innerText = "Complete Registration";
-          submitBtn.disabled = false;
-          return;
+        const formattedPhone = formatPHPhoneNumber(rawPhone);
+        if (!formattedPhone) {
+          return alert("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9123456789).");
         }
 
-        const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
-        const secondaryAuth = getAuth(secondaryApp);
-        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+        if (password !== confirmPassword) {
+          return alert("Passwords do not match!");
+        }
 
-        const secondaryDb = getFirestore(secondaryApp);
+        if (submitBtn) {
+          submitBtn.innerText = "Registering Account...";
+          submitBtn.disabled = true;
+        }
 
-        await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
-          firstName: firstName,
-          lastName: lastName,
-          username: username,
-          email: email,
-          phoneNumber: formattedPhone, // 👈 Saved in +639XXXXXXXXX format
-          role: "affiliate",
-          createdAt: new Date().toISOString()
-        });
+        try {
+          const qUsername = query(collection(db, "users"), where("username", "==", username));
+          const usernameSnap = await getDocs(qUsername);
 
-        await signOut(secondaryAuth);
-        e.target.reset();
-        window.toggleAuthView('success');
+          if (!usernameSnap.empty) {
+            alert("This username is already taken. Please choose another username.");
+            if (submitBtn) {
+              submitBtn.innerText = "Complete Registration";
+              submitBtn.disabled = false;
+            }
+            return;
+          }
 
-      } catch (error) {
-        alert("Registration failed: " + error.message);
-      } finally {
-        submitBtn.innerText = "Complete Registration";
-        submitBtn.disabled = false;
-      }
-    });
+          const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+          const secondaryAuth = getAuth(secondaryApp);
+          const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+
+          const secondaryDb = getFirestore(secondaryApp);
+
+          await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            phoneNumber: formattedPhone, // 👈 Saved in +639XXXXXXXXX format
+            role: "affiliate",
+            createdAt: new Date().toISOString()
+          });
+
+          await signOut(secondaryAuth);
+          e.target.reset();
+
+          // Safely trigger view switcher
+          if (typeof window.showAuthView === 'function') {
+            window.showAuthView('email');
+          } else if (typeof window.toggleAuthView === 'function') {
+            window.toggleAuthView('success');
+          }
+
+          alert("Registration successful! You can now log in with your credentials.");
+
+        } catch (error) {
+          alert("Registration failed: " + error.message);
+        } finally {
+          if (submitBtn) {
+            submitBtn.innerText = "Complete Registration";
+            submitBtn.disabled = false;
+          }
+        }
+      });
+    }
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {
       e.preventDefault();

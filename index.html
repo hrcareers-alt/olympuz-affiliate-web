@@ -4551,13 +4551,39 @@ body.light-mode #modal-user-created-at {
         return alert("Please enter the complete 6-digit verification code sent to your phone.");
       }
 
+      if (!confirmationResult) {
+        return alert("Session expired. Please request a new OTP code.");
+      }
+
       try {
-        await confirmationResult.confirm(code);
+        const userCredential = await confirmationResult.confirm(code);
+        const user = userCredential.user;
+
+        // Set session timestamp
         localStorage.setItem('loginTimestamp', Date.now().toString());
-        // onAuthStateChanged will handle dashboard transition automatically
+
+        // Check if user has a corresponding Firestore profile
+        const docRef = doc(db, "users", user.uid);
+        let docSnap = await getDoc(docRef);
+
+        // If logged in via phone auth for the first time without pre-linked UID, try matching via phoneNumber
+        if (!docSnap.exists() && user.phoneNumber) {
+          const q = query(collection(db, "users"), where("phoneNumber", "==", user.phoneNumber));
+          const querySnap = await getDocs(q);
+          if (!querySnap.empty) {
+            const matchedUserDoc = querySnap.docs[0];
+            // Link phone UID or merge data
+            window.currentUid = matchedUserDoc.id;
+          }
+        }
+
+        // Hide Auth Screen & Show Dashboard
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+
       } catch (error) {
         console.error("OTP verification error:", error);
-        alert("Invalid or expired verification code. Please try again.");
+        alert("Invalid or expired verification code. Please check and try again.");
       }
     };
 
@@ -4571,11 +4597,9 @@ body.light-mode #modal-user-created-at {
         if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
           localStorage.removeItem('loginTimestamp');
           await signOut(auth);
-
           document.getElementById('admin-menu').classList.add('hidden');
           document.getElementById('dashboard-screen').classList.add('hidden');
           document.getElementById('auth-screen').classList.remove('hidden');
-
           alert("Your 12-hour session has expired. Please log in again to continue.");
           return;
         }
@@ -4585,8 +4609,18 @@ body.light-mode #modal-user-created-at {
         }
 
         try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
+          let userDocRef = doc(db, "users", user.uid);
+          let docSnap = await getDoc(userDocRef);
+
+          // Fallback search if phone user UID differs from original registration UID
+          if (!docSnap.exists() && user.phoneNumber) {
+            const qPhone = query(collection(db, "users"), where("phoneNumber", "==", user.phoneNumber));
+            const phoneSnap = await getDocs(qPhone);
+            if (!phoneSnap.empty) {
+              docSnap = phoneSnap.docs[0];
+              window.currentUid = docSnap.id;
+            }
+          }
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
@@ -4599,7 +4633,7 @@ body.light-mode #modal-user-created-at {
 
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || 'Affiliate'}`;
+            document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || userData.username || 'Affiliate'}`;
 
             if (userData.photoURL) {
               const profileImg = document.getElementById('profile-avatar-img');
@@ -4609,72 +4643,49 @@ body.light-mode #modal-user-created-at {
                 profileImg.classList.remove('hidden');
                 profileIcon.classList.add('hidden');
               }
-
-              const headerImg = document.getElementById('header-avatar-img');
-              const headerIcon = document.getElementById('header-avatar-icon');
-              if (headerImg && headerIcon) {
-                headerImg.src = userData.photoURL;
-                headerImg.classList.remove('hidden');
-                headerIcon.classList.add('hidden');
-              }
             }
 
             updatePayoutDateRange();
             window.switchTab('home');
 
-            // 1. Initialize Month Filters
+            // Initialize Month Selectors
             initRawMonthFilter();
             init30thMonthFilter();
 
-            // 2. Load Affiliates list if Admin BEFORE running real-time listeners
+            // Load Admin Controls if user is Admin
             if (userData.role === 'admin') {
-      document.getElementById('admin-menu').classList.remove('hidden');
-      await loadAffiliates();
-      await fetchAffiliateDatabase(); // 👈 Pre-fetch affiliate directory for admin
-    }
+              document.getElementById('admin-menu').classList.remove('hidden');
+              await loadAffiliates();
+            }
 
-            // 3. Start real-time listeners ONLY AFTER auth session & roles are confirmed
+            // Start Realtime Listeners
             listenToSlideshow();
             initUserAdsEngine();
             listenToMonthlyLeaderboard();
-            listenToUserRewards(user.uid);
+            listenToUserRewards(window.currentUid);
             window.listenToRawLeaderboard();
-            window.listenToUserPayouts(user.uid);
+            window.listenToUserPayouts(window.currentUid);
             window.listenTo30thLeaderboard();
-            window.listenToUser30thInvoices(user.uid);
+            window.listenToUser30thInvoices(window.currentUid);
 
             if (userData.role === 'admin') {
-              listenToPending30thPayouts();
               listenToPendingPayouts(); 
               listenToAdminFeedback(); 
               listenToAdminAds();
               listenToAdminRewards();
               listenToAdminRawReferrals();
+              listenToPending30thPayouts();
               listenToAdmin30thPayoutsTrack();
             }
-
-            document.getElementById('setting-firstname').value = userData.firstName || '';
-            document.getElementById('setting-lastname').value = userData.lastName || '';
-            document.getElementById('setting-email').value = user.email || userData.email || '';
-            
-            if (userData.paymentMethod) {
-              const bankSelect = document.getElementById('setting-bank');
-              const defaultOptions = Array.from(bankSelect.options).map(opt => opt.value);
-
-              if (defaultOptions.includes(userData.paymentMethod) && userData.paymentMethod !== 'Others') {
-                bankSelect.value = userData.paymentMethod;
-              } else {
-                bankSelect.value = 'Others';
-                document.getElementById('setting-custom-bank').value = userData.paymentMethod;
-              }
-              toggleCustomBankInput();
-            }
-
-            if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
-            if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
+          } else {
+            // Fallback for phone users without an existing document profile
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            document.getElementById('welcome-message').innerText = `Welcome, Affiliate`;
+            window.switchTab('home');
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching user data on auth change:", error);
         }
       } else {
         window.currentUid = null;

@@ -2363,7 +2363,6 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
       }
     };
 
-    // 🧾 ADMIN "EVERY 30TH" LOGGED HISTORY LISTENER (was also missing)
     function listenToAdmin30thPayoutsTrack() {
       const q = query(collection(db, "payouts_30th"));
       if (unsubAdmin30thTrack) unsubAdmin30thTrack();
@@ -2383,26 +2382,29 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
         items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
         items.forEach((data) => {
+          const safeHires = data.referrals || 0;
+          const safeAmount = data.amount || 0;
+
           listDiv.innerHTML += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
                 <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
-                <p class="text-xs text-emerald-400 font-semibold">₱${(data.amount || 0).toFixed(2)} (${data.referrals || 0} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
+                <p class="text-xs text-emerald-400 font-semibold">₱${safeAmount.toFixed(2)} (${safeHires} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
                 <p class="text-[10px] text-slate-500">Period: ${data.monthKey || 'N/A'} (30th)</p>
               </div>
 
               <div class="flex items-center gap-2 shrink-0">
-                <button onclick="edit30thPayout('${data.id}', ${data.referrals}, ${data.amount})" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-amber-600/40">
+                <button onclick="window.edit30thPayout('${data.id}', ${safeHires}, ${safeAmount})" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg transition">
                   <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
                 </button>
-                <button onclick="delete30thPayout('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete 30th Record">
+                <button onclick="window.delete30thPayout('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete 30th Record">
                   <i class="fa-solid fa-trash-can mr-1"></i> Delete
                 </button>
               </div>
             </div>
           `;
         });
-      }, (err) => console.warn("Admin 30th track listener error:", err.message));
+      }, (err) => console.warn("Admin 30th track listener error (handled):", err.message));
     }
     
     // SLIDESHOW STATE VARIABLES

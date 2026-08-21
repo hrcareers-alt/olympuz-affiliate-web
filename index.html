@@ -4751,16 +4751,13 @@ window.sendOTPCode = async () => {
             }
           }
           if (docSnap.exists()) {
-          const userData = docSnap.data();
-          currentUsername = userData.username || 'user';
-          currentUserRole = userData.role || 'affiliate';
-
-          // 🟢 Start Realtime Community Chat
-          listenToCommunityChat();
-
-          if (docSnap.exists()) {
             const userData = docSnap.data();
-            
+            currentUsername = userData.username || 'user';
+            currentUserRole = userData.role || 'affiliate';
+
+            // 🟢 Start Realtime Community Chat
+            listenToCommunityChat();
+
             sessionStorage.removeItem('rewardPopupDismissed');
 
             if (userData.theme) {
@@ -4768,26 +4765,26 @@ window.sendOTPCode = async () => {
             }
 
             // 🟢 POPULATE PROFILE INFORMATION INPUTS
-  document.getElementById('setting-firstname').value = userData.firstName || '';
-  document.getElementById('setting-lastname').value = userData.lastName || '';
-  document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
-  document.getElementById('setting-email').value = userData.email || user.email || '';
+            document.getElementById('setting-firstname').value = userData.firstName || '';
+            document.getElementById('setting-lastname').value = userData.lastName || '';
+            document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
+            document.getElementById('setting-email').value = userData.email || user.email || '';
 
-  // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
-  if (userData.paymentMethod) {
-    const bankSelect = document.getElementById('setting-bank');
-    if (bankSelect) {
-      if (['GoTyme', 'GCash', 'Maya', 'BPI', 'RCBC', 'Metrobank', 'China Bank'].includes(userData.paymentMethod)) {
-        bankSelect.value = userData.paymentMethod;
-      } else {
-        bankSelect.value = 'Others';
-        document.getElementById('custom-bank-container').classList.remove('hidden');
-        document.getElementById('setting-custom-bank').value = userData.paymentMethod;
-      }
-    }
-  }
-  if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
-  if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
+            // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
+            if (userData.paymentMethod) {
+              const bankSelect = document.getElementById('setting-bank');
+              if (bankSelect) {
+                if (['GoTyme', 'GCash', 'Maya', 'BPI', 'RCBC', 'Metrobank', 'China Bank'].includes(userData.paymentMethod)) {
+                  bankSelect.value = userData.paymentMethod;
+                } else {
+                  bankSelect.value = 'Others';
+                  document.getElementById('custom-bank-container').classList.remove('hidden');
+                  document.getElementById('setting-custom-bank').value = userData.paymentMethod;
+                }
+              }
+            }
+            if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
+            if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
 
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');

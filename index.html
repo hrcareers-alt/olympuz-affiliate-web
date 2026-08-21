@@ -782,11 +782,6 @@ body.light-mode #modal-user-created-at {
           </div>
 
           <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/20">Log In</button>
-          <div class="text-center mt-2">
-          <button type="button" onclick="toggleAuthView('phone')" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline">
-            <i class="fa-solid fa-mobile-screen mr-1"></i> Sign In using Phone OTP
-          </button>
-        </div>
         </form>
 
         <div class="text-center mt-3">
@@ -3336,67 +3331,68 @@ body.light-mode #modal-user-created-at {
     };
 
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button');
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button');
 
-      const firstName = document.getElementById('reg-firstname').value.trim();
-      const lastName = document.getElementById('reg-lastname').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const rawPhone = document.getElementById('reg-phone').value.trim();
-      const username = document.getElementById('reg-username').value.trim().toLowerCase();
-      const password = document.getElementById('reg-password').value;
-      const confirmPassword = document.getElementById('reg-confirm-password').value;
+  const firstName = document.getElementById('reg-firstname').value.trim();
+  const lastName = document.getElementById('reg-lastname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const rawPhone = document.getElementById('reg-phone').value.trim();
+  const username = document.getElementById('reg-username').value.trim().toLowerCase();
+  const password = document.getElementById('reg-password').value;
+  const confirmPassword = document.getElementById('reg-confirm-password').value;
 
-      const formattedPhone = formatPHPhoneNumber(rawPhone);
-      if (!formattedPhone) {
-        return alert("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9123456789).");
-      }
+  const formattedPhone = formatPHPhoneNumber(rawPhone);
+  if (!formattedPhone) {
+    return alert("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9123456789).");
+  }
 
-      if (password !== confirmPassword) {
-        return alert("Passwords do not match!");
-      }
+  if (password !== confirmPassword) {
+    return alert("Passwords do not match!");
+  }
 
-      submitBtn.innerText = "Registering Account...";
-      submitBtn.disabled = true;
+  submitBtn.innerText = "Registering Account...";
+  submitBtn.disabled = true;
 
-      try {
-        const qUsername = query(collection(db, "users"), where("username", "==", username));
-        const usernameSnap = await getDocs(qUsername);
+  try {
+    const qUsername = query(collection(db, "users"), where("username", "==", username));
+    const usernameSnap = await getDocs(qUsername);
 
-        if (!usernameSnap.empty) {
-          alert("This username is already taken. Please choose another username.");
-          submitBtn.innerText = "Complete Registration";
-          submitBtn.disabled = false;
-          return;
-        }
+    if (!usernameSnap.empty) {
+      alert("This username is already taken. Please choose another username.");
+      submitBtn.innerText = "Complete Registration";
+      submitBtn.disabled = false;
+      return;
+    }
 
-        const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
-        const secondaryAuth = getAuth(secondaryApp);
-        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+    const secondaryAuth = getAuth(secondaryApp);
+    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
-        const secondaryDb = getFirestore(secondaryApp);
+    const secondaryDb = getFirestore(secondaryApp);
 
-        await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
-          firstName: firstName,
-          lastName: lastName,
-          username: username,
-          email: email,
-          phoneNumber: formattedPhone, // 👈 Saved in +639XXXXXXXXX format
-          role: "affiliate",
-          createdAt: new Date().toISOString()
-        });
-
-        await signOut(secondaryAuth);
-        e.target.reset();
-        window.toggleAuthView('success');
-
-      } catch (error) {
-        alert("Registration failed: " + error.message);
-      } finally {
-        submitBtn.innerText = "Complete Registration";
-        submitBtn.disabled = false;
-      }
+    // Save profile WITH phone number
+    await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      email: email,
+      phoneNumber: formattedPhone, // Saves +639XXXXXXXXX
+      role: "affiliate",
+      createdAt: new Date().toISOString()
     });
+
+    await signOut(secondaryAuth);
+    e.target.reset();
+    window.toggleAuthView('success');
+
+  } catch (error) {
+    alert("Registration failed: " + error.message);
+  } finally {
+    submitBtn.innerText = "Complete Registration";
+    submitBtn.disabled = false;
+  }
+});
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {
       e.preventDefault();

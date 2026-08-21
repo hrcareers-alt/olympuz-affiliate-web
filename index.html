@@ -633,6 +633,123 @@ body.light-mode #payout-30th-leaderboard-list span.text-slate-400,
 body.light-mode #invoice-30th-list p.text-slate-400 {
   color: #64748b !important;
 }
+
+    /* Top Banner Header */
+body.light-mode #tab-admin-users > div:first-child {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #e0e7ff 100%) !important;
+  border-color: #c7d2fe !important;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+}
+
+body.light-mode #tab-admin-users h2 {
+  color: #1e1b4b !important;
+}
+
+body.light-mode #tab-admin-users p.text-slate-300 {
+  color: #3730a3 !important;
+}
+
+/* Total Registered Count Box */
+body.light-mode #tab-admin-users .bg-slate-950\/80 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #admin-total-users-count {
+  color: #4f46e5 !important;
+}
+
+/* Search Bar & Filter Container */
+body.light-mode #tab-admin-users .bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #admin-user-search-input {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #admin-users-page-indicator {
+  color: #64748b !important;
+}
+
+/* Affiliate Directory List Items */
+body.light-mode #admin-users-directory-list > div {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.light-mode #admin-users-directory-list > div:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #818cf8 !important;
+}
+
+body.light-mode #admin-users-directory-list h4 {
+  color: #0f172a !important;
+}
+
+body.light-mode #admin-users-directory-list p {
+  color: #475569 !important;
+}
+
+body.light-mode #admin-users-directory-list span.text-slate-300 {
+  color: #1e293b !important;
+}
+
+/* 📋 HR PROFILE MODAL LIGHT MODE STYLING */
+body.light-mode #admin-user-modal {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+body.light-mode #admin-user-modal > div {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode #modal-user-fullname {
+  color: #0f172a !important;
+}
+
+body.light-mode #modal-user-email {
+  color: #4338ca !important;
+}
+
+/* Modal Metrics Grid Boxes */
+body.light-mode #admin-user-modal .grid > div,
+body.light-mode #admin-user-modal .bg-slate-950\/60 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #admin-user-modal .grid span.text-slate-400,
+body.light-mode #admin-user-modal p.text-slate-400 {
+  color: #475569 !important;
+}
+
+body.light-mode #modal-user-username,
+body.light-mode #modal-user-account-num {
+  color: #0f172a !important;
+}
+
+body.light-mode #modal-user-id {
+  color: #334155 !important;
+}
+
+body.light-mode #modal-user-payment-method {
+  color: #047857 !important;
+}
+
+body.light-mode #modal-user-created-at {
+  color: #b45309 !important;
+}
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1366,6 +1483,7 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
   </div>
 </section>
 
+
 <!-- 📋 HR AFFILIATE PROFILE DETAILED INSPECTOR MODAL -->
 <div id="admin-user-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
   <div class="relative bg-slate-900 border border-indigo-500/40 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
@@ -1411,11 +1529,11 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
 
     <!-- HR ACTIONS: CHANGE PASSWORD -->
     <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
-      <h4 class="font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+      <h4 class="font-bold text-xs uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
         <i class="fa-solid fa-key"></i> HR Administrative Reset
       </h4>
       <p class="text-[11px] text-slate-400">Send an official Firebase password reset link to this affiliate's registered email address.</p>
-      <button id="modal-send-reset-btn" onclick="sendAdminPasswordReset()" class="w-full bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 font-bold py-2 rounded-xl text-xs transition">
+      <button id="modal-send-reset-btn" onclick="sendAdminPasswordReset()" class="w-full bg-amber-600/20 hover:bg-amber-600/30 text-amber-500 border border-amber-500/40 font-bold py-2 rounded-xl text-xs transition">
         <i class="fa-solid fa-paper-plane mr-1"></i> Send Password Reset Email
       </button>
     </div>

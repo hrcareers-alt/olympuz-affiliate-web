@@ -803,7 +803,8 @@ body.light-mode #modal-user-created-at {
       <div id="auth-phone-view" class="hidden space-y-4">
         <h3 class="text-base font-bold text-white text-center">Log In with Phone OTP</h3>
 
-        <!-- Phase A: Send Verification Code -->
+        
+       <!-- Phase A: Send Verification Code -->
         <div id="otp-step-send" class="space-y-3">
           <div>
             <label for="otp-phone-input" class="block text-xs uppercase tracking-wider text-slate-300 mb-1 font-semibold">
@@ -815,12 +816,22 @@ body.light-mode #modal-user-created-at {
             </div>
           </div>
 
+          
+
           <!-- Invisible / Rendered reCAPTCHA Container -->
           <div id="recaptcha-container" class="flex justify-center my-2"></div>
 
-          <button type="button" onclick="sendOTPCode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-md text-xs">
-            Send SMS Verification Code
+          <!-- ⏱️ Send Button with Dynamic Cooldown -->
+          <button type="button" id="btn-send-otp" onclick="sendOTPCode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-md text-xs disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="btn-send-otp-text">Send SMS Verification Code</span>
           </button>
+        </div>
+
+        <div class="text-center pt-1">
+            <button type="button" onclick="document.getElementById('otp-step-verify').classList.add('hidden'); document.getElementById('otp-step-send').classList.remove('hidden');" class="text-[11px] text-slate-400 hover:text-emerald-400 underline">
+              Didn't receive code? Change number or resend
+            </button>
+          </div>
         </div>
 
         <!-- Phase B: Enter Received OTP Code -->
@@ -2307,6 +2318,9 @@ body.light-mode #modal-user-created-at {
     let currentAdminUserPage = 1;
     const adminUsersPerPage = 10;
     let selectedInspectorUserId = null;
+
+    let otpCooldownTimer = null;
+    
 
     // Formats 9123456789 or 09123456789 to E.164 standard (+639123456789)
     function formatPHPhoneNumber(rawInput) {
@@ -4510,6 +4524,30 @@ body.light-mode #modal-user-created-at {
       }
     }
 
+    function startOTPCooldown(durationSeconds = 60) {
+      const sendBtn = document.getElementById('btn-send-otp');
+      const sendBtnText = document.getElementById('btn-send-otp-text');
+      if (!sendBtn || !sendBtnText) return;
+
+      sendBtn.disabled = true;
+      let remaining = durationSeconds;
+
+      if (otpCooldownTimer) clearInterval(otpCooldownTimer);
+
+      sendBtnText.innerText = `Resend SMS in ${remaining}s`;
+
+      otpCooldownTimer = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          sendBtnText.innerText = `Resend SMS in ${remaining}s`;
+        } else {
+          clearInterval(otpCooldownTimer);
+          sendBtn.disabled = false;
+          sendBtnText.innerText = "Resend SMS Verification Code";
+        }
+      }, 1000);
+    }
+
     window.sendOTPCode = async () => {
       const rawPhone = document.getElementById('otp-phone-input').value.trim();
       const formattedPhone = formatPHPhoneNumber(rawPhone);
@@ -4518,11 +4556,19 @@ body.light-mode #modal-user-created-at {
         return alert("Please enter a valid 10-digit Philippine mobile number (e.g. 9123456789).");
       }
 
+      const sendBtn = document.getElementById('btn-send-otp');
+      const sendBtnText = document.getElementById('btn-send-otp-text');
+
+      sendBtn.disabled = true;
+      sendBtnText.innerText = "Sending SMS...";
+
       try {
         const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhone));
         const snap = await getDocs(q);
 
         if (snap.empty) {
+          sendBtn.disabled = false;
+          sendBtnText.innerText = "Send SMS Verification Code";
           return alert("No account found registered with this phone number. Please check or register first.");
         }
 
@@ -4532,13 +4578,16 @@ body.light-mode #modal-user-created-at {
         confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
         
         alert(`Verification code sent via SMS to ${formattedPhone}!`);
+        
+        // Switch to OTP Verification step and start 60s cooldown
         document.getElementById('otp-step-send').classList.add('hidden');
         document.getElementById('otp-step-verify').classList.remove('hidden');
+        startOTPCooldown(60);
 
       } catch (error) {
         console.error("OTP send error:", error);
 
-        // Clear reCAPTCHA instance on error so the user can retry cleanly
+        // Reset reCAPTCHA
         if (window.recaptchaVerifier) {
           try {
             window.recaptchaVerifier.clear();
@@ -4549,9 +4598,12 @@ body.light-mode #modal-user-created-at {
         }
 
         if (error.code === 'auth/error-code:-39' || error.message.includes('503')) {
-          alert("SMS service is temporarily busy or rate-limited. Please wait a few minutes before requesting another code.");
+          alert("SMS gateway is busy or rate-limited. Please wait 15 minutes before requesting another code.");
+          startOTPCooldown(900); // 15 minutes cooldown if throttled by carrier
         } else {
           alert("Failed to send OTP SMS: " + error.message);
+          sendBtn.disabled = false;
+          sendBtnText.innerText = "Send SMS Verification Code";
         }
       }
     };

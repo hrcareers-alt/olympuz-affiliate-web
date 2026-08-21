@@ -476,6 +476,79 @@
       border-color: #e2e8f0 !important;
       box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }
+
+    /* ============================================================
+   LIGHT MODE: EVERY 30TH (HIRES FOR PAYOUT) OVERRIDES
+   ============================================================ */
+
+/* Banner Header Container */
+body.light-mode #tab-payout-30th > div > div:first-child {
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #f0fdf4 100%) !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08) !important;
+}
+
+body.light-mode #tab-payout-30th h2 {
+  color: #064e3b !important;
+}
+
+body.light-mode #tab-payout-30th p.text-slate-300 {
+  color: #047857 !important;
+}
+
+/* Month Dropdown Filter */
+body.light-mode #tab-payout-30th select#payout-30th-month-filter {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+/* Stat Cards (Standing, Hires, Payout Amount) */
+body.light-mode #tab-payout-30th .grid > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #tab-payout-30th .grid span.text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Standings Leaderboard Container */
+body.light-mode #tab-payout-30th .bg-slate-950\/60 {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #tab-payout-30th h3 {
+  color: #0f172a !important;
+}
+
+/* Leaderboard Individual Item Rows */
+body.light-mode #payout-30th-leaderboard-list > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Highlight Row for Current User in Light Mode */
+body.light-mode #payout-30th-leaderboard-list > div.border-emerald-500 {
+  background-color: #ecfdf5 !important;
+  border-color: #10b981 !important;
+}
+
+body.light-mode #payout-30th-leaderboard-list span {
+  color: #0f172a !important;
+}
+
+body.light-mode #payout-30th-leaderboard-list span.text-slate-400 {
+  color: #64748b !important;
+}
+
+body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
+  color: #047857 !important;
+}
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1854,7 +1927,6 @@
         listDiv.innerHTML = "";
 
         let affiliateList = [...allAffiliates];
-        
         if (affiliateList.length === 0) {
           try {
             const qUsers = query(collection(db, "users"), where("role", "==", "affiliate"));
@@ -1863,7 +1935,7 @@
               affiliateList.push({ id: uDoc.id, ...uDoc.data() });
             });
           } catch (err) {
-            console.warn("Non-admin user fallback for affiliate list:", err.message);
+            console.warn("Could not fetch affiliates for 30th leaderboard:", err.message);
           }
         }
 

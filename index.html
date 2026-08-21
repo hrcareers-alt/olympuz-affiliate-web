@@ -2328,132 +2328,12 @@ body.light-mode #modal-user-created-at {
     const adminUsersPerPage = 10;
     let selectedInspectorUserId = null;
 
+    let currentUsername = "";
+    let currentUserRole = "affiliate";
+
 
     let otpTimerInterval = null;
     let otpCountdown = 60;
-
-    // Community Chat State Variables
-let isChatOpen = false;
-let unreadChatCount = 0;
-let unsubCommunityChat = null;
-let currentUsername = "";
-
-// 1. Toggle Minimize / Expand Chat Window
-window.toggleCommunityChat = () => {
-  const chatContainer = document.getElementById('chat-box-container');
-  const badge = document.getElementById('chat-unread-badge');
-  
-  isChatOpen = !isChatOpen;
-  
-  if (isChatOpen) {
-    chatContainer.classList.remove('hidden');
-    unreadChatCount = 0;
-    if (badge) badge.classList.add('hidden');
-    
-    // Auto-scroll to bottom of chat
-    const listDiv = document.getElementById('chat-messages-list');
-    if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
-  } else {
-    chatContainer.classList.add('hidden');
-  }
-};
-
-// 2. Realtime Messages Listener (Renders Usernames)
-function listenToCommunityChat() {
-  const q = query(collection(db, "community_chat"), orderBy("createdAt", "asc"));
-  
-  if (unsubCommunityChat) unsubCommunityChat();
-  
-  unsubCommunityChat = onSnapshot(q, (snapshot) => {
-    const listDiv = document.getElementById('chat-messages-list');
-    const badge = document.getElementById('chat-unread-badge');
-    if (!listDiv) return;
-
-    if (snapshot.empty) {
-      listDiv.innerHTML = `<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation! 👋</div>`;
-      return;
-    }
-
-    listDiv.innerHTML = "";
-    const currentUid = auth.currentUser ? auth.currentUser.uid : null;
-
-    snapshot.docs.forEach((docSnap) => {
-      const msg = docSnap.data();
-      const isMe = msg.userId === currentUid;
-      const formattedTime = msg.createdAt 
-        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : 'Just now';
-
-      // Username Display (@username format)
-      const usernameDisplay = `@${msg.username || 'user'}`;
-      const roleTag = msg.role === 'admin' ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` : '';
-
-      listDiv.innerHTML += `
-        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5">
-          <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
-            <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
-            ${roleTag}
-            <span class="text-slate-500 text-[9px]">${formattedTime}</span>
-          </div>
-          <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'} shadow-sm">
-            ${msg.text}
-          </div>
-        </div>
-      `;
-    });
-
-    // Handle Unread Notification Badge if Minimized
-    if (!isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
-      unreadChatCount++;
-      if (badge) {
-        badge.innerText = unreadChatCount > 99 ? '99+' : unreadChatCount;
-        badge.classList.remove('hidden');
-      }
-    }
-
-    // Scroll to latest message
-    listDiv.scrollTop = listDiv.scrollHeight;
-  }, (err) => console.warn("Community chat error handled:", err.message));
-}
-
-// 3. Send Message Function
-window.sendCommunityChatMessage = async (e) => {
-  e.preventDefault();
-  const input = document.getElementById('chat-message-input');
-  const text = input ? input.value.trim() : "";
-  const user = auth.currentUser;
-
-  if (!text || !user) return;
-
-  try {
-    input.value = "";
-
-    // Get sender profile details
-    let senderUsername = currentUsername;
-    let senderRole = 'affiliate';
-
-    if (!senderUsername) {
-      const uDoc = await getDoc(doc(db, "users", user.uid));
-      if (uDoc.exists()) {
-        const uData = uDoc.data();
-        senderUsername = uData.username || 'user';
-        senderRole = uData.role || 'affiliate';
-        currentUsername = senderUsername;
-      }
-    }
-
-    await addDoc(collection(db, "community_chat"), {
-      userId: user.uid,
-      username: senderUsername || 'user',
-      role: senderRole,
-      text: text,
-      createdAt: new Date().toISOString()
-    });
-
-  } catch (err) {
-    alert("Failed to send message: " + err.message);
-  }
-};
 
 
     // Formats 9123456789 or 09123456789 to E.164 standard (+639123456789)
@@ -4878,9 +4758,6 @@ window.sendOTPCode = async () => {
             currentUsername = userData.username || 'user';
             currentUserRole = userData.role || 'affiliate';
 
-            // 🟢 Start Realtime Community Chat
-            listenToCommunityChat();
-
             sessionStorage.removeItem('rewardPopupDismissed');
 
             if (userData.theme) {
@@ -5019,44 +4896,43 @@ window.sendOTPCode = async () => {
     });
 
     document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const loginInput = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-      const loginButton = e.target.querySelector('button');
-      
-      loginButton.innerText = "Logging in...";
-      loginButton.disabled = true;
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button');
+  const userInput = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
 
-      let emailToUse = loginInput;
+  submitBtn.innerText = "Logging in...";
+  submitBtn.disabled = true;
 
-      try {
-        if (!loginInput.includes('@')) {
-          const q = query(collection(db, "users"), where("username", "==", loginInput));
-          const querySnapshot = await getDocs(q);
+  try {
+    let targetEmail = userInput;
 
-          if (querySnapshot.empty) {
-            alert("Username not found. Please check your username or try signing in with your email.");
-            loginButton.innerText = "Log In";
-            loginButton.disabled = false;
-            return;
-          }
+    // If user typed a username instead of an email address
+    if (!userInput.includes('@')) {
+      const q = query(collection(db, "users"), where("username", "==", userInput.toLowerCase()));
+      const snap = await getDocs(q);
 
-          querySnapshot.forEach((docSnap) => {
-            emailToUse = docSnap.data().email;
-          });
-        }
-
-        await signInWithEmailAndPassword(auth, emailToUse, password);
-        localStorage.setItem('loginTimestamp', Date.now().toString());
-
-      } catch (error) {
-        console.error("Login Error:", error);
-        alert("Login failed. Please check your credentials.");
-      } finally {
-        loginButton.innerText = "Log In";
-        loginButton.disabled = false;
+      if (snap.empty) {
+        alert("Username not found. Please check your credentials or register.");
+        submitBtn.innerText = "Log In";
+        submitBtn.disabled = false;
+        return;
       }
-    });
+
+      targetEmail = snap.docs[0].data().email;
+    }
+
+    // Authenticate with Firebase Auth
+    await signInWithEmailAndPassword(auth, targetEmail, password);
+    e.target.reset();
+
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  } finally {
+    submitBtn.innerText = "Log In";
+    submitBtn.disabled = false;
+  }
+});
 
     document.getElementById('public-forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -5546,7 +5422,7 @@ window.sendOTPCode = async () => {
         <i class="fa-solid fa-comments text-amber-300"></i>
         <span class="font-bold text-sm">Affiliate Community Chat</span>
       </div>
-      <button onclick="toggleCommunityChat()" class="text-indigo-200 hover:text-white text-base px-1">
+      <button type="button" onclick="toggleCommunityChat()" class="text-indigo-200 hover:text-white text-base px-1">
         <i class="fa-solid fa-minus"></i>
       </button>
     </div>
@@ -5566,7 +5442,7 @@ window.sendOTPCode = async () => {
   </div>
 
   <!-- FLOATING TOGGLE BUTTON -->
-  <button id="chat-toggle-btn" onclick="toggleCommunityChat()" class="relative bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 rounded-full border border-indigo-400/30 flex items-center justify-center shadow-xl transition transform hover:scale-105">
+  <button type="button" id="chat-toggle-btn" onclick="toggleCommunityChat()" class="relative bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 rounded-full border border-indigo-400/30 flex items-center justify-center shadow-xl transition transform hover:scale-105">
     <i class="fa-solid fa-comments text-lg"></i>
     <!-- UNREAD COUNTER BADGE -->
     <span id="chat-unread-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-md">0</span>

@@ -2030,6 +2030,17 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
       }
     };
 
+    window.delete30thPayout = async (payoutId) => {
+      if (confirm("Are you sure you want to permanently delete this monthly payout record? It will be removed from the leaderboard and the affiliate's invoice list.")) {
+        try {
+          await deleteDoc(doc(db, "payouts_30th", payoutId));
+          alert("Monthly payout record deleted successfully!");
+        } catch (err) {
+          alert("Failed to delete monthly payout: " + err.message);
+        }
+      }
+    };
+
     // 🔒 Confidential Invoice Listener: Fetches ONLY the logged-in affiliate's approved invoices
     window.listenToUser30thInvoices = function(uid) {
       if (!auth.currentUser) return;
@@ -2336,38 +2347,46 @@ body.light-mode #invoice-30th-list p.text-slate-400 {
 
     // 🧾 ADMIN "EVERY 30TH" LOGGED HISTORY LISTENER (was also missing)
     function listenToAdmin30thPayoutsTrack() {
-      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
+      const q = query(collection(db, "payouts_30th"));
       if (unsubAdmin30thTrack) unsubAdmin30thTrack();
+
       unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
         const listDiv = document.getElementById('admin-payout-30th-track-list');
         if (!listDiv) return;
         listDiv.innerHTML = "";
 
-        if (snapshot.empty) {
-          listDiv.innerHTML = "<p class='text-sm text-slate-400'>No monthly hires payouts logged yet.</p>";
-          return;
-        }
+        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
 
-        const arr = [];
-        snapshot.forEach((docSnap) => arr.push({ id: docSnap.id, ...docSnap.data() }));
-        arr.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const items = [];
+        snapshot.forEach((docSnap) => {
+          items.push({ id: docSnap.id, ...docSnap.data() });
+        });
 
-        arr.forEach((data) => {
-          const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        items.forEach((data) => {
           listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center gap-3">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
                 <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
-                <p class="text-xs text-indigo-400 font-semibold">${data.referrals} Hires | ₱${(data.amount || 0).toFixed(2)}</p>
-                <p class="text-[10px] text-slate-500">${formattedDate} | Month Key: ${data.monthKey || 'N/A'}</p>
+                <p class="text-xs text-emerald-400 font-semibold">₱${(data.amount || 0).toFixed(2)} (${data.referrals || 0} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
+                <p class="text-[10px] text-slate-500">Period: ${data.monthKey || 'N/A'} (30th)</p>
               </div>
-              ${data.receiptUrl ? `<a href="${data.receiptUrl}" target="_blank" class="text-xs text-indigo-400 hover:underline shrink-0">View Receipt</a>` : ''}
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="edit30thPayout('${data.id}', ${data.referrals}, ${data.amount})" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg hover:bg-amber-600/40">
+                  <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                </button>
+                <button onclick="delete30thPayout('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete 30th Record">
+                  <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                </button>
+              </div>
             </div>
           `;
         });
-      }, (err) => console.warn("Admin 30th track listener handled silently:", err.message));
+      }, (err) => console.warn("Admin 30th track listener error:", err.message));
     }
-
+    
     // SLIDESHOW STATE VARIABLES
     let slideshowList = [];
     let currentSlideIndex = 0;

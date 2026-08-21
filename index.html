@@ -4519,7 +4519,6 @@ body.light-mode #modal-user-created-at {
       }
 
       try {
-        // Verify phone number exists in database first
         const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhone));
         const snap = await getDocs(q);
 
@@ -4538,9 +4537,21 @@ body.light-mode #modal-user-created-at {
 
       } catch (error) {
         console.error("OTP send error:", error);
-        alert("Failed to send OTP SMS: " + error.message);
+
+        // Clear reCAPTCHA instance on error so the user can retry cleanly
         if (window.recaptchaVerifier) {
-          window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+          try {
+            window.recaptchaVerifier.clear();
+            window.recaptchaVerifier = null;
+          } catch (e) {
+            console.warn("reCAPTCHA clear error:", e);
+          }
+        }
+
+        if (error.code === 'auth/error-code:-39' || error.message.includes('503')) {
+          alert("SMS service is temporarily busy or rate-limited. Please wait a few minutes before requesting another code.");
+        } else {
+          alert("Failed to send OTP SMS: " + error.message);
         }
       }
     };

@@ -3807,9 +3807,11 @@ body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
             listenToUserRewards(user.uid);
             window.listenToRawLeaderboard();
             window.listenToUserPayouts(user.uid);
-            window.listenTo30thLeaderboard(); // Safe to listen now
+            window.listenTo30thLeaderboard();
+            window.listenToUser30thInvoices(user.uid);
 
             if (userData.role === 'admin') {
+              listenToPending30thPayouts();
               listenToPendingPayouts(); 
               listenToAdminFeedback(); 
               listenToAdminAds();

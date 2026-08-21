@@ -2937,7 +2937,7 @@ directoryList.innerHTML += `
       }, (err) => console.warn("Pending 30th payouts error:", err.message));
     }
 
-    wwindow.decline30thPayout = async (payoutId) => {
+    window.decline30thPayout = async (payoutId) => {
       if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
         await updateDoc(doc(db, "payouts_30th", payoutId), { status: 'declined' });
       }

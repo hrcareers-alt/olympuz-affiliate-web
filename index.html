@@ -1564,29 +1564,33 @@ body.light-mode #modal-user-created-at {
       </div>
     </div>
 
-    <!-- METRICS GRID -->
-    <div class="grid grid-cols-2 gap-3 text-xs">
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-        <span class="text-slate-400 text-[11px] block font-semibold">Username</span>
-        <span id="modal-user-username" class="font-bold text-slate-200 text-sm"></span>
-      </div>
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-        <span class="text-slate-400 text-[11px] block font-semibold">Account ID</span>
-        <span id="modal-user-id" class="font-mono text-[10px] text-slate-300 truncate block"></span>
-      </div>
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-        <span class="text-slate-400 text-[11px] block font-semibold">Preferred Payment Method</span>
-        <span id="modal-user-payment-method" class="font-bold text-emerald-400"></span>
-      </div>
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-        <span class="text-slate-400 text-[11px] block font-semibold">Account Number</span>
-        <span id="modal-user-account-num" class="font-bold text-slate-200"></span>
-      </div>
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
-        <span class="text-slate-400 text-[11px] block font-semibold">Account Created On</span>
-        <span id="modal-user-created-at" class="font-bold text-amber-400"></span>
-      </div>
-    </div>
+    <!-- Inside #admin-user-modal METRICS GRID -->
+<div class="grid grid-cols-2 gap-3 text-xs">
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+    <span class="text-slate-400 text-[11px] block font-semibold">Username</span>
+    <span id="modal-user-username" class="font-bold text-slate-200 text-sm"></span>
+  </div>
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+    <span class="text-slate-400 text-[11px] block font-semibold">Mobile Number</span>
+    <span id="modal-user-phone" class="font-bold text-emerald-400 text-sm"></span>
+  </div>
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+    <span class="text-slate-400 text-[11px] block font-semibold">Account ID</span>
+    <span id="modal-user-id" class="font-mono text-[10px] text-slate-300 truncate block"></span>
+  </div>
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+    <span class="text-slate-400 text-[11px] block font-semibold">Preferred Payment Method</span>
+    <span id="modal-user-payment-method" class="font-bold text-emerald-400"></span>
+  </div>
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
+    <span class="text-slate-400 text-[11px] block font-semibold">Account Number</span>
+    <span id="modal-user-account-num" class="font-bold text-slate-200"></span>
+  </div>
+  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
+    <span class="text-slate-400 text-[11px] block font-semibold">Account Created On</span>
+    <span id="modal-user-created-at" class="font-bold text-amber-400"></span>
+  </div>
+</div>
 
     <!-- HR ACTIONS: CHANGE PASSWORD -->
     <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
@@ -2664,32 +2668,37 @@ body.light-mode #modal-user-created-at {
           ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Admin</span>`
           : `<span class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Affiliate</span>`;
 
-        directoryList.innerHTML += `
-          <div onclick="openAdminUserModal('${user.id}')" class="bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-indigo-500/50 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition cursor-pointer group shadow-sm">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                ${user.photoURL ? `<img src="${user.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-sm text-slate-400"></i>`}
-              </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <h4 class="font-bold text-sm text-slate-100 group-hover:text-indigo-400 transition">${fullName}</h4>
-                  ${roleBadge}
-                </div>
-                <p class="text-xs text-slate-400">${user.email || 'No email registered'} | Username: <span class="text-slate-300 font-semibold">${user.username || '-'}</span></p>
-              </div>
-            </div>
+        // Replace directoryList.innerHTML += `...` inside renderAdminUserPage() with this:
+directoryList.innerHTML += `
+  <div onclick="openAdminUserModal('${user.id}')" class="bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-indigo-500/50 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition cursor-pointer group shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+        ${user.photoURL ? `<img src="${user.photoURL}" class="w-full h-full object-cover" alt="Profile">` : `<i class="fa-solid fa-user text-sm text-slate-400"></i>`}
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h4 class="font-bold text-sm text-slate-100 group-hover:text-indigo-400 transition">${fullName}</h4>
+          ${roleBadge}
+        </div>
+        <p class="text-xs text-slate-400">
+          ${user.email || 'No email registered'} | 
+          Username: <span class="text-slate-300 font-semibold">${user.username || '-'}</span> | 
+          <span class="text-emerald-400 font-bold"><i class="fa-solid fa-phone text-[10px] mr-0.5"></i> ${user.phoneNumber || 'No phone'}</span>
+        </p>
+      </div>
+    </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-4 text-right shrink-0">
-              <div class="text-left sm:text-right">
-                <span class="text-[10px] text-slate-500 uppercase font-bold block">Joined On</span>
-                <span class="text-xs text-amber-400/90 font-semibold">${formattedDate}</span>
-              </div>
-              <button class="bg-indigo-600/20 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-id-card"></i> Inspect
-              </button>
-            </div>
-          </div>
-        `;
+    <div class="flex items-center justify-between sm:justify-end gap-4 text-right shrink-0">
+      <div class="text-left sm:text-right">
+        <span class="text-[10px] text-slate-500 uppercase font-bold block">Joined On</span>
+        <span class="text-xs text-amber-400/90 font-semibold">${formattedDate}</span>
+      </div>
+      <button class="bg-indigo-600/20 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+        <i class="fa-solid fa-id-card"></i> Inspect
+      </button>
+    </div>
+  </div>
+`;
       });
 
       if (paginationControls) {
@@ -2733,6 +2742,7 @@ body.light-mode #modal-user-created-at {
 
       document.getElementById('modal-user-fullname').innerText = fullName;
       document.getElementById('modal-user-email').innerText = user.email || 'No email';
+      document.getElementById('modal-user-phone').innerText = user.phoneNumber || 'Not Configured';
       document.getElementById('modal-user-role-badge').innerText = (user.role || 'affiliate').toUpperCase();
       document.getElementById('modal-user-username').innerText = user.username || 'Not set';
       document.getElementById('modal-user-id').innerText = user.id;

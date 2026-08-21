@@ -2937,7 +2937,7 @@ directoryList.innerHTML += `
       }, (err) => console.warn("Pending 30th payouts error:", err.message));
     }
 
-    window.decline30thPayout = async (payoutId) => {
+    wwindow.decline30thPayout = async (payoutId) => {
       if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
         await updateDoc(doc(db, "payouts_30th", payoutId), { status: 'declined' });
       }
@@ -2966,8 +2966,11 @@ directoryList.innerHTML += `
         alert("Monthly payout approved and receipt attached!");
       } catch (error) {
         alert("Error approving monthly payout: " + error.message);
-        btn.innerText = "Approve & Attach Receipt";
-        btn.disabled = false;
+      } finally {
+        if (btn) {
+          btn.innerText = "Approve & Attach Receipt";
+          btn.disabled = false;
+        }
       }
     };
 

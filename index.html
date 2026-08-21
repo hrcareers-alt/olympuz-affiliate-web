@@ -2317,8 +2317,11 @@ body.light-mode #modal-user-created-at {
     const adminUsersPerPage = 10;
     let selectedInspectorUserId = null;
 
+    // NOTE: fixed - these were previously declared twice (duplicate "let" block +
+    // duplicate startOTPTimer function), which threw a fatal SyntaxError and broke
+    // this entire <script type="module"> block (nothing on the page worked as a result).
     let otpTimerInterval = null;
-let otpCountdown = 60;
+    let otpCountdown = 60;
 
     // Formats 9123456789 or 09123456789 to E.164 standard (+639123456789)
     function formatPHPhoneNumber(rawInput) {
@@ -4523,115 +4526,88 @@ let otpCountdown = 60;
     }
 
     function startOTPTimer() {
-  const resendBtn = document.getElementById('btn-resend-otp');
-  const timerSpan = document.getElementById('otp-timer-count');
-  
-  otpCountdown = 60;
-  if (resendBtn) resendBtn.disabled = true;
-  if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
+      const resendBtn = document.getElementById('btn-resend-otp');
+      const timerSpan = document.getElementById('otp-timer-count');
+      
+      otpCountdown = 60;
+      if (resendBtn) resendBtn.disabled = true;
+      if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
 
-  if (otpTimerInterval) clearInterval(otpTimerInterval);
+      if (otpTimerInterval) clearInterval(otpTimerInterval);
 
-  otpTimerInterval = setInterval(() => {
-    otpCountdown--;
-    if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
+      otpTimerInterval = setInterval(() => {
+        otpCountdown--;
+        if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
 
-    if (otpCountdown <= 0) {
-      clearInterval(otpTimerInterval);
-      if (resendBtn) {
-        resendBtn.disabled = false;
+        if (otpCountdown <= 0) {
+          clearInterval(otpTimerInterval);
+          if (resendBtn) {
+            resendBtn.disabled = false;
+          }
+          if (timerSpan) timerSpan.innerText = "";
+        }
+      }, 1000);
+    }
+
+    window.sendOTPCode = async () => {
+      const sendBtn = document.getElementById('btn-send-otp');
+      const rawPhone = document.getElementById('otp-phone-input').value.trim();
+      const formattedPhone = formatPHPhoneNumber(rawPhone);
+
+      if (!formattedPhone) {
+        return alert("Please enter a valid 10-digit Philippine mobile number (e.g. 9123456789).");
       }
-      if (timerSpan) timerSpan.innerText = "";
-    }
-  }, 1000);
-}
 
-    let otpTimerInterval = null;
-let otpCountdown = 60;
+      try {
+        sendBtn.disabled = true;
+        sendBtn.innerText = "Sending SMS...";
 
-function startOTPTimer() {
-  const resendBtn = document.getElementById('btn-resend-otp');
-  const timerSpan = document.getElementById('otp-timer-count');
-  
-  otpCountdown = 60;
-  if (resendBtn) resendBtn.disabled = true;
-  if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
+        const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhone));
+        const snap = await getDocs(q);
 
-  if (otpTimerInterval) clearInterval(otpTimerInterval);
+        if (snap.empty) {
+          sendBtn.disabled = false;
+          sendBtn.innerText = "Send SMS Verification Code";
+          return alert("No account found registered with this phone number. Please check or register first.");
+        }
 
-  otpTimerInterval = setInterval(() => {
-    otpCountdown--;
-    if (timerSpan) timerSpan.innerText = `(${otpCountdown}s)`;
+        initRecaptcha();
+        const appVerifier = window.recaptchaVerifier;
 
-    if (otpCountdown <= 0) {
-      clearInterval(otpTimerInterval);
-      if (resendBtn) {
-        resendBtn.disabled = false;
+        confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+        
+        alert(`Verification code sent via SMS to ${formattedPhone}!`);
+        document.getElementById('otp-step-send').classList.add('hidden');
+        document.getElementById('otp-step-verify').classList.remove('hidden');
+
+        // Start 60-second timer
+        startOTPTimer();
+
+      } catch (error) {
+        console.error("OTP send error:", error);
+        alert("Failed to send OTP SMS: " + error.message);
+        sendBtn.disabled = false;
+        sendBtn.innerText = "Send SMS Verification Code";
+
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+        }
       }
-      if (timerSpan) timerSpan.innerText = "";
-    }
-  }, 1000);
-}
+    };
 
-window.sendOTPCode = async () => {
-  const sendBtn = document.getElementById('btn-send-otp');
-  const rawPhone = document.getElementById('otp-phone-input').value.trim();
-  const formattedPhone = formatPHPhoneNumber(rawPhone);
+    window.resendOTPCode = async () => {
+      if (otpCountdown > 0) return;
 
-  if (!formattedPhone) {
-    return alert("Please enter a valid 10-digit Philippine mobile number (e.g. 9123456789).");
-  }
+      // Reset reCAPTCHA for resend attempt
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+      }
 
-  try {
-    sendBtn.disabled = true;
-    sendBtn.innerText = "Sending SMS...";
-
-    const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhone));
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      sendBtn.disabled = false;
-      sendBtn.innerText = "Send SMS Verification Code";
-      return alert("No account found registered with this phone number. Please check or register first.");
-    }
-
-    initRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
-
-    confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-    
-    alert(`Verification code sent via SMS to ${formattedPhone}!`);
-    document.getElementById('otp-step-send').classList.add('hidden');
-    document.getElementById('otp-step-verify').classList.remove('hidden');
-
-    // Start 60-second timer
-    startOTPTimer();
-
-  } catch (error) {
-    console.error("OTP send error:", error);
-    alert("Failed to send OTP SMS: " + error.message);
-    sendBtn.disabled = false;
-    sendBtn.innerText = "Send SMS Verification Code";
-
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
-    }
-  }
-};
-
-window.resendOTPCode = async () => {
-  if (otpCountdown > 0) return;
-
-  // Reset reCAPTCHA for resend attempt
-  if (window.recaptchaVerifier) {
-    window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
-  }
-
-  document.getElementById('otp-step-verify').classList.add('hidden');
-  document.getElementById('otp-step-send').classList.remove('hidden');
-  document.getElementById('btn-send-otp').disabled = false;
-  document.getElementById('btn-send-otp').innerText = "Send SMS Verification Code";
-};
+      document.getElementById('otp-step-verify').classList.add('hidden');
+      document.getElementById('otp-step-send').classList.remove('hidden');
+      document.getElementById('btn-send-otp').disabled = false;
+      document.getElementById('btn-send-otp').innerText = "Send SMS Verification Code";
+    };
 
     window.verifyOTPCode = async () => {
       const code = document.getElementById('otp-code-input').value.trim();

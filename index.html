@@ -9,800 +9,226 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-/* 🟢 FORCE 30TH STANDINGS SECTION TO RESPECT LIGHT MODE */
-body.light-mode #tab-payout-30th .bg-white,
-body.light-mode #tab-payout-30th .bg-slate-900,
-body.light-mode #tab-payout-30th .bg-slate-950,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span {
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span.text-slate-400,
-body.light-mode #30th-standings-container span.text-slate-500 {
-  color: #64748b !important;
-}
-
-body.light-mode #30th-standings-container .bg-indigo-950\/60,
-body.light-mode #30th-standings-container .bg-indigo-50 {
-  background-color: #e0e7ff !important;
-  color: #3730a3 !important;
-}
-    /* LIGHT MODE PAYOUT SCHEME BANNER OVERRIDES */
-    body.light-mode #tab-payout .bg-indigo-950\/60,
-    body.light-mode #tab-payout-30th .bg-indigo-950\/60 {
-      background-color: #f0fdf4 !important;
-      border-color: #c7d2fe !important;
-    }
-
-    body.light-mode #tab-payout .bg-indigo-950\/60 span,
-    body.light-mode #tab-payout-30th .bg-indigo-950\/60 span {
-      color: #1e1b4b !important;
-      font-weight: 600 !important;
-    }
-    
-    /* CLASSY & TRENDY LIGHT MODE OVERRIDES */
-    body.light-mode {
-      background-color: #f8fafc !important; /* Soft Slate 50 background */
-      color: #0f172a !important; /* Deep Slate 900 text */
-    }
-
-    body.light-mode #dashboard-screen,
-    body.light-mode main {
-      background-color: #f8fafc !important;
-      color: #0f172a !important;
-    }
-
-    /* Cards, Sidebar, Header Containers */
-    body.light-mode aside,
-    body.light-mode header {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
-    }
-
-    body.light-mode .bg-slate-900,
-    body.light-mode .bg-slate-800,
-    body.light-mode .bg-slate-900\/80 {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
-    }
-
-    /* Inputs & Form Controls */
-    body.light-mode .bg-slate-950,
-    body.light-mode input,
-    body.light-mode select,
-    body.light-mode textarea {
-      background-color: #f1f5f9 !important;
-      color: #0f172a !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    /* High Contrast Typography */
-    body.light-mode .text-slate-400,
-    body.light-mode .text-slate-300,
-    body.light-mode .text-slate-500 {
-      color: #475569 !important;
-    }
-
-    body.light-mode .text-slate-100,
-    body.light-mode .text-slate-200,
-    body.light-mode h1,
-    body.light-mode h2,
-    body.light-mode h3,
-    body.light-mode h4 {
-      color: #0f172a !important;
-    }
-
-    /* Sidebar Navigation Hover & Active States */
-    body.light-mode #sidebar-menu button:hover,
-    body.light-mode #sidebar-menu a:hover,
-    body.light-mode .hover\:bg-slate-800:hover,
-    body.light-mode .hover\:bg-slate-700:hover {
-      background-color: #f1f5f9 !important;
-      color: #4f46e5 !important;
-    }
-
-    body.light-mode #main-sidebar .text-indigo-400,
-    body.light-mode .md\:hidden .text-indigo-400 {
-      color: #3730a3 !important;
-      font-weight: 800 !important;
-    }
-
-    body.light-mode #main-sidebar div.font-bold {
-      color: #0f172a !important;
-    }
-
-    /* Modern Buttons */
-    body.light-mode .bg-indigo-600 {
-      background-color: #4f46e5 !important;
-      color: #ffffff !important;
-    }
-    body.light-mode .bg-indigo-600:hover {
-      background-color: #4338ca !important;
-    }
-
-    /* LIGHT MODE LEADERBOARD OVERRIDES */
-    body.light-mode #tab-leaderboard > div {
-      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eff6ff 100%) !important;
-      border-color: #cbd5e1 !important;
-      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-amber-500\/20 {
-      background-color: #fef3c7 !important;
-      border-color: #fde047 !important;
-      color: #b45309 !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
-      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-      border-color: #3730a3 !important;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-indigo-950\/80 span.text-indigo-300 {
-      color: #e0e7ff !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-indigo-950\/80 span#user-current-rank {
-      color: #fbbf24 !important;
-    }
-
-    body.light-mode #top-5-container > div {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    body.light-mode #extended-rankings-list > div {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-    }
-
-    body.light-mode #tab-leaderboard .bg-slate-950\/60 {
-      background-color: #f1f5f9 !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    /* LIGHT MODE CHANNELS TAB OVERRIDES */
-    body.light-mode #tab-channels > div > div:first-child {
-      background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #eff6ff 100%) !important;
-      border-color: #a7f3d0 !important;
-      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08) !important;
-    }
-
-    body.light-mode #tab-channels h2 {
-      color: #064e3b !important;
-    }
-
-    body.light-mode #tab-channels p.text-slate-300 {
-      color: #047857 !important;
-    }
-
-    body.light-mode #tab-channels .bg-emerald-500\/20 {
-      background-color: #d1fae5 !important;
-      border-color: #6ee7b7 !important;
-      color: #065f46 !important;
-    }
-
-    body.light-mode #tab-channels .bg-slate-900 {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    body.light-mode #tab-channels .bg-slate-900:hover {
-      background-color: #f8fafc !important;
-    }
-
-    body.light-mode #tab-channels h3 {
-      color: #0f172a !important;
-    }
-
-    /* LIGHT MODE TREATS & REWARDS OVERRIDES */
-    body.light-mode #tab-treats > div > div:first-child {
-      background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #eff6ff 100%) !important;
-      border-color: #fbcfe8 !important;
-      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.08) !important;
-    }
-
-    body.light-mode #tab-treats h2 {
-      color: #831843 !important;
-    }
-
-    body.light-mode #tab-treats p.text-slate-300 {
-      color: #be185d !important;
-    }
-
-    body.light-mode #tab-treats .bg-pink-500\/20 {
-      background-color: #fce7f3 !important;
-      border-color: #fbcfe8 !important;
-      color: #9d174d !important;
-    }
-
-    body.light-mode #user-rewards-list > div {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    body.light-mode #user-rewards-list h3 {
-      color: #0f172a !important;
-    }
-
-    body.light-mode #user-rewards-list p {
-      color: #475569 !important;
-    }
-
-    /* LIGHT MODE POPUP OVERRIDES */
-    body.light-mode #reward-login-popup,
-    body.light-mode div:has(> #reward-login-popup) {
-      background-color: rgba(15, 23, 42, 0.5) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-    }
-
-    body.light-mode #reward-login-popup > div {
-      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-      background-color: #ffffff !important;
-      border: 1px solid #c7d2fe !important;
-      box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
-      border-radius: 20px !important;
-      padding: 24px !important;
-    }
-
-    body.light-mode #reward-login-popup h3 {
-      color: #0f172a !important;
-      font-weight: 800 !important;
-    }
-
-    body.light-mode #reward-login-popup p {
-      color: #334155 !important;
-    }
-
-    /* LIGHT MODE RAW REFERRALS OVERRIDES */
-    body.light-mode #tab-raw-referrals > div > div:first-child {
-      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f1f5f9 100%) !important;
-      border-color: #cbd5e1 !important;
-      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
-    }
-
-    body.light-mode #tab-raw-referrals h2 {
-      color: #3730a3 !important;
-    }
-
-    body.light-mode #tab-raw-referrals p.text-slate-300 {
-      color: #4338ca !important;
-    }
-
-    body.light-mode #tab-raw-referrals select#raw-month-filter {
-      background-color: #f1f5f9 !important;
-      color: #0f172a !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    body.light-mode #raw-leaderboard-list > div {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    body.light-mode #raw-leaderboard-list span {
-      color: #0f172a !important;
-    }
-
-    /* LIGHT MODE DISCLAIMER BANNER OVERRIDES */
-    body.light-mode #tab-raw-referrals .bg-amber-500\/10 {
-      background-color: #fffbeb !important;
-      border-color: #fde68a !important;
-    }
-
-    body.light-mode #tab-raw-referrals .text-amber-300\/90 {
-      color: #78350f !important;
-    }
-
-    body.light-mode #tab-raw-referrals .text-amber-400 {
-      color: #b45309 !important;
-    }
-
-    body.light-mode #tab-admin-raw .bg-slate-900 {
-      background-color: #ffffff !important;
-      border-color: #fde68a !important;
-    }
-
-    /* Modal Surface Overrides */
-    body.light-mode #ad-popup-modal,
-    body.light-mode #reward-view-modal,
-    body.light-mode #raw-edit-modal,
-    body.light-mode #reward-login-popup {
-      background-color: rgba(15, 23, 42, 0.45) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-    }
-
-    body.light-mode #ad-popup-modal > div,
-    body.light-mode #reward-view-modal > div,
-    body.light-mode #raw-edit-modal > div,
-    body.light-mode #reward-login-popup > div {
-      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-      background-color: #ffffff !important;
-      border: 1px solid #cbd5e1 !important;
-      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.2) !important;
-      color: #0f172a !important;
-    }
-
-    body.light-mode #ad-popup-modal h3,
-    body.light-mode #reward-view-modal h3,
-    body.light-mode #raw-edit-modal h3,
-    body.light-mode #reward-login-popup h3 {
-      color: #0f172a !important;
-      font-weight: 800 !important;
-    }
-
-    body.light-mode #ad-popup-modal p,
-    body.light-mode #reward-view-modal p,
-    body.light-mode #reward-login-popup p,
-    body.light-mode #raw-edit-modal label {
-      color: #334155 !important;
-    }
-
-    body.light-mode #ad-popup-modal button.absolute,
-    body.light-mode #reward-view-modal button.absolute,
-    body.light-mode #raw-edit-modal button.absolute {
-      background-color: #f1f5f9 !important;
-      color: #475569 !important;
-      border: 1px solid #cbd5e1 !important;
-    }
-
-    body.light-mode #ad-popup-modal button.absolute:hover,
-    body.light-mode #reward-view-modal button.absolute:hover,
-    body.light-mode #raw-edit-modal button.absolute:hover {
-      background-color: #e2e8f0 !important;
-      color: #0f172a !important;
-    }
-
-    body.light-mode #modal-reward-image-container {
-      background-color: #f1f5f9 !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    body.light-mode #raw-edit-modal input,
-    body.light-mode #reward-view-modal input {
-      background-color: #f8fafc !important;
-      color: #0f172a !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    body.light-mode #tab-treats .border-pink-500\/40 {
-      background-color: #ffffff !important;
-      border-color: #fbcfe8 !important;
-      box-shadow: 0 4px 12px -2px rgba(236, 72, 153, 0.1) !important;
-    }
-
-    body.light-mode #tab-treats .border-pink-500\/40 h4 {
-      color: #831843 !important;
-    }
-
-    body.light-mode #tab-treats .border-pink-500\/40 p {
-      color: #be185d !important;
-    }
-
-    body.light-mode .bg-amber-500\/10,
-    body.light-mode div:has(> .fa-triangle-exclamation) {
-      background-color: #fffbeb !important;
-      border-color: #fcd34d !important;
-    }
-
-    body.light-mode .text-amber-400,
-    body.light-mode .fa-triangle-exclamation {
-      color: #92400e !important;
-      font-weight: 800 !important;
-    }
-
-    body.light-mode .text-amber-200\/90,
-    body.light-mode .text-amber-300\/90,
-    body.light-mode .bg-amber-500\/10 p,
-    body.light-mode .bg-amber-500\/10 strong {
-      color: #78350f !important;
-    }
-
-    body.light-mode .bg-amber-500\/10 a,
-    body.light-mode #auth-success-view a {
-      color: #b45309 !important;
-      font-weight: 800 !important;
-      text-decoration: underline !important;
-    }
-
-    body.light-mode .bg-amber-500\/10 a:hover,
-    body.light-mode #auth-success-view a:hover {
-      color: #78350f !important;
-    }
-
-    body.light-mode #auth-screen > div {
-      background-color: #ffffff !important;
-      border-color: #cbd5e1 !important;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    /* HOME HERO & ANIMATED NAVIGATION STYLES */
-    .slide-item {
-      transition: opacity 0.8s ease-in-out;
-    }
-
-    body.light-mode #home-nav-grid button,
-    body.light-mode #home-nav-grid a {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    body.light-mode #home-nav-grid button:hover,
-    body.light-mode #home-nav-grid a:hover {
-      background-color: #f1f5f9 !important;
-      border-color: #818cf8 !important;
-    }
-
-    .morph-nav-anim {
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    body.light-mode #slideshow-slides-container h2 {
-      color: #ffffff !important;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7) !important;
-    }
-
-    body.light-mode #slideshow-slides-container p {
-      color: #f1f5f9 !important;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
-    }
-
-    body.light-mode #slideshow-slides-container .bg-gradient-to-t {
-      background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%) !important;
-    }
-
-    @keyframes fadeTranslucent {
-      0%, 60% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0.15; /* Almost translucent */
-      }
-    }
-
-    .slide-text-overlay {
-      animation: fadeTranslucent 5s ease-in-out forwards;
-      transition: opacity 0.3s ease;
-    }
-
-    .slide-text-overlay:hover {
-      opacity: 1 !important;
-    }
-
-    /* LIGHT MODE EVERY 30TH PAYOUT OVERRIDES */
-    body.light-mode #tab-payout-30th select#payout-30th-month-filter {
-      background-color: #f1f5f9 !important;
-      color: #0f172a !important;
-      border-color: #cbd5e1 !important;
-    }
-
-    body.light-mode #payout-30th-leaderboard-list > div,
-    body.light-mode #admin-payout-30th-track-list > div {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    /* ============================================================
-   LIGHT MODE: EVERY 30TH (HIRES FOR PAYOUT) OVERRIDES
-   ============================================================ */
-
-/* Banner Header Container */
-body.light-mode #tab-payout-30th > div > div:first-child {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #f0fdf4 100%) !important;
-  border-color: #a7f3d0 !important;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08) !important;
-}
-
-body.light-mode #tab-payout-30th h2 {
-  color: #064e3b !important;
-}
-
-body.light-mode #tab-payout-30th p.text-slate-300 {
-  color: #047857 !important;
-}
-
-/* Month Dropdown Filter */
-body.light-mode #tab-payout-30th select#payout-30th-month-filter {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
-}
-
-/* Stat Cards (Standing, Hires, Payout Amount) */
-body.light-mode #tab-payout-30th .grid > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #tab-payout-30th .grid span.text-slate-400 {
-  color: #64748b !important;
-}
-
-/* Standings Leaderboard Container */
-body.light-mode #tab-payout-30th .bg-slate-950\/60 {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-}
-
-body.light-mode #tab-payout-30th h3 {
-  color: #0f172a !important;
-}
-
-/* Leaderboard Individual Item Rows */
-body.light-mode #payout-30th-leaderboard-list > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Highlight Row for Current User in Light Mode */
-body.light-mode #payout-30th-leaderboard-list > div.border-emerald-500 {
-  background-color: #ecfdf5 !important;
-  border-color: #10b981 !important;
-}
-
-body.light-mode #payout-30th-leaderboard-list span {
-  color: #0f172a !important;
-}
-
-body.light-mode #payout-30th-leaderboard-list span.text-slate-400 {
-  color: #64748b !important;
-}
-
-body.light-mode #payout-30th-leaderboard-list span.text-emerald-400 {
-  color: #047857 !important;
-}
-    /* ============================================================
-   LIGHT MODE: EVERY 30TH (HIRES FOR PAYOUT) OVERRIDES
-   ============================================================ */
-
-/* Clean Card Backgrounds for Standings & Invoices */
-body.light-mode #tab-payout-30th .bg-slate-900,
-body.light-mode #tab-payout-30th .bg-slate-950\/60 {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
-}
-
-/* Banner Hero Container (Matches Emerald Scheme Gracefully) */
-body.light-mode #tab-payout-30th > div > div:first-child {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%, #f0fdf4 100%) !important;
-  border-color: #a7f3d0 !important;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
-}
-
-/* Banner Badge Override */
-body.light-mode #tab-payout-30th .bg-emerald-500\/20 {
-  background-color: #d1fae5 !important;
-  border-color: #6ee7b7 !important;
-  color: #065f46 !important;
-}
-
-/* Fix Unreadable Header & Subtitle Typography */
-body.light-mode #tab-payout-30th h2 {
-  color: #064e3b !important;
-}
-
-body.light-mode #tab-payout-30th p {
-  color: #047857 !important;
-}
-
-body.light-mode #tab-payout-30th label {
-  color: #0f172a !important;
-}
-
-/* Month Dropdown Selector */
-body.light-mode #tab-payout-30th select#payout-30th-month-filter {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-}
-
-/* Stat Cards (Standing, Hires, Payout Amount) */
-body.light-mode #tab-payout-30th .grid > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-}
-
-body.light-mode #tab-payout-30th .grid span.text-slate-400 {
-  color: #64748b !important;
-}
-
-/* Standings & Confidential Invoices Titles */
-body.light-mode #tab-payout-30th h3 {
-  color: #0f172a !important;
-}
-
-/* Item Row Styling in Light Mode */
-body.light-mode #payout-30th-leaderboard-list > div,
-body.light-mode #invoice-30th-list > div {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-}
-
-/* Current Logged-In User Active Highlight Row */
-body.light-mode #payout-30th-leaderboard-list > div.border-emerald-500 {
-  background-color: #ecfdf5 !important;
-  border-color: #10b981 !important;
-}
-
-body.light-mode #payout-30th-leaderboard-list span,
-body.light-mode #invoice-30th-list span,
-body.light-mode #invoice-30th-list p {
-  color: #0f172a !important;
-}
-
-body.light-mode #payout-30th-leaderboard-list span.text-slate-400,
-body.light-mode #invoice-30th-list p.text-slate-400 {
-  color: #64748b !important;
-}
-
-    /* Top Banner Header */
-body.light-mode #tab-admin-users > div:first-child {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #e0e7ff 100%) !important;
-  border-color: #c7d2fe !important;
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
-}
-
-body.light-mode #tab-admin-users h2 {
-  color: #1e1b4b !important;
-}
-
-body.light-mode #tab-admin-users p.text-slate-300 {
-  color: #3730a3 !important;
-}
-
-/* Total Registered Count Box */
-body.light-mode #tab-admin-users .bg-slate-950\/80 {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-}
-
-body.light-mode #admin-total-users-count {
-  color: #4f46e5 !important;
-}
-
-/* Search Bar & Filter Container */
-body.light-mode #tab-admin-users .bg-slate-900 {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #admin-user-search-input {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-}
-
-body.light-mode #admin-users-page-indicator {
-  color: #64748b !important;
-}
-
-/* Affiliate Directory List Items */
-body.light-mode #admin-users-directory-list > div {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-}
-
-body.light-mode #admin-users-directory-list > div:hover {
-  background-color: #f1f5f9 !important;
-  border-color: #818cf8 !important;
-}
-
-body.light-mode #admin-users-directory-list h4 {
-  color: #0f172a !important;
-}
-
-body.light-mode #admin-users-directory-list p {
-  color: #475569 !important;
-}
-
-body.light-mode #admin-users-directory-list span.text-slate-300 {
-  color: #1e293b !important;
-}
-
-/* 📋 HR PROFILE MODAL LIGHT MODE STYLING */
-body.light-mode #admin-user-modal {
-  background-color: rgba(15, 23, 42, 0.45) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-}
-
-body.light-mode #admin-user-modal > div {
-  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 1px solid #cbd5e1 !important;
-  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #modal-user-fullname {
-  color: #0f172a !important;
-}
-
-body.light-mode #modal-user-email {
-  color: #4338ca !important;
-}
-
-/* Modal Metrics Grid Boxes */
-body.light-mode #admin-user-modal .grid > div,
-body.light-mode #admin-user-modal .bg-slate-950\/60 {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-}
-
-body.light-mode #admin-user-modal .grid span.text-slate-400,
-body.light-mode #admin-user-modal p.text-slate-400 {
-  color: #475569 !important;
-}
-
-body.light-mode #modal-user-username,
-body.light-mode #modal-user-account-num {
-  color: #0f172a !important;
-}
-
-body.light-mode #modal-user-id {
-  color: #334155 !important;
-}
-
-body.light-mode #modal-user-payment-method {
-  color: #047857 !important;
-}
-
-body.light-mode #modal-user-created-at {
-  color: #b45309 !important;
-}
-
-    /* DARK MODE OVERRIDES FOR CHATBOX WHEN BODY IS NOT IN LIGHT MODE */
-body:not(.light-mode) #chat-box-container,
-body:not(.light-mode) #chat-input-form {
-  background-color: #0f172a !important; /* Slate 900 */
-  border-color: #1e293b !important;     /* Slate 800 */
-}
-
-body:not(.light-mode) #chat-messages-list {
-  background-color: #020617 !important; /* Slate 950 */
-  color: #f8fafc !important;
-}
-
-body:not(.light-mode) #chat-message-input {
-  background-color: #020617 !important;
-  border-color: #1e293b !important;
-  color: #f8fafc !important;
-}
-
-/* MESSAGE BUBBLES IN DARK MODE */
-body:not(.light-mode) .chat-bubble-received {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-  color: #f1f5f9 !important;
-}
-  </style>
+  /* ------------------------------------------------------------
+     1. CLASSY & TRENDY LIGHT MODE CORE OVERRIDES
+     ------------------------------------------------------------ */
+  body.light-mode {
+    background-color: #f8fafc !important; /* Soft Slate 50 background */
+    color: #0f172a !important; /* Deep Slate 900 text */
+  }
+
+  body.light-mode #dashboard-screen,
+  body.light-mode main {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  /* Cards, Sidebar, Header Containers */
+  body.light-mode aside,
+  body.light-mode header {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
+  }
+
+  body.light-mode .bg-slate-900,
+  body.light-mode .bg-slate-800,
+  body.light-mode .bg-slate-900\/80 {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
+  }
+
+  /* Inputs & Form Controls */
+  body.light-mode .bg-slate-950,
+  body.light-mode input,
+  body.light-mode select,
+  body.light-mode textarea {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  /* High Contrast Typography */
+  body.light-mode .text-slate-400,
+  body.light-mode .text-slate-300,
+  body.light-mode .text-slate-500 {
+    color: #475569 !important;
+  }
+
+  body.light-mode .text-slate-100,
+  body.light-mode .text-slate-200,
+  body.light-mode h1,
+  body.light-mode h2,
+  body.light-mode h3,
+  body.light-mode h4 {
+    color: #0f172a !important;
+  }
+
+  /* Sidebar Navigation Hover & Active States */
+  body.light-mode #sidebar-menu button:hover,
+  body.light-mode #sidebar-menu a:hover,
+  body.light-mode .hover\:bg-slate-800:hover,
+  body.light-mode .hover\:bg-slate-700:hover {
+    background-color: #f1f5f9 !important;
+    color: #4f46e5 !important;
+  }
+
+  body.light-mode #main-sidebar .text-indigo-400,
+  body.light-mode .md\:hidden .text-indigo-400 {
+    color: #3730a3 !important;
+    font-weight: 800 !important;
+  }
+
+  body.light-mode #main-sidebar div.font-bold {
+    color: #0f172a !important;
+  }
+
+  /* Modern Buttons */
+  body.light-mode .bg-indigo-600 {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+  }
+  body.light-mode .bg-indigo-600:hover {
+    background-color: #4338ca !important;
+  }
+
+  /* ------------------------------------------------------------
+     2. LEADERBOARD, CHANNELS, TREATS & MODALS OVERRIDES
+     ------------------------------------------------------------ */
+  body.light-mode #tab-leaderboard > div {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eff6ff 100%) !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+  }
+
+  body.light-mode #tab-leaderboard .bg-amber-500\/20 {
+    background-color: #fef3c7 !important;
+    border-color: #fde047 !important;
+    color: #b45309 !important;
+  }
+
+  body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+    border-color: #3730a3 !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
+  }
+
+  body.light-mode #top-5-container > div,
+  body.light-mode #extended-rankings-list > div {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  body.light-mode #tab-channels > div > div:first-child {
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #eff6ff 100%) !important;
+    border-color: #a7f3d0 !important;
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08) !important;
+  }
+
+  body.light-mode #tab-treats > div > div:first-child {
+    background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #eff6ff 100%) !important;
+    border-color: #fbcfe8 !important;
+    box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.08) !important;
+  }
+
+  body.light-mode #user-rewards-list > div {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  body.light-mode #ad-popup-modal,
+  body.light-mode #reward-view-modal,
+  body.light-mode #raw-edit-modal,
+  body.light-mode #reward-login-popup,
+  body.light-mode #admin-user-modal {
+    background-color: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  body.light-mode #ad-popup-modal > div,
+  body.light-mode #reward-view-modal > div,
+  body.light-mode #raw-edit-modal > div,
+  body.light-mode #reward-login-popup > div,
+  body.light-mode #admin-user-modal > div {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.2) !important;
+    color: #0f172a !important;
+  }
+
+  /* ------------------------------------------------------------
+     3. DARK MODE CHATBOX OVERRIDES
+     ------------------------------------------------------------ */
+  body:not(.light-mode) #chat-box-container,
+  body:not(.light-mode) #chat-input-form {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+  }
+
+  body:not(.light-mode) #chat-messages-list {
+    background-color: #020617 !important;
+    color: #f8fafc !important;
+  }
+
+  body:not(.light-mode) #chat-message-input {
+    background-color: #020617 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
+
+  body:not(.light-mode) .chat-bubble-received {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* ------------------------------------------------------------
+     4. 🟢 FINAL PRIORITY OVERRIDES: EVERY 30TH LIGHT MODE
+     ------------------------------------------------------------ */
+  body.light-mode #tab-payout-30th > div > div:first-child {
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%, #f0fdf4 100%) !important;
+    border-color: #a7f3d0 !important;
+  }
+
+  body.light-mode #tab-payout-30th .bg-slate-900,
+  body.light-mode #tab-payout-30th .bg-slate-950,
+  body.light-mode #tab-payout-30th .bg-slate-950\/60,
+  body.light-mode #30th-standings-container,
+  body.light-mode #30th-standings-container > div,
+  body.light-mode #30th-standings-container .standings-row,
+  body.light-mode #invoice-30th-list > div {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  body.light-mode #tab-payout-30th h2,
+  body.light-mode #tab-payout-30th h3,
+  body.light-mode #tab-payout-30th label,
+  body.light-mode #30th-standings-container span,
+  body.light-mode #invoice-30th-list span,
+  body.light-mode #invoice-30th-list p {
+    color: #0f172a !important;
+  }
+
+  body.light-mode #30th-standings-container span.text-slate-400,
+  body.light-mode #30th-standings-container span.text-slate-500,
+  body.light-mode #invoice-30th-list p.text-slate-400 {
+    color: #64748b !important;
+  }
+
+  body.light-mode #tab-payout-30th select#month-filter-30th {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+</style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
 

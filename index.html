@@ -2536,43 +2536,47 @@ window.sendCommunityChatMessage = async (e) => {
     };
 
     // 🔒 Confidential Invoice Listener: Fetches ONLY the logged-in affiliate's approved invoices
-    window.listenToUser30thInvoices = function(uid) {
-      if (!auth.currentUser) return;
+    window.listenToUser30thInvoices = (uid) => {
+  if (!uid) return;
 
-      const q = query(
-        collection(db, "payouts_30th"), 
-        where("userId", "==", uid), 
-        where("status", "==", "approved")
-      );
+  const invoiceContainer = document.getElementById('user-30th-invoices-list');
 
-      if (unsubUser30thInvoices) unsubUser30thInvoices();
-      unsubUser30thInvoices = onSnapshot(q, (snapshot) => {
-        const invoiceList = document.getElementById('invoice-30th-list');
-        if (!invoiceList) return;
+  // Query only the payouts belonging to this specific affiliate
+  const q = query(
+    collection(db, "monthly_30th_payouts"),
+    where("userId", "==", uid),
+    where("status", "==", "APPROVED")
+  );
 
-        if (snapshot.empty) {
-          invoiceList.innerHTML = "No official monthly invoices attached for this period yet.";
-          document.getElementById('pagination-30th-controls').classList.add('hidden');
-          user30thPayoutsArray = [];
-          return;
-        }
+  onSnapshot(q, (snapshot) => {
+    if (!invoiceContainer) return;
 
-        let filteredInvoices = [];
-        snapshot.forEach((docSnap) => {
-          const item = { id: docSnap.id, ...docSnap.data() };
-          if (item.monthKey === selected30thMonthKey) {
-            filteredInvoices.push(item);
-          }
-        });
+    if (snapshot.empty) {
+      invoiceContainer.innerHTML = `<div class="text-center text-slate-400 py-4 text-xs">No official monthly invoices attached for this period yet.</div>`;
+      return;
+    }
 
-        filteredInvoices.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        user30thPayoutsArray = filteredInvoices;
-
-        current30thInvoicePage = 1;
-        render30thInvoicePage();
-      }, (err) => console.warn("User 30th invoices error (handled):", err.message));
-    };
-
+    let invoicesHTML = `<div class="space-y-2">`;
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      invoicesHTML += `
+        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs">
+          <div>
+            <div class="font-bold text-slate-800 dark:text-slate-200">Invoice #${docSnap.id.substring(0, 8).toUpperCase()}</div>
+            <div class="text-[10px] text-slate-400">Period: ${data.period || 'N/A'} | Verified Hires: ${data.hires || 0}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-extrabold text-emerald-600 dark:text-emerald-400">₱${Number(data.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <span class="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold uppercase">PAID</span>
+          </div>
+        </div>`;
+    });
+    invoicesHTML += `</div>`;
+    invoiceContainer.innerHTML = invoicesHTML;
+  }, (err) => {
+    console.warn("User 30th invoices notice:", err.message);
+  });
+};
     function render30thInvoicePage() {
       const invoiceList = document.getElementById('invoice-30th-list');
       const paginationControls = document.getElementById('pagination-30th-controls');
@@ -4875,141 +4879,137 @@ window.init30thMonthFilter = () => {
 };
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        window.currentUid = user.uid;
-        
-        const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
-        const currentTime = Date.now();
+  if (user) {
+    window.currentUid = user.uid;
+    
+    const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
+    const currentTime = Date.now();
 
-        if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
-          localStorage.removeItem('loginTimestamp');
-          await signOut(auth);
-          document.getElementById('admin-menu').classList.add('hidden');
-          document.getElementById('dashboard-screen').classList.add('hidden');
-          document.getElementById('auth-screen').classList.remove('hidden');
-          alert("Your 12-hour session has expired. Please log in again to continue.");
-          return;
+    if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
+      localStorage.removeItem('loginTimestamp');
+      await signOut(auth);
+      document.getElementById('admin-menu').classList.add('hidden');
+      document.getElementById('dashboard-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+      alert("Your 12-hour session has expired. Please log in again to continue.");
+      return;
+    }
+
+    if (!loginTime) {
+      localStorage.setItem('loginTimestamp', currentTime.toString());
+    }
+
+    try {
+      let userDocRef = doc(db, "users", user.uid);
+      let docSnap = await getDoc(userDocRef);
+
+      // Fallback search if phone user UID differs from original registration UID
+      if (!docSnap.exists() && user.phoneNumber) {
+        const qPhone = query(collection(db, "users"), where("phoneNumber", "==", user.phoneNumber));
+        const phoneSnap = await getDocs(qPhone);
+        if (!phoneSnap.empty) {
+          docSnap = phoneSnap.docs[0];
+          window.currentUid = docSnap.id;
+        }
+      }
+
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        currentUsername = userData.username || 'user';
+        currentUserRole = userData.role || 'affiliate';
+
+        sessionStorage.removeItem('rewardPopupDismissed');
+
+        if (userData.theme) {
+          applyTheme(userData.theme);
         }
 
-        if (!loginTime) {
-          localStorage.setItem('loginTimestamp', currentTime.toString());
+        // 🟢 POPULATE PROFILE INFORMATION INPUTS
+        document.getElementById('setting-firstname').value = userData.firstName || '';
+        document.getElementById('setting-lastname').value = userData.lastName || '';
+        document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
+        document.getElementById('setting-email').value = userData.email || user.email || '';
+
+        // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
+        if (userData.paymentMethod) {
+          const bankSelect = document.getElementById('setting-bank');
+          if (bankSelect) {
+            if (['GoTyme', 'GCash', 'Maya', 'BPI', 'RCBC', 'Metrobank', 'China Bank'].includes(userData.paymentMethod)) {
+              bankSelect.value = userData.paymentMethod;
+            } else {
+              bankSelect.value = 'Others';
+              document.getElementById('custom-bank-container').classList.remove('hidden');
+              document.getElementById('setting-custom-bank').value = userData.paymentMethod;
+            }
+          }
+        }
+        if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
+        if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
+
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+        document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || userData.username || 'Affiliate'}`;
+
+        if (userData.photoURL) {
+          const profileImg = document.getElementById('profile-avatar-img');
+          const profileIcon = document.getElementById('profile-avatar-icon');
+          if (profileImg && profileIcon) {
+            profileImg.src = userData.photoURL;
+            profileImg.classList.remove('hidden');
+            profileIcon.classList.add('hidden');
+          }
         }
 
-        try {
-          let userDocRef = doc(db, "users", user.uid);
-          let docSnap = await getDoc(userDocRef);
+        updatePayoutDateRange();
+        window.switchTab('home');
 
-          // Fallback search if phone user UID differs from original registration UID
-          if (!docSnap.exists() && user.phoneNumber) {
-            const qPhone = query(collection(db, "users"), where("phoneNumber", "==", user.phoneNumber));
-            const phoneSnap = await getDocs(qPhone);
-            if (!phoneSnap.empty) {
-              docSnap = phoneSnap.docs[0];
-              window.currentUid = docSnap.id;
-            }
-          }
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            currentUsername = userData.username || 'user';
-            currentUserRole = userData.role || 'affiliate';
+        // Safe Initialization of Month Selectors
+        if (typeof initRawMonthFilter === 'function') initRawMonthFilter();
+        if (typeof window.init30thMonthFilter === 'function') window.init30thMonthFilter();
 
-            sessionStorage.removeItem('rewardPopupDismissed');
+        // Load Admin Controls if user is Admin
+        if (userData.role === 'admin') {
+          document.getElementById('admin-menu').classList.remove('hidden');
+          await loadAffiliates();
+        }
 
-            if (userData.theme) {
-              applyTheme(userData.theme);
-            }
+        // Start Realtime Listeners (Affiliate-Safe)
+        listenToSlideshow();
+        initUserAdsEngine();
+        listenToMonthlyLeaderboard();
+        listenToUserRewards(window.currentUid);
+        if (typeof window.listenToRawLeaderboard === 'function') window.listenToRawLeaderboard();
+        if (typeof window.listenToUserPayouts === 'function') window.listenToUserPayouts(window.currentUid);
+        if (typeof window.listenTo30thLeaderboard === 'function') window.listenTo30thLeaderboard();
+        if (typeof window.listenToUser30thInvoices === 'function') window.listenToUser30thInvoices(window.currentUid);
+        if (typeof window.listenToCommunityChat === 'function') window.listenToCommunityChat();
 
-            // 🟢 POPULATE PROFILE INFORMATION INPUTS
-            document.getElementById('setting-firstname').value = userData.firstName || '';
-            document.getElementById('setting-lastname').value = userData.lastName || '';
-            document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
-            document.getElementById('setting-email').value = userData.email || user.email || '';
-
-            if (typeof window.init30thMonthFilter === 'function') {
-              window.init30thMonthFilter();
-            }
-
-            // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
-            if (userData.paymentMethod) {
-              const bankSelect = document.getElementById('setting-bank');
-              if (bankSelect) {
-                if (['GoTyme', 'GCash', 'Maya', 'BPI', 'RCBC', 'Metrobank', 'China Bank'].includes(userData.paymentMethod)) {
-                  bankSelect.value = userData.paymentMethod;
-                } else {
-                  bankSelect.value = 'Others';
-                  document.getElementById('custom-bank-container').classList.remove('hidden');
-                  document.getElementById('setting-custom-bank').value = userData.paymentMethod;
-                }
-              }
-            }
-            if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
-            if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
-
-            if (typeof initRawMonthFilter === 'function') initRawMonthFilter();
-            if (typeof init30thMonthFilter === 'function') init30thMonthFilter();
-
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('welcome-message').innerText = `Welcome, ${userData.firstName || userData.username || 'Affiliate'}`;
-
-            if (userData.photoURL) {
-              const profileImg = document.getElementById('profile-avatar-img');
-              const profileIcon = document.getElementById('profile-avatar-icon');
-              if (profileImg && profileIcon) {
-                profileImg.src = userData.photoURL;
-                profileImg.classList.remove('hidden');
-                profileIcon.classList.add('hidden');
-              }
-            }
-
-            updatePayoutDateRange();
-            window.switchTab('home');
-
-            // Initialize Month Selectors
-            initRawMonthFilter();
-            init30thMonthFilter();
-
-            // Load Admin Controls if user is Admin
-            if (userData.role === 'admin') {
-              document.getElementById('admin-menu').classList.remove('hidden');
-              await loadAffiliates();
-            }
-
-            // Start Realtime Listeners
-            listenToSlideshow();
-            initUserAdsEngine();
-            listenToMonthlyLeaderboard();
-            listenToUserRewards(window.currentUid);
-            window.listenToRawLeaderboard();
-            window.listenToUserPayouts(window.currentUid);
-            window.listenTo30thLeaderboard();
-            window.listenToUser30thInvoices(window.currentUid);
-
-            if (userData.role === 'admin') {
-              listenToPendingPayouts(); 
-              listenToAdminFeedback(); 
-              listenToAdminAds();
-              listenToAdminRewards();
-              listenToAdminRawReferrals();
-              listenToPending30thPayouts();
-              listenToAdmin30thPayoutsTrack();
-            }
-          } else {
-            // Fallback for phone users without an existing document profile
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('welcome-message').innerText = `Welcome, Affiliate`;
-            window.switchTab('home');
-          }
-        } catch (error) {
-          console.error("Error fetching user data on auth change:", error);
+        // Admin-Only Realtime Listeners
+        if (userData.role === 'admin') {
+          listenToPendingPayouts(); 
+          listenToAdminFeedback(); 
+          listenToAdminAds();
+          listenToAdminRewards();
+          listenToAdminRawReferrals();
+          listenToPending30thPayouts();
+          listenToAdmin30thPayoutsTrack();
         }
       } else {
-        window.currentUid = null;
-        document.getElementById('auth-screen').classList.remove('hidden');
-        document.getElementById('dashboard-screen').classList.add('hidden');
+        // Fallback for phone users without an existing document profile
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+        document.getElementById('welcome-message').innerText = `Welcome, Affiliate`;
+        window.switchTab('home');
       }
-    });
+    } catch (error) {
+      console.error("Error fetching user data on auth change:", error);
+    }
+  } else {
+    window.currentUid = null;
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+  }
+});
 
     document.getElementById('admin-reward-form').addEventListener('submit', async (e) => {
       e.preventDefault();

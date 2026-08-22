@@ -9,6 +9,43 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* ============================================================
+   EVERY 30TH STANDINGS LIGHT & DARK MODE ADAPTABILITY
+   ============================================================ */
+
+/* Light Mode Overrides */
+body.light-mode #30th-standings-container {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container .standings-row {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container .standings-row:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Dark Mode Defaults (When NOT in Light Mode) */
+body:not(.light-mode) #30th-standings-container {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body:not(.light-mode) #30th-standings-container .standings-row {
+  background-color: #020617 !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body:not(.light-mode) #30th-standings-container .standings-row:hover {
+  background-color: #0f172a !important;
+}
     /* LIGHT MODE PAYOUT SCHEME BANNER OVERRIDES */
     body.light-mode #tab-payout .bg-indigo-950\/60,
     body.light-mode #tab-payout-30th .bg-indigo-950\/60 {
@@ -2651,12 +2688,10 @@ window.sendCommunityChatMessage = async (e) => {
   const selectEl = document.getElementById('month-filter-30th');
   const selectedPeriod = selectEl && selectEl.value ? selectEl.value : "2026-08";
 
-  // Elements to update
   const hiresEl = document.getElementById('user-30th-hires');
   const earningsEl = document.getElementById('user-30th-earnings');
-  const standingsContainer = document.getElementById('30th-standings-container') || document.querySelector('#monthly-hires-standings-list');
+  const standingsContainer = document.getElementById('30th-standings-container');
 
-  // Query only APPROVED payouts
   const q = query(
     collection(db, "monthly_30th_payouts"),
     where("status", "==", "APPROVED")
@@ -2670,25 +2705,22 @@ window.sendCommunityChatMessage = async (e) => {
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       
-      // Filter by the selected period (e.g., "2026-08")
       if (data.period === selectedPeriod || data.period?.includes(selectedPeriod)) {
         totalHires += Number(data.hires || 0);
         totalEarnings += Number(data.amount || 0);
 
         standingsList.push({
           id: docSnap.id,
-          name: data.userName || data.affiliateName || data.name || 'Affiliate',
+          name: data.userName || data.affiliateName || 'Affiliate',
           hires: Number(data.hires || 0),
           amount: Number(data.amount || 0)
         });
       }
     });
 
-    // Update Summary Stats
     if (hiresEl) hiresEl.innerText = totalHires;
     if (earningsEl) earningsEl.innerText = `₱${totalEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
-    // Render Standings List
     if (standingsContainer) {
       if (standingsList.length === 0) {
         standingsContainer.innerHTML = `
@@ -2698,23 +2730,22 @@ window.sendCommunityChatMessage = async (e) => {
         return;
       }
 
-      // Sort affiliates by highest hires first
       standingsList.sort((a, b) => b.hires - a.hires);
 
-      let listHTML = `<div class="divide-y divide-slate-200 dark:divide-slate-800">`;
+      let listHTML = `<div class="space-y-2 p-1">`;
       
       standingsList.forEach((item, index) => {
         listHTML += `
-          <div class="flex items-center justify-between p-3 text-xs">
+          <div class="standings-row flex items-center justify-between p-3.5 bg-slate-950 dark:bg-slate-950 border border-slate-800 dark:border-slate-800 rounded-xl text-xs transition shadow-sm">
             <div class="flex items-center gap-3">
-              <span class="font-extrabold text-slate-400 w-5 text-center">#${index + 1}</span>
-              <span class="font-bold text-slate-800 dark:text-slate-100">${item.name}</span>
+              <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
+              <span class="font-bold text-slate-900 dark:text-slate-100">${item.name}</span>
             </div>
-            <div class="flex items-center gap-4">
-              <span class="bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold px-2.5 py-1 rounded-lg">
+            <div class="flex items-center gap-3">
+              <span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
                 ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
               </span>
-              <span class="font-extrabold text-emerald-600 dark:text-emerald-400">
+              <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
                 ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
             </div>

@@ -2429,6 +2429,7 @@ docsArray.forEach((msg) => {
     ? `<span class="text-[9px] bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
     : '';
 
+  // 🟢 Make sure ${msg.text} is placed directly against the inner HTML tags
   listDiv.innerHTML += `
     <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5 my-1.5">
       <div class="flex items-center gap-1 text-[10px] text-slate-500 px-1">
@@ -2440,9 +2441,7 @@ docsArray.forEach((msg) => {
         isMe 
           ? 'bg-indigo-600 text-white rounded-tr-none' 
           : 'bg-white border border-slate-200 text-slate-800 chat-bubble-received rounded-tl-none shadow-sm'
-      }">
-        ${msg.text}
-      </div>
+      }">${msg.text.trim()}</div>
     </div>
   `;
 });

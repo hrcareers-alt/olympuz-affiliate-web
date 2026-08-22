@@ -1240,15 +1240,19 @@ body:not(.light-mode) .chat-bubble-received {
             </div>
           </div>
 
-          <!-- PUBLIC LEADERBOARD LIST -->
-          <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <h3 class="text-sm font-bold text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-2">
-              <i class="fa-solid fa-list-ol text-emerald-400"></i> Monthly Hires Standings
-            </h3>
-            <div id="payout-30th-leaderboard-list" class="space-y-2 max-h-[350px] overflow-y-auto pr-1">
-              <div class="text-xs text-slate-500 py-4 text-center">Loading monthly hires standings...</div>
-            </div>
-          </div>
+         <!-- MONTHLY HIRES STANDINGS SECTION -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+  <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
+    📋 MONTHLY HIRES STANDINGS
+  </h3>
+
+  <!-- 🟢 Dynamic Container ID -->
+  <div id="30th-standings-container">
+    <div class="text-center text-slate-400 py-6 text-xs">
+      Loading standings...
+    </div>
+  </div>
+</div>
 
           <!-- 🔒 CONFIDENTIAL: PERSONAL MONTHLY INVOICES (VISIBLE ONLY TO YOU) -->
           <div class="bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-xl">
@@ -2639,89 +2643,87 @@ window.sendCommunityChatMessage = async (e) => {
     };
 
     // 🏆 PUBLIC "EVERY 30TH" LEADERBOARD LISTENER (was missing — this caused the error)
-    window.listenTo30thLeaderboard = function() {
-      const select = document.getElementById('payout-30th-month-filter');
+    window.listenTo30thLeaderboard = () => {
+  const selectEl = document.getElementById('month-filter-30th');
+  const selectedPeriod = selectEl && selectEl.value ? selectEl.value : "2026-08";
 
-      if (!select || select.options.length === 0) {
-        init30thMonthFilter();
-      }
+  // Elements to update
+  const hiresEl = document.getElementById('user-30th-hires');
+  const earningsEl = document.getElementById('user-30th-earnings');
+  const standingsContainer = document.getElementById('30th-standings-container') || document.querySelector('#monthly-hires-standings-list');
 
-      if (select && select.value) {
-        selected30thMonthKey = select.value;
-      }
+  // Query only APPROVED payouts
+  const q = query(
+    collection(db, "monthly_30th_payouts"),
+    where("status", "==", "APPROVED")
+  );
 
-      const q = query(collection(db, "payouts_30th"), where("status", "==", "approved"));
+  onSnapshot(q, (snapshot) => {
+    let totalHires = 0;
+    let totalEarnings = 0;
+    const standingsList = [];
 
-      if (unsub30thLeaderboard) unsub30thLeaderboard();
-      unsub30thLeaderboard = onSnapshot(q, (snapshot) => {
-        const userStatsMap = {};
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      
+      // Filter by the selected period (e.g., "2026-08")
+      if (data.period === selectedPeriod || data.period?.includes(selectedPeriod)) {
+        totalHires += Number(data.hires || 0);
+        totalEarnings += Number(data.amount || 0);
 
-        snapshot.forEach((docSnap) => {
-          const item = docSnap.data();
-          if (item.monthKey === selected30thMonthKey) {
-            const uid = item.userId;
-            if (!userStatsMap[uid]) {
-              userStatsMap[uid] = {
-                userId: uid,
-                userName: item.userName || "Affiliate",
-                totalHires: 0,
-                totalAmount: 0
-              };
-            }
-            userStatsMap[uid].totalHires += (item.referrals || 0);
-            userStatsMap[uid].totalAmount += (item.amount || 0);
-          }
+        standingsList.push({
+          id: docSnap.id,
+          name: data.userName || data.affiliateName || data.name || 'Affiliate',
+          hires: Number(data.hires || 0),
+          amount: Number(data.amount || 0)
         });
+      }
+    });
 
-        const rankings = Object.values(userStatsMap);
-        rankings.sort((a, b) => b.totalHires - a.totalHires);
+    // Update Summary Stats
+    if (hiresEl) hiresEl.innerText = totalHires;
+    if (earningsEl) earningsEl.innerText = `₱${totalEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
-        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
-        const userIndex = rankings.findIndex(r => r.userId === currentUid);
+    // Render Standings List
+    if (standingsContainer) {
+      if (standingsList.length === 0) {
+        standingsContainer.innerHTML = `
+          <div class="text-center text-slate-400 py-6 text-xs">
+            No verified hires recorded yet for this month.
+          </div>`;
+        return;
+      }
 
-        const userRankEl = document.getElementById('user-30th-rank');
-        const userHiresEl = document.getElementById('user-30th-monthly-hires');
-        const userAmountEl = document.getElementById('user-30th-monthly-amount');
+      // Sort affiliates by highest hires first
+      standingsList.sort((a, b) => b.hires - a.hires);
 
-        if (userRankEl) userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
-        if (userHiresEl) userHiresEl.innerText = userStatsMap[currentUid] ? userStatsMap[currentUid].totalHires : 0;
-        if (userAmountEl) userAmountEl.innerText = `₱${(userStatsMap[currentUid] ? userStatsMap[currentUid].totalAmount : 0).toFixed(2)}`;
-
-        const listDiv = document.getElementById('payout-30th-leaderboard-list');
-        if (!listDiv) return;
-        listDiv.innerHTML = "";
-
-        if (rankings.length === 0) {
-          listDiv.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center">No verified hires recorded yet for this month.</div>`;
-          return;
-        }
-
-        rankings.forEach((item, index) => {
-          const rankNum = index + 1;
-          const isCurrentUser = item.userId === currentUid;
-
-          listDiv.innerHTML += `
-            <div class="bg-slate-900 border ${isCurrentUser ? 'border-emerald-500 bg-emerald-950/20' : 'border-slate-800'} p-3 rounded-xl flex items-center justify-between text-xs transition">
-              <div class="flex items-center gap-3">
-                <span class="font-extrabold text-slate-400 w-6 text-center text-sm">#${rankNum}</span>
-                <span class="font-semibold text-slate-200 ${isCurrentUser ? 'text-emerald-400 font-bold' : ''}">
-                  ${item.userName} ${isCurrentUser ? '(You)' : ''}
-                </span>
-              </div>
-              <div class="flex items-center gap-4 text-right">
-                <span class="bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-extrabold px-3 py-1 rounded-lg text-xs">
-                  ${item.totalHires} Hires
-                </span>
-                <span class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold px-3 py-1 rounded-lg text-xs">
-                  ₱${item.totalAmount.toFixed(2)}
-                </span>
-              </div>
+      let listHTML = `<div class="divide-y divide-slate-200 dark:divide-slate-800">`;
+      
+      standingsList.forEach((item, index) => {
+        listHTML += `
+          <div class="flex items-center justify-between p-3 text-xs">
+            <div class="flex items-center gap-3">
+              <span class="font-extrabold text-slate-400 w-5 text-center">#${index + 1}</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">${item.name}</span>
             </div>
-          `;
-        });
-      }, (err) => console.warn("30th leaderboard listener handled silently:", err.message));
-    };
+            <div class="flex items-center gap-4">
+              <span class="bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold px-2.5 py-1 rounded-lg">
+                ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
+              </span>
+              <span class="font-extrabold text-emerald-600 dark:text-emerald-400">
+                ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>`;
+      });
 
+      listHTML += `</div>`;
+      standingsContainer.innerHTML = listHTML;
+    }
+  }, (err) => {
+    console.error("Error fetching 30th leaderboard:", err);
+  });
+};
     window.exportAffiliateDatabaseToExcel = () => {
   if (!affiliateDatabaseList || affiliateDatabaseList.length === 0) {
     return alert("No affiliate data available to export.");

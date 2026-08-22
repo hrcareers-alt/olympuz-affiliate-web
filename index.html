@@ -4923,7 +4923,9 @@ window.init30thMonthFilter = () => {
             document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
             document.getElementById('setting-email').value = userData.email || user.email || '';
 
-    
+            if (typeof window.init30thMonthFilter === 'function') {
+              window.init30thMonthFilter();
+            }
 
             // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
             if (userData.paymentMethod) {

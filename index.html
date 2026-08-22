@@ -3088,41 +3088,51 @@ directoryList.innerHTML += `
 }
 
     window.decline30thPayout = async (payoutId) => {
-      if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
-        await updateDoc(doc(db, "payouts_30th", payoutId), { status: 'declined' });
-      }
-    };
+  if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
+    try {
+      // 🟢 UPDATED: Collection changed to "monthly_30th_payouts"
+      await updateDoc(doc(db, "monthly_30th_payouts", payoutId), { status: 'DECLINED' });
+      alert("Monthly payout declined.");
+    } catch (error) {
+      alert("Error declining monthly payout: " + error.message);
+    }
+  }
+};
 
     window.approve30thPayout = async (payoutId, btn) => {
-      const remarkInput = document.getElementById(`remark-30th-${payoutId}`).value;
-      const fileInput = document.getElementById(`receipt-30th-${payoutId}`).files[0];
+  const remarkInput = document.getElementById(`remark-30th-${payoutId}`).value;
+  const fileInput = document.getElementById(`receipt-30th-${payoutId}`).files[0];
 
-      if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
+  if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
 
-      btn.innerText = "Uploading...";
-      btn.disabled = true;
-      try {
-        let receiptUrl = "";
-        if (fileInput) {
-          const storageRef = ref(storage, `receipts_30th/${payoutId}_${fileInput.name}`);
-          await uploadBytes(storageRef, fileInput);
-          receiptUrl = await getDownloadURL(storageRef);
-        }
-        await updateDoc(doc(db, "payouts_30th", payoutId), { 
-          status: 'approved',
-          remarks: remarkInput || "",
-          receiptUrl: receiptUrl
-        });
-        alert("Monthly payout approved and receipt attached!");
-      } catch (error) {
-        alert("Error approving monthly payout: " + error.message);
-      } finally {
-        if (btn) {
-          btn.innerText = "Approve & Attach Receipt";
-          btn.disabled = false;
-        }
-      }
-    };
+  btn.innerText = "Uploading...";
+  btn.disabled = true;
+
+  try {
+    let receiptUrl = "";
+    if (fileInput) {
+      const storageRef = ref(storage, `receipts_30th/${payoutId}_${fileInput.name}`);
+      await uploadBytes(storageRef, fileInput);
+      receiptUrl = await getDownloadURL(storageRef);
+    }
+
+    // 🟢 UPDATED: Collection changed to "monthly_30th_payouts" & status to uppercase "APPROVED"
+    await updateDoc(doc(db, "monthly_30th_payouts", payoutId), { 
+      status: 'APPROVED',
+      remarks: remarkInput || "",
+      receiptUrl: receiptUrl
+    });
+
+    alert("Monthly payout approved and receipt attached!");
+  } catch (error) {
+    alert("Error approving monthly payout: " + error.message);
+  } finally {
+    if (btn) {
+      btn.innerText = "Approve & Attach Receipt";
+      btn.disabled = false;
+    }
+  }
+};
 
     function listenToAdmin30thPayoutsTrack() {
   if (currentUserRole !== 'admin') return;

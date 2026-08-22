@@ -2403,17 +2403,18 @@ window.listenToCommunityChat = () => {
           : '';
 
         listDiv.innerHTML += `
-          <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5 my-1.5">
-            <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
-              <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
-              ${roleTag}
-              <span class="text-slate-500 text-[9px]">${formattedTime}</span>
-            </div>
-            <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-none'} shadow-sm">
-              ${msg.text}
-            </div>
-          </div>
-        `;
+  <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5 my-1.5">
+    <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
+      <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
+      ${roleTag}
+      <span class="text-slate-500 text-[9px]">${formattedTime}</span>
+    </div>
+    <!-- 🟢 Added whitespace-pre-wrap to preserve copy-paste formatting and line breaks -->
+    <div class="p-2.5 rounded-2xl max-w-[85%] whitespace-pre-wrap break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-none'} shadow-sm">
+      ${msg.text}
+    </div>
+  </div>
+`;
       });
 
       if (!window.isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
@@ -2434,6 +2435,13 @@ window.listenToCommunityChat = () => {
     listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Init Error: ${err.message}</div>`;
   }
 };
+
+    window.handleChatKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        window.sendCommunityChatMessage(e);
+      }
+    };
 
 // Send Message Handler
 window.sendCommunityChatMessage = async (e) => {
@@ -5528,13 +5536,21 @@ function init30thMonthFilter() {
       <div class="text-center text-slate-500 py-8">Loading messages...</div>
     </div>
 
-    <!-- INPUT FORM -->
-    <form id="chat-input-form" onsubmit="sendCommunityChatMessage(event); return false;" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0">
-      <input type="text" id="chat-message-input" maxlength="300" required placeholder="Type a message as @username..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-      <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl transition text-xs shrink-0">
-        <i class="fa-solid fa-paper-plane"></i>
-      </button>
-    </form>
+    <!-- INPUT FORM (Supports multi-line paste & shift+enter) -->
+<form id="chat-input-form" onsubmit="sendCommunityChatMessage(event); return false;" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2 items-end shrink-0">
+  <textarea 
+    id="chat-message-input" 
+    rows="1" 
+    maxlength="1000" 
+    required 
+    placeholder="Type or paste a message... (Shift+Enter for line break)" 
+    onkeydown="handleChatKeyDown(event)"
+    class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none max-h-24 overflow-y-auto leading-relaxed"
+  ></textarea>
+  <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl transition text-xs shrink-0 self-end">
+    <i class="fa-solid fa-paper-plane"></i>
+  </button>
+</form>
   </div>
 
   <!-- FLOATING TOGGLE BUTTON -->

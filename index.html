@@ -2739,29 +2739,27 @@ window.sendCommunityChatMessage = async (e) => {
       }
 
       let listHTML = `<div class="space-y-2">`;
-      
-      standingsList.forEach((item, index) => {
-        const isMe = item.userId === currentUid;
-        listHTML += `
-          <div class="flex items-center justify-between p-3.5 rounded-xl border text-xs transition ${
-            isMe 
-              ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-500/50 text-emerald-900 dark:text-emerald-100 font-bold' 
-              : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100'
-          }">
-            <div class="flex items-center gap-3">
-              <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
-              <span class="font-bold">${item.name} ${isMe ? '(You)' : ''}</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
-                ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
-              </span>
-              <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
-                ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>`;
-      });
+
+standingsList.forEach((item, index) => {
+  const isMe = item.userId === currentUid;
+  listHTML += `
+    <div class="standings-row flex items-center justify-between p-3.5 rounded-xl border text-xs transition bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 ${
+      isMe ? 'ring-2 ring-emerald-500' : ''
+    }">
+      <div class="flex items-center gap-3">
+        <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
+        <span class="font-bold">${item.name} ${isMe ? '(You)' : ''}</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
+          ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
+        </span>
+        <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
+          ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </span>
+      </div>
+    </div>`;
+});
 
       listHTML += `</div>`;
       standingsContainer.innerHTML = listHTML;

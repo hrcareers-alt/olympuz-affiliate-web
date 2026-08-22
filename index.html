@@ -1277,13 +1277,12 @@ body:not(.light-mode) .chat-bubble-received {
             </div>
           </div>
 
-         <!-- MONTHLY HIRES STANDINGS SECTION -->
-<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-  <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
-    📋 MONTHLY HIRES STANDINGS
+        <!-- MONTHLY HIRES STANDINGS SECTION -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
+  <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+    <span>📋</span> MONTHLY HIRES STANDINGS
   </h3>
 
-  <!-- 🟢 Dynamic Container ID -->
   <div id="30th-standings-container">
     <div class="text-center text-slate-400 py-6 text-xs">
       Loading standings...
@@ -2683,14 +2682,17 @@ window.sendCommunityChatMessage = async (e) => {
       render30thInvoicePage();
     };
 
-    // 🏆 PUBLIC "EVERY 30TH" LEADERBOARD LISTENER (was missing — this caused the error)
     window.listenTo30thLeaderboard = () => {
   const selectEl = document.getElementById('month-filter-30th');
   const selectedPeriod = selectEl && selectEl.value ? selectEl.value : "2026-08";
 
-  const hiresEl = document.getElementById('user-30th-hires');
-  const earningsEl = document.getElementById('user-30th-earnings');
+  // Summary Stat Card Elements
+  const userRankEl = document.getElementById('user-30th-rank');
+  const userHiresEl = document.getElementById('user-30th-monthly-hires');
+  const userAmountEl = document.getElementById('user-30th-monthly-amount');
   const standingsContainer = document.getElementById('30th-standings-container');
+
+  const currentUid = window.currentUid || (auth.currentUser ? auth.currentUser.uid : null);
 
   const q = query(
     collection(db, "monthly_30th_payouts"),
@@ -2698,29 +2700,46 @@ window.sendCommunityChatMessage = async (e) => {
   );
 
   onSnapshot(q, (snapshot) => {
-    let totalHires = 0;
-    let totalEarnings = 0;
+    let userHires = 0;
+    let userEarnings = 0;
     const standingsList = [];
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       
       if (data.period === selectedPeriod || data.period?.includes(selectedPeriod)) {
-        totalHires += Number(data.hires || 0);
-        totalEarnings += Number(data.amount || 0);
+        const hiresCount = Number(data.hires || data.referrals || 0);
+        const amountVal = Number(data.amount || 0);
+
+        if (data.userId === currentUid) {
+          userHires += hiresCount;
+          userEarnings += amountVal;
+        }
 
         standingsList.push({
           id: docSnap.id,
+          userId: data.userId,
           name: data.userName || data.affiliateName || 'Affiliate',
-          hires: Number(data.hires || 0),
-          amount: Number(data.amount || 0)
+          hires: hiresCount,
+          amount: amountVal
         });
       }
     });
 
-    if (hiresEl) hiresEl.innerText = totalHires;
-    if (earningsEl) earningsEl.innerText = `₱${totalEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    // Update Summary Stats for Logged-In User
+    if (userHiresEl) userHiresEl.innerText = userHires;
+    if (userAmountEl) userAmountEl.innerText = `₱${userEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
+    // Sort affiliates by highest hires first
+    standingsList.sort((a, b) => b.hires - a.hires);
+
+    // Calculate User Standing Rank
+    const userIndex = standingsList.findIndex(item => item.userId === currentUid);
+    if (userRankEl) {
+      userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
+    }
+
+    // Render Standings List
     if (standingsContainer) {
       if (standingsList.length === 0) {
         standingsContainer.innerHTML = `
@@ -2730,19 +2749,22 @@ window.sendCommunityChatMessage = async (e) => {
         return;
       }
 
-      standingsList.sort((a, b) => b.hires - a.hires);
-
-      let listHTML = `<div class="space-y-2 p-1">`;
+      let listHTML = `<div class="space-y-2">`;
       
       standingsList.forEach((item, index) => {
+        const isMe = item.userId === currentUid;
         listHTML += `
-          <div class="standings-row flex items-center justify-between p-3.5 bg-slate-950 dark:bg-slate-950 border border-slate-800 dark:border-slate-800 rounded-xl text-xs transition shadow-sm">
+          <div class="flex items-center justify-between p-3.5 rounded-xl border text-xs transition ${
+            isMe 
+              ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-500/50 text-emerald-900 dark:text-emerald-100 font-bold' 
+              : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100'
+          }">
             <div class="flex items-center gap-3">
               <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
-              <span class="font-bold text-slate-900 dark:text-slate-100">${item.name}</span>
+              <span class="font-bold">${item.name} ${isMe ? '(You)' : ''}</span>
             </div>
             <div class="flex items-center gap-3">
-              <span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
+              <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
                 ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
               </span>
               <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">

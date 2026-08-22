@@ -2335,98 +2335,105 @@ body.light-mode #modal-user-created-at {
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
- // State variables for community chat
-let isChatOpen = false;
-let unreadChatCount = 0;
-let unsubCommunityChat = null;
+// State tracking
+window.isChatOpen = false;
+window.unreadChatCount = 0;
+window.unsubCommunityChat = null;
 
-// Toggle Minimize / Expand Chat
+// Toggle Function (Automatically starts listener when opened)
 window.toggleCommunityChat = () => {
   const chatContainer = document.getElementById('chat-box-container');
   const badge = document.getElementById('chat-unread-badge');
   
-  isChatOpen = !isChatOpen;
+  window.isChatOpen = !window.isChatOpen;
   
-  if (isChatOpen) {
-    chatContainer.classList.remove('hidden');
-    unreadChatCount = 0;
+  if (window.isChatOpen) {
+    if (chatContainer) chatContainer.classList.remove('hidden');
+    window.unreadChatCount = 0;
     if (badge) badge.classList.add('hidden');
     
+    // Start listener if not already listening
+    window.listenToCommunityChat();
+
     const listDiv = document.getElementById('chat-messages-list');
     if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
   } else {
-    chatContainer.classList.add('hidden');
+    if (chatContainer) chatContainer.classList.add('hidden');
   }
 };
 
-// Realtime Messages Listener
-function listenToCommunityChat() {
-  const q = query(collection(db, "community_chat"));
-  
-  if (unsubCommunityChat) unsubCommunityChat();
-  
-  unsubCommunityChat = onSnapshot(q, (snapshot) => {
-    const listDiv = document.getElementById('chat-messages-list');
-    const badge = document.getElementById('chat-unread-badge');
-    if (!listDiv) return;
+// Realtime Listener
+window.listenToCommunityChat = () => {
+  const listDiv = document.getElementById('chat-messages-list');
+  if (!listDiv) return;
 
-    if (snapshot.empty) {
-      listDiv.innerHTML = `<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation! 👋</div>`;
-      return;
-    }
+  try {
+    const q = query(collection(db, "community_chat"));
+    
+    if (window.unsubCommunityChat) window.unsubCommunityChat();
+    
+    window.unsubCommunityChat = onSnapshot(q, (snapshot) => {
+      const badge = document.getElementById('chat-unread-badge');
 
-    listDiv.innerHTML = "";
-    const currentUid = auth.currentUser ? auth.currentUser.uid : null;
-
-    const docsArray = [];
-    snapshot.forEach((docSnap) => {
-      docsArray.push({ id: docSnap.id, ...docSnap.data() });
-    });
-
-    docsArray.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-
-    docsArray.forEach((msg) => {
-      const isMe = msg.userId === currentUid;
-      const formattedTime = msg.createdAt 
-        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : 'Just now';
-
-      const usernameDisplay = `@${msg.username || 'user'}`;
-      const roleTag = msg.role === 'admin' 
-        ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
-        : '';
-
-      listDiv.innerHTML += `
-        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5">
-          <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
-            <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
-            ${roleTag}
-            <span class="text-slate-500 text-[9px]">${formattedTime}</span>
-          </div>
-          <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'} shadow-sm">
-            ${msg.text}
-          </div>
-        </div>
-      `;
-    });
-
-    if (!isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
-      unreadChatCount++;
-      if (badge) {
-        badge.innerText = unreadChatCount > 99 ? '99+' : unreadChatCount;
-        badge.classList.remove('hidden');
+      if (snapshot.empty) {
+        listDiv.innerHTML = `<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation! 👋</div>`;
+        return;
       }
-    }
 
-    listDiv.scrollTop = listDiv.scrollHeight;
-  }, (err) => {
-    console.error("Community chat error:", err);
-    const listDiv = document.getElementById('chat-messages-list');
-    if (listDiv) {
-      listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Chat Error: ${err.message}</div>`;
-    }
-  });
-}
+      listDiv.innerHTML = "";
+      const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+
+      const docsArray = [];
+      snapshot.forEach((docSnap) => {
+        docsArray.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      // Sort locally by timestamp
+      docsArray.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+
+      docsArray.forEach((msg) => {
+        const isMe = msg.userId === currentUid;
+        const formattedTime = msg.createdAt 
+          ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : 'Just now';
+
+        const usernameDisplay = `@${msg.username || 'user'}`;
+        const roleTag = msg.role === 'admin' 
+          ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
+          : '';
+
+        listDiv.innerHTML += `
+          <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5 my-1.5">
+            <div class="flex items-center gap-1 text-[10px] text-slate-400 px-1">
+              <span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${usernameDisplay}</span>
+              ${roleTag}
+              <span class="text-slate-500 text-[9px]">${formattedTime}</span>
+            </div>
+            <div class="p-2.5 rounded-2xl max-w-[85%] break-words ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-none'} shadow-sm">
+              ${msg.text}
+            </div>
+          </div>
+        `;
+      });
+
+      if (!window.isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
+        window.unreadChatCount++;
+        if (badge) {
+          badge.innerText = window.unreadChatCount > 99 ? '99+' : window.unreadChatCount;
+          badge.classList.remove('hidden');
+        }
+      }
+
+      listDiv.scrollTop = listDiv.scrollHeight;
+    }, (err) => {
+      console.error("Community chat Firestore error:", err);
+      listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Firebase Error: ${err.message}</div>`;
+    });
+  } catch (err) {
+    console.error("Community chat initialization error:", err);
+    listDiv.innerHTML = `<div class="text-center text-red-400 text-xs py-4">Init Error: ${err.message}</div>`;
+  }
+};
 
 // Send Message Handler
 window.sendCommunityChatMessage = async (e) => {

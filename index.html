@@ -1216,9 +1216,10 @@ body:not(.light-mode) .chat-bubble-received {
               <p class="text-xs text-slate-300 mt-1">Track monthly verified hires and total payout earnings. Resets every 30th of the month.</p>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-              <label for="payout-30th-month-filter" class="text-xs text-slate-300 font-semibold">Select Month:</label>
-              <select id="payout-30th-month-filter" onchange="filter30thPayoutMonth()" class="bg-slate-950 border border-slate-800 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
+            <div class="flex items-center gap-2">
+              <label for="month-filter-30th" class="text-xs font-semibold text-slate-500">Select Month:</label>
+              <select id="month-filter-30th" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs rounded-xl px-2.5 py-1.5 outline-none focus:border-indigo-500 font-bold text-slate-700 dark:text-slate-200">
+                <option value="2026-08">2026-08</option>
               </select>
             </div>
           </div>
@@ -4921,6 +4922,8 @@ window.init30thMonthFilter = () => {
             document.getElementById('setting-lastname').value = userData.lastName || '';
             document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
             document.getElementById('setting-email').value = userData.email || user.email || '';
+
+    
 
             // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
             if (userData.paymentMethod) {

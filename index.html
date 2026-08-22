@@ -3008,15 +3008,18 @@ directoryList.innerHTML += `
       const user = allAffiliates.find(u => u.id === selectedId);
       try {
         await addDoc(collection(db, "payouts_30th"), {
-          userId: user.id,
-          userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email,
-          paymentMethod: user.paymentMethod || 'None',
-          accountNumber: user.accountNumber || 'None',
-          referrals: parseInt(referrals, 10),
-          amount: parseFloat(amount),
-          monthKey: monthInput,
-          status: 'pending',
-          createdAt: new Date().toISOString()
+          await addDoc(collection(db, "monthly_30th_payouts"), {
+      userId: user.id,
+      userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email,
+      paymentMethod: user.paymentMethod || 'None',
+      accountNumber: user.accountNumber || 'None',
+      hires: parseInt(referrals, 10),
+      referrals: parseInt(referrals, 10),
+      amount: parseFloat(amount),
+      period: monthInput,
+      monthKey: monthInput,
+      status: 'PENDING', // 🟢 Uppercase to match listener queries
+      createdAt: new Date().toISOString()
         });
         alert("Monthly 30th payout staged for approval!");
         document.getElementById('disburse-30th-user-select').value = "";

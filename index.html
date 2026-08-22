@@ -228,6 +228,23 @@
     color: #0f172a !important;
     border-color: #cbd5e1 !important;
   }
+    /* FORCE 30TH STANDINGS CONTAINER AND INNER ROWS TO LIGHT MODE */
+body.light-mode #tab-payout-30th .light-card,
+body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container .standings-row {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container .standings-row span {
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container .standings-row span.text-slate-400 {
+  color: #64748b !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -693,9 +710,9 @@
           </div>
 
         <!-- MONTHLY HIRES STANDINGS SECTION -->
-<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
+<div class="light-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
   <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-    <span>📋</span> MONTHLY HIRES STANDINGS
+    📋 MONTHLY HIRES STANDINGS
   </h3>
 
   <div id="30th-standings-container">
@@ -2101,7 +2118,6 @@ window.sendCommunityChatMessage = async (e) => {
   const selectEl = document.getElementById('month-filter-30th');
   const selectedPeriod = selectEl && selectEl.value ? selectEl.value : "2026-08";
 
-  // Summary Stat Card Elements
   const userRankEl = document.getElementById('user-30th-rank');
   const userHiresEl = document.getElementById('user-30th-monthly-hires');
   const userAmountEl = document.getElementById('user-30th-monthly-amount');
@@ -2141,20 +2157,16 @@ window.sendCommunityChatMessage = async (e) => {
       }
     });
 
-    // Update Summary Stats for Logged-In User
     if (userHiresEl) userHiresEl.innerText = userHires;
     if (userAmountEl) userAmountEl.innerText = `₱${userEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
-    // Sort affiliates by highest hires first
     standingsList.sort((a, b) => b.hires - a.hires);
 
-    // Calculate User Standing Rank
     const userIndex = standingsList.findIndex(item => item.userId === currentUid);
     if (userRankEl) {
       userRankEl.innerText = userIndex !== -1 ? `#${userIndex + 1}` : "Unranked";
     }
 
-    // Render Standings List
     if (standingsContainer) {
       if (standingsList.length === 0) {
         standingsContainer.innerHTML = `
@@ -2165,27 +2177,27 @@ window.sendCommunityChatMessage = async (e) => {
       }
 
       let listHTML = `<div class="space-y-2">`;
-
-standingsList.forEach((item, index) => {
-  const isMe = item.userId === currentUid;
-  listHTML += `
-    <div class="standings-row flex items-center justify-between p-3.5 rounded-xl border text-xs transition bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 ${
-      isMe ? 'ring-2 ring-emerald-500' : ''
-    }">
-      <div class="flex items-center gap-3">
-        <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
-        <span class="font-bold">${item.name} ${isMe ? '(You)' : ''}</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
-          ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
-        </span>
-        <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
-          ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </span>
-      </div>
-    </div>`;
-});
+      
+      standingsList.forEach((item, index) => {
+        const isMe = item.userId === currentUid;
+        listHTML += `
+          <div class="standings-row flex items-center justify-between p-3.5 rounded-xl border text-xs transition bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 ${
+            isMe ? 'ring-2 ring-emerald-500' : ''
+          }">
+            <div class="flex items-center gap-3">
+              <span class="font-extrabold text-slate-400 dark:text-slate-500 w-5 text-center">#${index + 1}</span>
+              <span class="font-bold">${item.name} ${isMe ? '(You)' : ''}</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 font-bold px-2.5 py-1 rounded-lg">
+                ${item.hires} ${item.hires === 1 ? 'Hire' : 'Hires'}
+              </span>
+              <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
+                ₱${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>`;
+      });
 
       listHTML += `</div>`;
       standingsContainer.innerHTML = listHTML;

@@ -3029,40 +3029,53 @@ directoryList.innerHTML += `
     };
 
     function listenToPending30thPayouts() {
-      const q = query(collection(db, "payouts_30th"), where("status", "==", "pending"));
-      if (unsubAdminPending30thPayouts) unsubAdminPending30thPayouts();
+  if (currentUserRole !== 'admin') return;
 
-      unsubAdminPending30thPayouts = onSnapshot(q, (snapshot) => {
-        const listDiv = document.getElementById('pending-approval-30th-list');
-        if (!listDiv) return;
-        listDiv.innerHTML = "";
+  // 🟢 Corrected collection name from "payouts_30th" to "monthly_30th_payouts"
+  const q = query(
+    collection(db, "monthly_30th_payouts"), 
+    where("status", "==", "PENDING")
+  );
 
-        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No pending monthly 30th approvals.</p>";
+  if (unsubAdminPending30thPayouts) unsubAdminPending30thPayouts();
 
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="font-bold text-emerald-400 text-sm">${data.userName}</p>
-                  <p class="text-xs text-slate-400">Period: ${data.monthKey || 'N/A'} (30th) | ${data.paymentMethod} - ${data.accountNumber}</p>
-                  <p class="text-xs mt-1">Hires: <span class="font-bold text-white">${data.referrals}</span> | Amt: <span class="text-emerald-400 font-bold">₱${data.amount.toFixed(2)}</span></p>
-                </div>
-                <button onclick="decline30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-xs hover:bg-red-600/40">Decline</button>
-              </div>
-              <div class="border-t border-slate-800 pt-3 space-y-2">
-                <input type="text" id="remark-30th-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500">
-                <div class="flex items-center gap-2">
-                  <input type="file" id="receipt-30th-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
-                  <button onclick="approve30thPayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Approve & Attach Receipt</button>
-                </div>
-              </div>
-            </div>
-          `;
-        });
-      }, (err) => console.warn("Pending 30th payouts error:", err.message));
+  unsubAdminPending30thPayouts = onSnapshot(q, (snapshot) => {
+    const listDiv = document.getElementById('pending-approval-30th-list');
+    if (!listDiv) return;
+    listDiv.innerHTML = "";
+
+    if (snapshot.empty) {
+      return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No pending monthly 30th approvals.</p>";
     }
+
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      listDiv.innerHTML += `
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-emerald-400 text-sm">${data.userName || data.affiliateName || 'Affiliate'}</p>
+              <p class="text-xs text-slate-400">Period: ${data.period || data.monthKey || 'N/A'} (30th) | ${data.paymentMethod || 'N/A'} - ${data.accountNumber || ''}</p>
+              <p class="text-xs mt-1">Hires: <span class="font-bold text-white">${data.hires || data.referrals || 0}</span> | Amt: <span class="text-emerald-400 font-bold">₱${Number(data.amount || 0).toFixed(2)}</span></p>
+            </div>
+            <button onclick="decline30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-xs hover:bg-red-600/40">Decline</button>
+          </div>
+          <div class="border-t border-slate-800 pt-3 space-y-2">
+            <input type="text" id="remark-30th-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500">
+            <div class="flex items-center gap-2">
+              <input type="file" id="receipt-30th-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
+              <button onclick="approve30thPayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Approve & Attach Receipt</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }, (err) => {
+    if (err.code !== 'permission-denied') {
+      console.warn("Pending 30th payouts error:", err.message);
+    }
+  });
+}
 
     window.decline30thPayout = async (payoutId) => {
       if (confirm("Are you sure you want to decline and remove this monthly payout?")) {
@@ -3102,48 +3115,59 @@ directoryList.innerHTML += `
     };
 
     function listenToAdmin30thPayoutsTrack() {
-      const q = query(collection(db, "payouts_30th"));
-      if (unsubAdmin30thTrack) unsubAdmin30thTrack();
+  if (currentUserRole !== 'admin') return;
 
-      unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
-        const listDiv = document.getElementById('admin-payout-30th-track-list');
-        if (!listDiv) return;
-        listDiv.innerHTML = "";
+  // 🟢 Target the correct collection name matching Firestore Rules
+  const q = query(collection(db, "monthly_30th_payouts"));
+  if (unsubAdmin30thTrack) unsubAdmin30thTrack();
 
-        if (snapshot.empty) return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
+  unsubAdmin30thTrack = onSnapshot(q, (snapshot) => {
+    const listDiv = document.getElementById('admin-payout-30th-track-list');
+    if (!listDiv) return;
+    listDiv.innerHTML = "";
 
-        const items = [];
-        snapshot.forEach((docSnap) => {
-          items.push({ id: docSnap.id, ...docSnap.data() });
-        });
-
-        items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-
-        items.forEach((data) => {
-          const safeHires = data.referrals || 0;
-          const safeAmount = data.amount || 0;
-
-          listDiv.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
-              <div>
-                <h4 class="font-bold text-sm text-slate-100">${data.userName}</h4>
-                <p class="text-xs text-emerald-400 font-semibold">₱${safeAmount.toFixed(2)} (${safeHires} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
-                <p class="text-[10px] text-slate-500">Period: ${data.monthKey || 'N/A'} (30th)</p>
-              </div>
-
-              <div class="flex items-center gap-2 shrink-0">
-                <button onclick="window.edit30thPayout('${data.id}', ${safeHires}, ${safeAmount})" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg transition">
-                  <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
-                </button>
-                <button onclick="window.delete30thPayout('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete 30th Record">
-                  <i class="fa-solid fa-trash-can mr-1"></i> Delete
-                </button>
-              </div>
-            </div>
-          `;
-        });
-      }, (err) => console.warn("Admin 30th track listener error (handled):", err.message));
+    if (snapshot.empty) {
+      return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No monthly payout entries recorded yet.</p>";
     }
+
+    const items = [];
+    snapshot.forEach((docSnap) => {
+      items.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    items.forEach((data) => {
+      const safeHires = data.hires || data.referrals || 0;
+      const safeAmount = data.amount || 0;
+      const safeName = data.userName || data.affiliateName || 'Affiliate';
+      const safePeriod = data.period || data.monthKey || 'N/A';
+
+      listDiv.innerHTML += `
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
+          <div>
+            <h4 class="font-bold text-sm text-slate-100">${safeName}</h4>
+            <p class="text-xs text-emerald-400 font-semibold">₱${Number(safeAmount).toFixed(2)} (${safeHires} Hires) | Status: ${(data.status || 'APPROVED').toUpperCase()}</p>
+            <p class="text-[10px] text-slate-500">Period: ${safePeriod} (30th)</p>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="window.edit30thPayout('${data.id}', ${safeHires}, ${safeAmount})" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg transition">
+              <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+            </button>
+            <button onclick="window.delete30thPayout('${data.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete 30th Record">
+              <i class="fa-solid fa-trash-can mr-1"></i> Delete
+            </button>
+          </div>
+        </div>
+      `;
+    });
+  }, (err) => {
+    if (err.code !== 'permission-denied') {
+      console.warn("Admin 30th track listener error:", err.message);
+    }
+  });
+}  
     
     // SLIDESHOW STATE VARIABLES
     let slideshowList = [];

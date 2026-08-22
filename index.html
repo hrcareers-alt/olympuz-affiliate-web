@@ -2472,6 +2472,7 @@ window.sendCommunityChatMessage = async (e) => {
 
   return false;
 };
+    
 
     // 🗑️ Delete 30th Monthly Payout (Exposed to Global Scope)
     window.delete30thPayout = async (payoutId) => {
@@ -4791,6 +4792,19 @@ window.sendOTPCode = async () => {
       }
     };
 
+    // Missing month filter initializer
+function init30thMonthFilter() {
+  const selectEl = document.getElementById('month-filter-30th');
+  if (!selectEl) return;
+  
+  // Set default to current month/year if empty
+  if (!selectEl.value) {
+    const now = new Date();
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    selectEl.value = yearMonth;
+  }
+}
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         window.currentUid = user.uid;
@@ -4857,6 +4871,9 @@ window.sendOTPCode = async () => {
             }
             if (userData.accountName) document.getElementById('setting-account-name').value = userData.accountName;
             if (userData.accountNumber) document.getElementById('setting-account-num').value = userData.accountNumber;
+
+            if (typeof initRawMonthFilter === 'function') initRawMonthFilter();
+            if (typeof init30thMonthFilter === 'function') init30thMonthFilter();
 
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');

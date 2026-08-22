@@ -4844,17 +4844,32 @@ window.sendOTPCode = async () => {
     };
 
     // Missing month filter initializer
-function init30thMonthFilter() {
+window.init30thMonthFilter = () => {
   const selectEl = document.getElementById('month-filter-30th');
   if (!selectEl) return;
-  
-  // Set default to current month/year if empty
-  if (!selectEl.value) {
-    const now = new Date();
-    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    selectEl.value = yearMonth;
+
+  // Clear any old static options
+  selectEl.innerHTML = '';
+
+  // Generate options starting from the current month (2026-08) going back 6 months
+  const now = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const yearMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    
+    const option = document.createElement('option');
+    option.value = yearMonth;
+    option.textContent = yearMonth;
+    selectEl.appendChild(option);
   }
-}
+
+  // Automatically refresh payouts when an affiliate changes the month
+  selectEl.onchange = () => {
+    if (typeof window.listenTo30thLeaderboard === 'function') {
+      window.listenTo30thLeaderboard();
+    }
+  };
+};
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {

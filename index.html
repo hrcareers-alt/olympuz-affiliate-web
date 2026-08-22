@@ -9,10 +9,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ============================================================
-   EVERY 30TH STANDINGS LIGHT & DARK MODE ADAPTABILITY
-   ============================================================ */
+/* LIGHT MODE STANDINGS CARD OVERRIDES */
+body.light-mode #30th-standings-container > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
 
+body.light-mode #30th-standings-container .flex {
+  color: #0f172a !important;
+}
 /* Light Mode Overrides */
 body.light-mode #30th-standings-container {
   background-color: #ffffff !important;

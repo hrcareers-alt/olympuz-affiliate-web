@@ -2998,38 +2998,45 @@ directoryList.innerHTML += `
     };
 
     window.submit30thPreApproval = async () => {
-      const selectedId = document.getElementById('disburse-30th-user-select').value;
-      const monthInput = document.getElementById('disburse-30th-month').value;
-      const referrals = document.getElementById('disburse-30th-referrals').value;
-      const amount = document.getElementById('disburse-30th-amount').value;
+  const selectedId = document.getElementById('disburse-30th-user-select').value;
+  const monthInput = document.getElementById('disburse-30th-month').value;
+  const referrals = document.getElementById('disburse-30th-referrals').value;
+  const amount = document.getElementById('disburse-30th-amount').value;
 
-      if (!selectedId || !monthInput || !referrals || !amount) return alert("Please fill in all fields.");
+  if (!selectedId || !monthInput || !referrals || !amount) {
+    return alert("Please fill in all fields.");
+  }
 
-      const user = allAffiliates.find(u => u.id === selectedId);
-      try {
-        await addDoc(collection(db, "payouts_30th"), {
-          await addDoc(collection(db, "monthly_30th_payouts"), {
-      userId: user.id,
-      userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email,
-      paymentMethod: user.paymentMethod || 'None',
-      accountNumber: user.accountNumber || 'None',
+  const user = allAffiliates.find(u => u.id === selectedId);
+  
+  try {
+    const affiliateName = user 
+      ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email 
+      : 'Affiliate';
+
+    await addDoc(collection(db, "monthly_30th_payouts"), {
+      userId: selectedId,
+      userName: affiliateName,
+      paymentMethod: user?.paymentMethod || 'None',
+      accountNumber: user?.accountNumber || 'None',
       hires: parseInt(referrals, 10),
       referrals: parseInt(referrals, 10),
       amount: parseFloat(amount),
       period: monthInput,
       monthKey: monthInput,
-      status: 'PENDING', // 🟢 Uppercase to match listener queries
+      status: 'PENDING',
       createdAt: new Date().toISOString()
-        });
-        alert("Monthly 30th payout staged for approval!");
-        document.getElementById('disburse-30th-user-select').value = "";
-        document.getElementById('disburse-30th-referrals').value = "";
-        document.getElementById('disburse-30th-amount').value = "";
-        document.getElementById('disburse-30th-bank-info').classList.add('hidden');
-      } catch (error) {
-        alert("Error staging monthly payout: " + error.message);
-      }
-    };
+    });
+
+    alert("Monthly 30th payout staged for approval!");
+    document.getElementById('disburse-30th-user-select').value = "";
+    document.getElementById('disburse-30th-referrals').value = "";
+    document.getElementById('disburse-30th-amount').value = "";
+    document.getElementById('disburse-30th-bank-info').classList.add('hidden');
+  } catch (error) {
+    alert("Error staging monthly payout: " + error.message);
+  }
+};
 
     function listenToPending30thPayouts() {
   if (currentUserRole !== 'admin') return;

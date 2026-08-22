@@ -228,22 +228,34 @@
     color: #0f172a !important;
     border-color: #cbd5e1 !important;
   }
-    /* FORCE 30TH STANDINGS CONTAINER AND INNER ROWS TO LIGHT MODE */
-body.light-mode #tab-payout-30th .light-card,
+   /* 🟢 FORCE 30TH LEADERBOARD CONTAINER & ROWS TO LIGHT MODE */
+body.light-mode #monthly-standings-card,
 body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container > div,
 body.light-mode #30th-standings-container .standings-row {
   background-color: #ffffff !important;
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
 }
 
-body.light-mode #30th-standings-container .standings-row span {
+body.light-mode #monthly-standings-card h3,
+body.light-mode #30th-standings-container span {
   color: #0f172a !important;
 }
 
-body.light-mode #30th-standings-container .standings-row span.text-slate-400 {
+body.light-mode #30th-standings-container span.text-slate-400,
+body.light-mode #30th-standings-container span.text-slate-500 {
   color: #64748b !important;
+}
+
+body.light-mode #30th-standings-container .bg-indigo-50,
+body.light-mode #30th-standings-container .bg-indigo-950\/50,
+body.light-mode #30th-standings-container .bg-indigo-950\/60 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #c7d2fe !important;
 }
 </style>
 </head>
@@ -710,11 +722,12 @@ body.light-mode #30th-standings-container .standings-row span.text-slate-400 {
           </div>
 
         <!-- MONTHLY HIRES STANDINGS SECTION -->
-<div class="light-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
+<div id="monthly-standings-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
   <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-    📋 MONTHLY HIRES STANDINGS
+    <span>📋</span> MONTHLY HIRES STANDINGS
   </h3>
 
+  <!-- 🟢 Dynamic Container ID -->
   <div id="30th-standings-container">
     <div class="text-center text-slate-400 py-6 text-xs">
       Loading standings...

@@ -9,47 +9,31 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-/* LIGHT MODE STANDINGS CARD OVERRIDES */
-body.light-mode #30th-standings-container > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-}
-
-body.light-mode #30th-standings-container .flex {
-  color: #0f172a !important;
-}
-/* Light Mode Overrides */
-body.light-mode #30th-standings-container {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
+/* 🟢 FORCE 30TH STANDINGS SECTION TO RESPECT LIGHT MODE */
+body.light-mode #tab-payout-30th .bg-white,
+body.light-mode #tab-payout-30th .bg-slate-900,
+body.light-mode #tab-payout-30th .bg-slate-950,
+body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container > div,
 body.light-mode #30th-standings-container .standings-row {
-  background-color: #f8fafc !important;
+  background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
-body.light-mode #30th-standings-container .standings-row:hover {
-  background-color: #f1f5f9 !important;
+body.light-mode #30th-standings-container span {
+  color: #0f172a !important;
 }
 
-/* Dark Mode Defaults (When NOT in Light Mode) */
-body:not(.light-mode) #30th-standings-container {
-  background-color: #0f172a !important;
-  border-color: #1e293b !important;
-  color: #f8fafc !important;
+body.light-mode #30th-standings-container span.text-slate-400,
+body.light-mode #30th-standings-container span.text-slate-500 {
+  color: #64748b !important;
 }
 
-body:not(.light-mode) #30th-standings-container .standings-row {
-  background-color: #020617 !important;
-  border-color: #1e293b !important;
-  color: #f8fafc !important;
-}
-
-body:not(.light-mode) #30th-standings-container .standings-row:hover {
-  background-color: #0f172a !important;
+body.light-mode #30th-standings-container .bg-indigo-950\/60,
+body.light-mode #30th-standings-container .bg-indigo-50 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
 }
     /* LIGHT MODE PAYOUT SCHEME BANNER OVERRIDES */
     body.light-mode #tab-payout .bg-indigo-950\/60,

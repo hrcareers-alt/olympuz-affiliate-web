@@ -2875,25 +2875,31 @@ directoryList.innerHTML += `
     function updateSlideDisplay() {
   document.querySelectorAll('#slideshow-slides-container .slide-item').forEach((el, idx) => {
     const textOverlay = el.querySelector('.slide-text-overlay');
+    const slideImg = el.querySelector('img');
 
     if (idx === currentSlideIndex) {
       el.classList.remove('opacity-0', 'pointer-events-none');
       el.classList.add('opacity-100', 'pointer-events-auto');
 
-      // Force-reset CSS animation on the active slide's overlay
+      // Reset and trigger image blur animation
+      if (slideImg) {
+        slideImg.style.animation = 'none';
+        void slideImg.offsetWidth; // Force CSS Reflow
+        slideImg.style.animation = 'heroImageBlur 8s ease-in-out forwards';
+      }
+
+      // Reset and trigger text overlay fade animation
       if (textOverlay) {
         textOverlay.style.animation = 'none';
-        void textOverlay.offsetWidth; // Trigger DOM Reflow
-        textOverlay.style.animation = 'frostedToTranslucent 8s ease-in-out forwards';
+        void textOverlay.offsetWidth; // Force CSS Reflow
+        textOverlay.style.animation = 'heroTextOverlay 8s ease-in-out forwards';
       }
     } else {
       el.classList.remove('opacity-100', 'pointer-events-auto');
       el.classList.add('opacity-0', 'pointer-events-none');
 
-      // Clean up hidden slides
-      if (textOverlay) {
-        textOverlay.style.animation = 'none';
-      }
+      if (slideImg) slideImg.style.animation = 'none';
+      if (textOverlay) textOverlay.style.animation = 'none';
     }
   });
 

@@ -346,6 +346,95 @@ body.light-mode #extended-rankings-list > div {
 body.light-mode #extended-rankings-list span {
   color: #0f172a !important;
 }
+    /* 🟢 FIX DAILY RAW REFERRALS SECTION FOR LIGHT MODE */
+
+/* 1. Header Banner Gradient & Text Overrides */
+body.light-mode #tab-raw-referrals > div > div:first-child {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f1f5f9 100%) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+}
+
+body.light-mode #tab-raw-referrals h2 {
+  color: #1e1b4b !important;
+}
+
+body.light-mode #tab-raw-referrals p,
+body.light-mode #tab-raw-referrals label {
+  color: #3730a3 !important;
+}
+
+/* Badge inside Header Banner */
+body.light-mode #tab-raw-referrals .bg-indigo-500\/20 {
+  background-color: #e0e7ff !important;
+  border-color: #c7d2fe !important;
+  color: #3730a3 !important;
+}
+
+/* Month Filter Select Dropdown */
+body.light-mode #tab-raw-referrals select#raw-month-filter {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* 2. Overall Raw Rankings Outer Container Background */
+body.light-mode #tab-raw-referrals .bg-slate-950\/60 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Section Title Heading inside Rankings Container */
+body.light-mode #tab-raw-referrals .bg-slate-950\/60 h3,
+body.light-mode #tab-raw-referrals .bg-slate-950\/60 i {
+  color: #1e1b4b !important;
+  font-weight: 800 !important;
+}
+
+/* 3. Individual Ranking Row Items */
+body.light-mode #raw-leaderboard-list > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+body.light-mode #raw-leaderboard-list span {
+  color: #0f172a !important;
+}
+
+body.light-mode #raw-leaderboard-list span.text-indigo-400 {
+  color: #4f46e5 !important;
+}
+    /* 🟢 FORCE EVERY 30TH STANDINGS CARD AND INNER ROWS TO LIGHT MODE */
+body.light-mode #30th-standings-card,
+body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container > div,
+body.light-mode #30th-standings-container .standings-row {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #30th-standings-card h3,
+body.light-mode #30th-standings-card span,
+body.light-mode #30th-standings-container span {
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container span.text-slate-400,
+body.light-mode #30th-standings-container span.text-slate-500 {
+  color: #64748b !important;
+}
+
+body.light-mode #30th-standings-container .bg-indigo-100,
+body.light-mode #30th-standings-container .bg-indigo-950\/60 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #c7d2fe !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

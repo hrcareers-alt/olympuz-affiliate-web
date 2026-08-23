@@ -435,6 +435,33 @@ body.light-mode #30th-standings-container .bg-indigo-950\/60 {
   color: #3730a3 !important;
   border-color: #c7d2fe !important;
 }
+    /* 🟢 ULTIMATE OVERRIDE FOR 30TH STANDINGS LIGHT MODE */
+body.light-mode #tab-payout-30th .bg-slate-900,
+body.light-mode #tab-payout-30th .bg-slate-950,
+body.light-mode #tab-payout-30th .dark\:bg-slate-900,
+body.light-mode #tab-payout-30th .dark\:bg-slate-950,
+body.light-mode #30th-standings-card,
+body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container > div,
+body.light-mode #30th-standings-container .standings-row {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #30th-standings-card h3,
+body.light-mode #30th-standings-card span,
+body.light-mode #30th-standings-container span,
+body.light-mode #30th-standings-container font {
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container span.text-slate-400,
+body.light-mode #30th-standings-container span.text-slate-500 {
+  color: #64748b !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -2372,7 +2399,7 @@ window.sendCommunityChatMessage = async (e) => {
       standingsList.forEach((item, index) => {
         const isMe = item.userId === currentUid;
         listHTML += `
-          <div class="standings-row flex items-center justify-between p-3.5 rounded-xl border text-xs transition bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 ${
+          <div class="standings-row flex items-center justify-between p-3.5 rounded-xl border text-xs transition bg-white text-slate-900 ${
             isMe ? 'ring-2 ring-emerald-500' : ''
           }">
             <div class="flex items-center gap-3">

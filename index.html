@@ -177,64 +177,80 @@
   }
 
   /* ------------------------------------------------------------
-     4. HOME SLIDESHOW FROSTED-TO-TRANSLUCENT ANIMATION (8 SECONDS)
-     ------------------------------------------------------------ */
-  /* 🟢 ADJUSTED SLIDESHOW OVERLAY ANIMATION */
-@keyframes frostedToTranslucent {
+   4. HOME SLIDESHOW ANIMATION & LIGHT MODE OVERRIDES
+   ------------------------------------------------------------ */
+
+/* Image Blur Keyframes (Blurs photo for 4s, unblurs for next 4s) */
+@keyframes heroImageBlur {
   0% {
-    opacity: 1;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transform: translateY(0);
+    filter: blur(8px) scale(1.03);
   }
   50% {
-    /* Holds 100% full clarity for 4 seconds */
-    opacity: 1;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transform: translateY(0);
+    filter: blur(8px) scale(1.03);
   }
   65% {
-    /* Smoothly transitions into semi-translucent state */
-    opacity: 0.55;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    transform: translateY(2px);
+    filter: blur(0px) scale(1);
   }
   100% {
-    /* Retains 55% visibility so title & subtitle remain clearly legible */
-    opacity: 0.55;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    transform: translateY(2px);
+    filter: blur(0px) scale(1);
   }
 }
 
-/* Base overlay styling (Bottom-focused gradient so the photo image is clear) */
-.slide-text-overlay {
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 50%, transparent 80%) !important;
-  animation: frostedToTranslucent 8s ease-in-out forwards !important;
-  transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+/* Text Overlay Keyframes (Full dark backdrop for 4s, softens to show bottom image) */
+@keyframes heroTextOverlay {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 0.65;
+  }
 }
 
+/* Apply animation to slide image */
+#slideshow-slides-container .slide-item img {
+  animation: heroImageBlur 8s ease-in-out forwards !important;
+  transition: filter 0.5s ease;
+}
+
+/* Apply animation to bottom text overlay container */
+.slide-text-overlay {
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 60%, transparent 100%) !important;
+  animation: heroTextOverlay 8s ease-in-out forwards !important;
+  transition: opacity 0.4s ease;
+  z-index: 10 !important;
+}
+
+/* Force text to stay PURE WHITE in both Light and Dark modes */
+body.light-mode .slide-text-overlay h2,
+body:not(.light-mode) .slide-text-overlay h2,
 .slide-text-overlay h2 {
   color: #ffffff !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+  font-weight: 900 !important;
 }
 
+body.light-mode .slide-text-overlay p,
+body:not(.light-mode) .slide-text-overlay p,
 .slide-text-overlay p {
   color: #f8fafc !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9) !important;
+  font-weight: 500 !important;
 }
 
-/* Hover over container brings overlay back to 100% full opacity */
+/* Hover over container to bring overlay back to 100% and re-blur image */
 #slideshow-slides-container:hover .slide-text-overlay {
   opacity: 1 !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
-  transform: translateY(0) !important;
 }
 
+#slideshow-slides-container:hover .slide-item img {
+  filter: blur(6px) scale(1.02) !important;
+}
   /* ------------------------------------------------------------
      5. LEADERBOARD & DAILY RAW REFERRAL OVERRIDES
      ------------------------------------------------------------ */

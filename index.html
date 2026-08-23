@@ -385,6 +385,35 @@ body.light-mode #tab-raw-referrals select#raw-month-filter {
   font-weight: 800 !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
 }
+    /* 🟢 HERO SLIDESHOW TEXT AUTOMATIC FADE ANIMATION */
+@keyframes fadeTranslucent {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    /* Holds 100% opacity for 4 seconds out of 5 seconds (80%) */
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    /* Fades to 15% translucency on the 5th second */
+    opacity: 0.15;
+    transform: translateY(4px);
+  }
+}
+
+/* Base class applied to the text overlay */
+.slide-text-overlay {
+  animation: fadeTranslucent 5s ease-in-out forwards;
+  transition: opacity 0.5s ease;
+}
+
+/* Optional: Hover over the hero image to bring text back to 100% */
+#slideshow-slides-container:hover .slide-text-overlay {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -2825,32 +2854,33 @@ directoryList.innerHTML += `
     }
 
     function updateSlideDisplay() {
-      document.querySelectorAll('#slideshow-slides-container .slide-item').forEach((el, idx) => {
-        const textOverlay = el.querySelector('.slide-text-overlay');
+  document.querySelectorAll('#slideshow-slides-container .slide-item').forEach((el, idx) => {
+    const textOverlay = el.querySelector('.slide-text-overlay');
 
-        if (idx === currentSlideIndex) {
-          el.classList.remove('opacity-0', 'pointer-events-none');
-          el.classList.add('opacity-100', 'pointer-events-auto');
+    if (idx === currentSlideIndex) {
+      el.classList.remove('opacity-0', 'pointer-events-none');
+      el.classList.add('opacity-100', 'pointer-events-auto');
 
-          if (textOverlay) {
-            textOverlay.style.animation = 'none';
-            void textOverlay.offsetWidth;
-            textOverlay.style.animation = 'fadeTranslucent 5s ease-in-out forwards';
-          }
-        } else {
-          el.classList.remove('opacity-100', 'pointer-events-auto');
-          el.classList.add('opacity-0', 'pointer-events-none');
-        }
-      });
-
-      document.querySelectorAll('#slideshow-dots-container button').forEach((dot, idx) => {
-        if (idx === currentSlideIndex) {
-          dot.className = "w-6 h-2.5 rounded-full bg-indigo-500 transition-all";
-        } else {
-          dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-all";
-        }
-      });
+      // Reset and trigger the 4-second delay + fade animation
+      if (textOverlay) {
+        textOverlay.style.animation = 'none';
+        void textOverlay.offsetWidth; // Force CSS Reflow
+        textOverlay.style.animation = 'fadeTranslucent 5s ease-in-out forwards';
+      }
+    } else {
+      el.classList.remove('opacity-100', 'pointer-events-auto');
+      el.classList.add('opacity-0', 'pointer-events-none');
     }
+  });
+
+  document.querySelectorAll('#slideshow-dots-container button').forEach((dot, idx) => {
+    if (idx === currentSlideIndex) {
+      dot.className = "w-6 h-2.5 rounded-full bg-indigo-500 transition-all";
+    } else {
+      dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-all";
+    }
+  });
+}
 
     window.nextSlide = function() {
       if (slideshowList.length <= 1) return;

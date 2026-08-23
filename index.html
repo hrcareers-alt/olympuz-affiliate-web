@@ -13,8 +13,8 @@
      1. CLASSY & TRENDY LIGHT MODE CORE OVERRIDES
      ------------------------------------------------------------ */
   body.light-mode {
-    background-color: #f8fafc !important; /* Soft Slate 50 background */
-    color: #0f172a !important; /* Deep Slate 900 text */
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
   }
 
   body.light-mode #dashboard-screen,
@@ -104,24 +104,6 @@
     box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
   }
 
-  body.light-mode #tab-leaderboard .bg-amber-500\/20 {
-    background-color: #fef3c7 !important;
-    border-color: #fde047 !important;
-    color: #b45309 !important;
-  }
-
-  body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
-    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-    border-color: #3730a3 !important;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
-  }
-
-  body.light-mode #top-5-container > div,
-  body.light-mode #extended-rankings-list > div {
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
-  }
-
   body.light-mode #tab-channels > div > div:first-child {
     background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #eff6ff 100%) !important;
     border-color: #a7f3d0 !important;
@@ -188,29 +170,76 @@
   }
 
   /* ------------------------------------------------------------
-     4. 🟢 FINAL PRIORITY OVERRIDES: EVERY 30TH LIGHT MODE
+     4. HOME SLIDESHOW LIGHT MODE OVERRIDES
      ------------------------------------------------------------ */
-  body.light-mode #tab-payout-30th > div > div:first-child {
+  body.light-mode .slide-text-overlay {
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 60%, transparent 100%) !important;
+  }
+
+  body.light-mode .slide-text-overlay h2 {
+    color: #0f172a !important;
+    text-shadow: none !important;
+  }
+
+  body.light-mode .slide-text-overlay p {
+    color: #334155 !important;
+    text-shadow: none !important;
+  }
+
+  /* ------------------------------------------------------------
+     5. LEADERBOARD & DAILY RAW REFERRAL CARD BORDERS
+     ------------------------------------------------------------ */
+  body.light-mode #top-5-container > div,
+  body.light-mode #extended-rankings-list > div,
+  body.light-mode #raw-leaderboard-list > div,
+  body.light-mode #raw-leaderboard-list > div.bg-slate-900 {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+
+  body.light-mode #raw-leaderboard-list span,
+  body.light-mode #extended-rankings-list span {
+    color: #0f172a !important;
+  }
+
+  /* ------------------------------------------------------------
+     6. WEEKLY PAYOUT SCHEME BANNER
+     ------------------------------------------------------------ */
+  body.light-mode #tab-payout .bg-indigo-950\/60 {
+    background-color: #e0e7ff !important;
+    border-color: #c7d2fe !important;
+  }
+
+  body.light-mode #tab-payout .bg-indigo-950\/60 span,
+  body.light-mode #tab-payout .bg-indigo-950\/60 i {
+    color: #3730a3 !important;
+  }
+
+  /* ------------------------------------------------------------
+     7. 🟢 EVERY 30TH PAYOUT & STANDINGS LIGHT MODE OVERRIDES
+     ------------------------------------------------------------ */
+  body.light-mode #tab-payout-30th > div:first-child {
     background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%, #f0fdf4 100%) !important;
     border-color: #a7f3d0 !important;
   }
 
-  body.light-mode #tab-payout-30th .bg-slate-900,
-  body.light-mode #tab-payout-30th .bg-slate-950,
-  body.light-mode #tab-payout-30th .bg-slate-950\/60,
+  body.light-mode #30th-standings-card,
   body.light-mode #30th-standings-container,
   body.light-mode #30th-standings-container > div,
   body.light-mode #30th-standings-container .standings-row,
+  body.light-mode #30th-standings-container .standings-item-row,
   body.light-mode #invoice-30th-list > div {
     background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
     color: #0f172a !important;
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
   }
 
-  body.light-mode #tab-payout-30th h2,
-  body.light-mode #tab-payout-30th h3,
-  body.light-mode #tab-payout-30th label,
+  body.light-mode #30th-standings-card h3,
+  body.light-mode #30th-standings-card span,
   body.light-mode #30th-standings-container span,
   body.light-mode #invoice-30th-list span,
   body.light-mode #invoice-30th-list p {
@@ -228,192 +257,35 @@
     color: #0f172a !important;
     border-color: #cbd5e1 !important;
   }
-   /* 🟢 FORCE 30TH LEADERBOARD CONTAINER & ROWS TO LIGHT MODE */
-body.light-mode #monthly-standings-card,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05) !important;
-}
 
-body.light-mode #monthly-standings-card h3,
-body.light-mode #30th-standings-container span {
-  color: #0f172a !important;
-}
+  /* ------------------------------------------------------------
+     8. ADMIN PANEL: DIRECTORY & SLIDESHOW
+     ------------------------------------------------------------ */
+  body.light-mode #admin-users-directory-list > div,
+  body.light-mode #admin-slides-list > div,
+  body.light-mode #admin-slideshow-form {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
 
-body.light-mode #30th-standings-container span.text-slate-400,
-body.light-mode #30th-standings-container span.text-slate-500 {
-  color: #64748b !important;
-}
+  body.light-mode #admin-users-directory-list h4,
+  body.light-mode #admin-users-directory-list span,
+  body.light-mode #admin-slides-list h4 {
+    color: #0f172a !important;
+  }
 
-body.light-mode #30th-standings-container .bg-indigo-50,
-body.light-mode #30th-standings-container .bg-indigo-950\/50,
-body.light-mode #30th-standings-container .bg-indigo-950\/60 {
-  background-color: #e0e7ff !important;
-  color: #3730a3 !important;
-  border-color: #c7d2fe !important;
-}
-    /* 🟢 FORCE 30TH STANDINGS CARD & CONTENTS TO RESPECT LIGHT MODE */
-body.light-mode #30th-standings-card,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
+  body.light-mode #admin-users-directory-list p,
+  body.light-mode #admin-slides-list p {
+    color: #475569 !important;
+  }
 
-body.light-mode #30th-standings-card h3,
-body.light-mode #30th-standings-card span,
-body.light-mode #30th-standings-container span {
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span.text-slate-400,
-body.light-mode #30th-standings-container span.text-slate-500 {
-  color: #64748b !important;
-}
-
-body.light-mode #30th-standings-container .bg-indigo-950\/60,
-body.light-mode #30th-standings-container .bg-indigo-950\/50,
-body.light-mode #30th-standings-container .bg-indigo-50 {
-  background-color: #e0e7ff !important;
-  color: #3730a3 !important;
-  border-color: #c7d2fe !important;
-}
-    /* ============================================================
-   LIGHT MODE OVERRIDES FOR HOME, LEADERBOARDS, MODALS & ADMIN
-   ============================================================ */
-
-/* 1. HOME HERO SLIDESHOW TEXT & OVERLAY */
-body.light-mode .slide-text-overlay {
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 60%, transparent 100%) !important;
-}
-
-body.light-mode .slide-text-overlay h2 {
-  color: #0f172a !important;
-  text-shadow: none !important;
-}
-
-body.light-mode .slide-text-overlay p {
-  color: #334155 !important;
-  text-shadow: none !important;
-}
-
-/* 2. LEADERBOARD & DAILY RAW REFERRAL CARD BORDERS & ROWS */
-body.light-mode #top-5-container > div,
-body.light-mode #extended-rankings-list > div,
-body.light-mode #raw-leaderboard-list > div,
-body.light-mode #raw-leaderboard-list > div.bg-slate-900 {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #raw-leaderboard-list span,
-body.light-mode #extended-rankings-list span {
-  color: #0f172a !important;
-}
-
-/* 3. WEEKLY PAYOUT SCHEME BANNER */
-body.light-mode #tab-payout .bg-indigo-950\/60 {
-  background-color: #e0e7ff !important;
-  border-color: #c7d2fe !important;
-}
-
-body.light-mode #tab-payout .bg-indigo-950\/60 span,
-body.light-mode #tab-payout .bg-indigo-950\/60 i {
-  color: #3730a3 !important;
-}
-
-/* 4. EVERY 30TH STANDINGS & CARDS */
-body.light-mode #30th-standings-card,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row,
-body.light-mode #30th-standings-container .standings-item-row {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span {
-  color: #0f172a !important;
-}
-
-/* 5. MODALS & POP-UP ADS */
-body.light-mode #ad-popup-modal > div,
-body.light-mode #reward-view-modal > div,
-body.light-mode #raw-edit-modal > div,
-body.light-mode #reward-login-popup > div,
-body.light-mode #admin-user-modal > div {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #ad-popup-modal h3,
-body.light-mode #reward-view-modal h3,
-body.light-mode #reward-login-popup h3,
-body.light-mode #admin-user-modal h3 {
-  color: #0f172a !important;
-}
-
-body.light-mode #ad-popup-modal p,
-body.light-mode #reward-view-modal p,
-body.light-mode #reward-login-popup p {
-  color: #334155 !important;
-}
-
-/* 6. ADMIN PANEL: AFFILIATE DATABASE DIRECTORY */
-body.light-mode #admin-users-directory-list > div {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #admin-users-directory-list h4,
-body.light-mode #admin-users-directory-list span {
-  color: #0f172a !important;
-}
-
-body.light-mode #admin-users-directory-list p {
-  color: #475569 !important;
-}
-
-body.light-mode #admin-user-modal .bg-slate-950,
-body.light-mode #admin-user-modal .bg-slate-950\/60 {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-/* 7. ADMIN PANEL: MODIFY SLIDESHOW */
-body.light-mode #admin-slides-list > div {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #admin-slides-list h4 {
-  color: #0f172a !important;
-}
-
-body.light-mode #admin-slides-list p {
-  color: #475569 !important;
-}
-
-body.light-mode #admin-slideshow-form {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-}
+  body.light-mode #admin-user-modal .bg-slate-950,
+  body.light-mode #admin-user-modal .bg-slate-950\/60 {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

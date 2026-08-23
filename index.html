@@ -490,6 +490,26 @@ body.light-mode #tab-payout-30th #30th-standings-card h3,
 body.light-mode #tab-payout-30th #30th-standings-card span {
   color: #0f172a !important;
 }
+    /* 🟢 CSS VARIABLE LIGHT/DARK SWITCH FOR 30TH STANDINGS CARD */
+body.light-mode {
+  --card-bg: #ffffff;
+  --card-border: #cbd5e1;
+}
+
+body:not(.light-mode) {
+  --card-bg: #0f172a;
+  --card-border: #1e293b;
+}
+
+body.light-mode #30th-standings-card,
+body.light-mode #30th-standings-card * {
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-card span.text-slate-400,
+body.light-mode #30th-standings-card span.text-slate-500 {
+  color: #64748b !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -955,9 +975,9 @@ body.light-mode #tab-payout-30th #30th-standings-card span {
           </div>
 
         <!-- MONTHLY HIRES STANDINGS SECTION -->
-<div id="30th-standings-card" class="bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
-  <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-    📋 <span class="text-slate-900 dark:text-slate-100">MONTHLY HIRES STANDINGS</span>
+<div id="30th-standings-card" style="background-color: var(--card-bg, #ffffff) !important; border-color: var(--card-border, #e2e8f0) !important;" class="bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
+  <h3 class="font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2 text-slate-900 dark:text-slate-100">
+    📋 <span>MONTHLY HIRES STANDINGS</span>
   </h3>
 
   <!-- Dynamic Container -->

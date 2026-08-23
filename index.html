@@ -176,7 +176,7 @@
     color: #f1f5f9 !important;
   }
 
-  /* ------------------------------------------------------------
+ /* ------------------------------------------------------------
    4. HOME SLIDESHOW ANIMATION & LIGHT MODE OVERRIDES
    ------------------------------------------------------------ */
 
@@ -196,7 +196,7 @@
   }
 }
 
-/* Text Overlay Keyframes (Full dark backdrop for 4s, softens to show bottom image) */
+/* Text Overlay Keyframes (Full dark backdrop for 4s, softens to 65% opacity) */
 @keyframes heroTextOverlay {
   0% {
     opacity: 1;
@@ -218,26 +218,25 @@
   transition: filter 0.5s ease;
 }
 
-/* Apply animation to bottom text overlay container */
-.slide-text-overlay {
+/* Apply dark bottom-gradient overlay to BOTH light and dark mode */
+.slide-text-overlay,
+body.light-mode .slide-text-overlay {
   background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 60%, transparent 100%) !important;
   animation: heroTextOverlay 8s ease-in-out forwards !important;
   transition: opacity 0.4s ease;
   z-index: 10 !important;
 }
 
-/* Force text to stay PURE WHITE in both Light and Dark modes */
-body.light-mode .slide-text-overlay h2,
-body:not(.light-mode) .slide-text-overlay h2,
-.slide-text-overlay h2 {
+/* Force text to stay crisp white with dark drop shadows in ALL modes */
+.slide-text-overlay h2,
+body.light-mode .slide-text-overlay h2 {
   color: #ffffff !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
   font-weight: 900 !important;
 }
 
-body.light-mode .slide-text-overlay p,
-body:not(.light-mode) .slide-text-overlay p,
-.slide-text-overlay p {
+.slide-text-overlay p,
+body.light-mode .slide-text-overlay p {
   color: #f8fafc !important;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9) !important;
   font-weight: 500 !important;

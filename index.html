@@ -15,6 +15,13 @@
   body.light-mode {
     background-color: #f8fafc !important;
     color: #0f172a !important;
+    --card-bg: #ffffff;
+    --card-border: #cbd5e1;
+  }
+
+  body:not(.light-mode) {
+    --card-bg: #0f172a;
+    --card-border: #1e293b;
   }
 
   body.light-mode #dashboard-screen,
@@ -204,6 +211,21 @@
     color: #0f172a !important;
   }
 
+  body.light-mode #tab-leaderboard .bg-slate-950\/60,
+  body.light-mode #tab-raw-referrals .bg-slate-950\/60 {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
+  }
+
+  body.light-mode #tab-leaderboard .bg-slate-950\/60 h3,
+  body.light-mode #tab-leaderboard .bg-slate-950\/60 i,
+  body.light-mode #tab-raw-referrals .bg-slate-950\/60 h3,
+  body.light-mode #tab-raw-referrals .bg-slate-950\/60 i {
+    color: #1e1b4b !important;
+    font-weight: 800 !important;
+  }
+
   /* ------------------------------------------------------------
      6. WEEKLY PAYOUT SCHEME BANNER
      ------------------------------------------------------------ */
@@ -218,7 +240,7 @@
   }
 
   /* ------------------------------------------------------------
-     7. 🟢 EVERY 30TH PAYOUT & STANDINGS LIGHT MODE OVERRIDES
+     7. EVERY 30TH PAYOUT & STANDINGS LIGHT MODE OVERRIDES
      ------------------------------------------------------------ */
   body.light-mode #tab-payout-30th > div:first-child {
     background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%, #f0fdf4 100%) !important;
@@ -229,7 +251,6 @@
   body.light-mode #30th-standings-container,
   body.light-mode #30th-standings-container > div,
   body.light-mode #30th-standings-container .standings-row,
-  body.light-mode #30th-standings-container .standings-item-row,
   body.light-mode #invoice-30th-list > div {
     background-color: #ffffff !important;
     background: #ffffff !important;
@@ -258,9 +279,42 @@
     border-color: #cbd5e1 !important;
   }
 
+  /* 🟢 VIBRANT SUNSET AMBER GRADIENT HIRE BADGE IN LIGHT MODE */
+  body.light-mode #30th-standings-container .hire-badge,
+  body.light-mode #30th-standings-container span.bg-indigo-950\/60,
+  body.light-mode #30th-standings-container span.bg-indigo-100 {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    color: #92400e !important;
+    border: 1px solid #fcd34d !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.025em !important;
+    box-shadow: 0 2px 6px -1px rgba(245, 158, 11, 0.25) !important;
+  }
+
   /* ------------------------------------------------------------
      8. ADMIN PANEL: DIRECTORY & SLIDESHOW
      ------------------------------------------------------------ */
+  body.light-mode #tab-admin-users > div:first-child {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #e0e7ff 100%) !important;
+    border-color: #c7d2fe !important;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+  }
+
+  body.light-mode #tab-admin-users h2,
+  body.light-mode #tab-admin-users p,
+  body.light-mode #tab-admin-users p.text-slate-300 {
+    color: #1e1b4b !important;
+  }
+
+  body.light-mode #tab-admin-users .bg-slate-950\/80 {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  body.light-mode #admin-total-users-count {
+    color: #4f46e5 !important;
+  }
+
   body.light-mode #admin-users-directory-list > div,
   body.light-mode #admin-slides-list > div,
   body.light-mode #admin-slideshow-form {
@@ -286,234 +340,6 @@
     border-color: #cbd5e1 !important;
     color: #0f172a !important;
   }
-    /* 🟢 FIX ADMIN AFFILIATE DATABASE HEADER BANNER FOR LIGHT MODE */
-body.light-mode #tab-admin-users > div:first-child {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #e0e7ff 100%) !important;
-  border-color: #c7d2fe !important;
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
-}
-
-body.light-mode #tab-admin-users h2 {
-  color: #1e1b4b !important;
-}
-
-body.light-mode #tab-admin-users p,
-body.light-mode #tab-admin-users p.text-slate-300 {
-  color: #3730a3 !important;
-}
-
-/* Total Registered Count Box Overrides */
-body.light-mode #tab-admin-users .bg-slate-950\/80 {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #tab-admin-users .bg-slate-950\/80 span {
-  color: #475569 !important;
-}
-
-body.light-mode #admin-total-users-count {
-  color: #4f46e5 !important;
-}
-
-/* Admin Management Hub Badge */
-body.light-mode #tab-admin-users .bg-indigo-500\/20 {
-  background-color: #e0e7ff !important;
-  border-color: #c7d2fe !important;
-  color: #3730a3 !important;
-}
-/* 🟢 FIX MONTHLY LEADERBOARD EXTENDED STANDINGS CONTAINER FOR LIGHT MODE */
-body.light-mode #tab-leaderboard .bg-slate-950\/60 {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
-}
-
-body.light-mode #tab-leaderboard .bg-slate-950\/60 h3,
-body.light-mode #tab-leaderboard .bg-slate-950\/60 i {
-  color: #1e1b4b !important;
-  font-weight: 800 !important;
-}
-
-/* Row borders inside extended rankings */
-body.light-mode #extended-rankings-list > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-}
-
-body.light-mode #extended-rankings-list span {
-  color: #0f172a !important;
-}
-    /* 🟢 FIX DAILY RAW REFERRALS SECTION FOR LIGHT MODE */
-
-/* 1. Header Banner Gradient & Text Overrides */
-body.light-mode #tab-raw-referrals > div > div:first-child {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f1f5f9 100%) !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
-}
-
-body.light-mode #tab-raw-referrals h2 {
-  color: #1e1b4b !important;
-}
-
-body.light-mode #tab-raw-referrals p,
-body.light-mode #tab-raw-referrals label {
-  color: #3730a3 !important;
-}
-
-/* Badge inside Header Banner */
-body.light-mode #tab-raw-referrals .bg-indigo-500\/20 {
-  background-color: #e0e7ff !important;
-  border-color: #c7d2fe !important;
-  color: #3730a3 !important;
-}
-
-/* Month Filter Select Dropdown */
-body.light-mode #tab-raw-referrals select#raw-month-filter {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-}
-
-/* 2. Overall Raw Rankings Outer Container Background */
-body.light-mode #tab-raw-referrals .bg-slate-950\/60 {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
-}
-
-/* Section Title Heading inside Rankings Container */
-body.light-mode #tab-raw-referrals .bg-slate-950\/60 h3,
-body.light-mode #tab-raw-referrals .bg-slate-950\/60 i {
-  color: #1e1b4b !important;
-  font-weight: 800 !important;
-}
-
-/* 3. Individual Ranking Row Items */
-body.light-mode #raw-leaderboard-list > div {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-}
-
-body.light-mode #raw-leaderboard-list span {
-  color: #0f172a !important;
-}
-
-body.light-mode #raw-leaderboard-list span.text-indigo-400 {
-  color: #4f46e5 !important;
-}
-    /* 🟢 FORCE EVERY 30TH STANDINGS CARD AND INNER ROWS TO LIGHT MODE */
-body.light-mode #30th-standings-card,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #30th-standings-card h3,
-body.light-mode #30th-standings-card span,
-body.light-mode #30th-standings-container span {
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span.text-slate-400,
-body.light-mode #30th-standings-container span.text-slate-500 {
-  color: #64748b !important;
-}
-
-body.light-mode #30th-standings-container .bg-indigo-100,
-body.light-mode #30th-standings-container .bg-indigo-950\/60 {
-  background-color: #e0e7ff !important;
-  color: #3730a3 !important;
-  border-color: #c7d2fe !important;
-}
-    /* 🟢 ULTIMATE OVERRIDE FOR 30TH STANDINGS LIGHT MODE */
-body.light-mode #tab-payout-30th .bg-slate-900,
-body.light-mode #tab-payout-30th .bg-slate-950,
-body.light-mode #tab-payout-30th .dark\:bg-slate-900,
-body.light-mode #tab-payout-30th .dark\:bg-slate-950,
-body.light-mode #30th-standings-card,
-body.light-mode #30th-standings-container,
-body.light-mode #30th-standings-container > div,
-body.light-mode #30th-standings-container .standings-row {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #30th-standings-card h3,
-body.light-mode #30th-standings-card span,
-body.light-mode #30th-standings-container span,
-body.light-mode #30th-standings-container font {
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-container span.text-slate-400,
-body.light-mode #30th-standings-container span.text-slate-500 {
-  color: #64748b !important;
-}
-    /* 🟢 FORCE 30TH STANDINGS CARD OUTER CONTAINER TO WHITE IN LIGHT MODE */
-body.light-mode #30th-standings-card,
-body.light-mode div#30th-standings-card {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #30th-standings-card h3,
-body.light-mode #30th-standings-card span {
-  color: #0f172a !important;
-}
-    /* 🟢 DIRECT OVERRIDE FOR 30TH STANDINGS CARD CONTAINER */
-#tab-payout-30th #30th-standings-card,
-body.light-mode #tab-payout-30th #30th-standings-card {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-body.light-mode #tab-payout-30th #30th-standings-card h3,
-body.light-mode #tab-payout-30th #30th-standings-card span {
-  color: #0f172a !important;
-}
-    /* 🟢 CSS VARIABLE LIGHT/DARK SWITCH FOR 30TH STANDINGS CARD */
-body.light-mode {
-  --card-bg: #ffffff;
-  --card-border: #cbd5e1;
-}
-
-body:not(.light-mode) {
-  --card-bg: #0f172a;
-  --card-border: #1e293b;
-}
-
-body.light-mode #30th-standings-card,
-body.light-mode #30th-standings-card * {
-  color: #0f172a !important;
-}
-
-body.light-mode #30th-standings-card span.text-slate-400,
-body.light-mode #30th-standings-card span.text-slate-500 {
-  color: #64748b !important;
-}
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-color: #92400e !important;
-border: 1px solid #fcd34d !important;
-box-shadow: 0 2px 6px -1px rgba(245, 158, 11, 0.25) !important;
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

@@ -286,6 +286,43 @@
     border-color: #cbd5e1 !important;
     color: #0f172a !important;
   }
+    /* 🟢 FIX ADMIN AFFILIATE DATABASE HEADER BANNER FOR LIGHT MODE */
+body.light-mode #tab-admin-users > div:first-child {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #e0e7ff 100%) !important;
+  border-color: #c7d2fe !important;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.08) !important;
+}
+
+body.light-mode #tab-admin-users h2 {
+  color: #1e1b4b !important;
+}
+
+body.light-mode #tab-admin-users p,
+body.light-mode #tab-admin-users p.text-slate-300 {
+  color: #3730a3 !important;
+}
+
+/* Total Registered Count Box Overrides */
+body.light-mode #tab-admin-users .bg-slate-950\/80 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #tab-admin-users .bg-slate-950\/80 span {
+  color: #475569 !important;
+}
+
+body.light-mode #admin-total-users-count {
+  color: #4f46e5 !important;
+}
+
+/* Admin Management Hub Badge */
+body.light-mode #tab-admin-users .bg-indigo-500\/20 {
+  background-color: #e0e7ff !important;
+  border-color: #c7d2fe !important;
+  color: #3730a3 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

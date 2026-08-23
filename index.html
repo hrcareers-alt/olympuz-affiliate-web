@@ -179,58 +179,61 @@
   /* ------------------------------------------------------------
      4. HOME SLIDESHOW FROSTED-TO-TRANSLUCENT ANIMATION (8 SECONDS)
      ------------------------------------------------------------ */
-  @keyframes frostedToTranslucent {
-    0% {
-      opacity: 1;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transform: translateY(0);
-    }
-    50% {
-      /* Holds crisp overlay for 4 seconds */
-      opacity: 1;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transform: translateY(0);
-    }
-    65% {
-      /* Smoothly dissolves overlay to translucent state */
-      opacity: 0.12;
-      backdrop-filter: blur(0px);
-      -webkit-backdrop-filter: blur(0px);
-      transform: translateY(6px);
-    }
-    100% {
-      /* Stays translucent until slide changes at 8th second */
-      opacity: 0.12;
-      backdrop-filter: blur(0px);
-      -webkit-backdrop-filter: blur(0px);
-      transform: translateY(6px);
-    }
+  /* 🟢 ADJUSTED SLIDESHOW OVERLAY ANIMATION */
+@keyframes frostedToTranslucent {
+  0% {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transform: translateY(0);
   }
+  50% {
+    /* Holds 100% full clarity for 4 seconds */
+    opacity: 1;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transform: translateY(0);
+  }
+  65% {
+    /* Smoothly transitions into semi-translucent state */
+    opacity: 0.55;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transform: translateY(2px);
+  }
+  100% {
+    /* Retains 55% visibility so title & subtitle remain clearly legible */
+    opacity: 0.55;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transform: translateY(2px);
+  }
+}
 
-  .slide-text-overlay {
-    background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%) !important;
-    animation: frostedToTranslucent 8s ease-in-out forwards !important;
-    transition: all 0.5s ease;
-  }
+/* Base overlay styling (Bottom-focused gradient so the photo image is clear) */
+.slide-text-overlay {
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 50%, transparent 80%) !important;
+  animation: frostedToTranslucent 8s ease-in-out forwards !important;
+  transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+}
 
-  .slide-text-overlay h2 {
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6) !important;
-  }
+.slide-text-overlay h2 {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
 
-  .slide-text-overlay p {
-    color: #f1f5f9 !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
-  }
+.slide-text-overlay p {
+  color: #f8fafc !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
 
-  #slideshow-slides-container:hover .slide-text-overlay {
-    opacity: 1 !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    transform: translateY(0) !important;
-  }
+/* Hover over container brings overlay back to 100% full opacity */
+#slideshow-slides-container:hover .slide-text-overlay {
+  opacity: 1 !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  transform: translateY(0) !important;
+}
 
   /* ------------------------------------------------------------
      5. LEADERBOARD & DAILY RAW REFERRAL OVERRIDES

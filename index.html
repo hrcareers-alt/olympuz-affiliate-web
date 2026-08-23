@@ -257,6 +257,36 @@ body.light-mode #30th-standings-container .bg-indigo-950\/60 {
   color: #3730a3 !important;
   border-color: #c7d2fe !important;
 }
+    /* 🟢 FORCE 30TH STANDINGS CARD & CONTENTS TO RESPECT LIGHT MODE */
+body.light-mode #30th-standings-card,
+body.light-mode #30th-standings-container,
+body.light-mode #30th-standings-container > div,
+body.light-mode #30th-standings-container .standings-row {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode #30th-standings-card h3,
+body.light-mode #30th-standings-card span,
+body.light-mode #30th-standings-container span {
+  color: #0f172a !important;
+}
+
+body.light-mode #30th-standings-container span.text-slate-400,
+body.light-mode #30th-standings-container span.text-slate-500 {
+  color: #64748b !important;
+}
+
+body.light-mode #30th-standings-container .bg-indigo-950\/60,
+body.light-mode #30th-standings-container .bg-indigo-950\/50,
+body.light-mode #30th-standings-container .bg-indigo-50 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #c7d2fe !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -722,12 +752,12 @@ body.light-mode #30th-standings-container .bg-indigo-950\/60 {
           </div>
 
         <!-- MONTHLY HIRES STANDINGS SECTION -->
-<div id="monthly-standings-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
+<div id="30th-standings-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm transition-colors">
   <h3 class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-    <span>📋</span> MONTHLY HIRES STANDINGS
+    📋 <span>MONTHLY HIRES STANDINGS</span>
   </h3>
 
-  <!-- 🟢 Dynamic Container ID -->
+  <!-- Dynamic Container -->
   <div id="30th-standings-container">
     <div class="text-center text-slate-400 py-6 text-xs">
       Loading standings...

@@ -2865,15 +2865,20 @@ directoryList.innerHTML += `
       el.classList.remove('opacity-0', 'pointer-events-none');
       el.classList.add('opacity-100', 'pointer-events-auto');
 
-      // Reset and trigger 8s keyframe sequence
+      // Force-reset CSS animation on the active slide's overlay
       if (textOverlay) {
         textOverlay.style.animation = 'none';
-        void textOverlay.offsetWidth; // Force CSS Reflow
+        void textOverlay.offsetWidth; // Trigger DOM Reflow
         textOverlay.style.animation = 'frostedToTranslucent 8s ease-in-out forwards';
       }
     } else {
       el.classList.remove('opacity-100', 'pointer-events-auto');
       el.classList.add('opacity-0', 'pointer-events-none');
+
+      // Clean up hidden slides
+      if (textOverlay) {
+        textOverlay.style.animation = 'none';
+      }
     }
   });
 
@@ -2885,7 +2890,6 @@ directoryList.innerHTML += `
     }
   });
 }
-
     window.nextSlide = function() {
       if (slideshowList.length <= 1) return;
       currentSlideIndex = (currentSlideIndex + 1) % slideshowList.length;

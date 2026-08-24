@@ -538,6 +538,63 @@ body.light-mode #tab-invited-affiliates button.bg-indigo-600 {
 body.light-mode #tab-invited-affiliates button.bg-indigo-600:hover {
   background: linear-gradient(135deg, #ea580c 0%, #b45309 100%) !important;
 }
+    /* 🟢 LIGHT MODE STYLING FOR INVITED AFFILIATES LIST & INVOICES */
+body.light-mode #invited-affiliates-list > div,
+body.light-mode #invite-invoices-list > div {
+  background-color: #ffffff !important;
+  border-color: #fed7aa !important; /* Soft Amber/Orange Border */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Affiliate Name & Progress Labels */
+body.light-mode #invited-affiliates-list > div span.font-bold,
+body.light-mode #invited-affiliates-list > div .text-white {
+  color: #1e293b !important; /* Dark Slate Title */
+}
+
+body.light-mode #invited-affiliates-list > div .text-slate-500,
+body.light-mode #invited-affiliates-list > div .text-slate-400,
+body.light-mode #invited-affiliates-list > div .text-slate-600 {
+  color: #64748b !important; /* Muted Slate Subtext */
+}
+
+/* Progress Track Background */
+body.light-mode #invited-affiliates-list .bg-slate-900,
+body.light-mode #invited-affiliates-list .bg-slate-100 {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* In Progress Badge */
+body.light-mode #invited-affiliates-list .bg-indigo-950,
+body.light-mode #invited-affiliates-list .bg-indigo-100 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #c7d2fe !important;
+}
+
+/* Qualified Badge */
+body.light-mode #invited-affiliates-list .bg-amber-950,
+body.light-mode #invited-affiliates-list .bg-amber-100 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+}
+
+/* Paid Badge */
+body.light-mode #invited-affiliates-list .bg-emerald-950,
+body.light-mode #invited-affiliates-list .bg-emerald-100 {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #a7f3d0 !important;
+}
+
+/* Reward Amount (₱50) */
+body.light-mode #invited-affiliates-list .text-emerald-400,
+body.light-mode #invited-affiliates-list .text-emerald-600 {
+  color: #059669 !important;
+  font-weight: 900 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

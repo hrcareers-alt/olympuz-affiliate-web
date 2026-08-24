@@ -3896,7 +3896,7 @@ directoryList.innerHTML += `
 
   const formattedPhone = formatPHPhoneNumber(rawPhone);
   if (!formattedPhone) {
-    return alert("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9123456789).");
+    return alert("Please enter a valid 10-digit Philippine mobile number starting with 9.");
   }
 
   if (password !== confirmPassword) {
@@ -3907,8 +3907,13 @@ directoryList.innerHTML += `
   submitBtn.disabled = true;
 
   try {
-    // Check if username is taken
-    const qUsername = query(collection(db, "users"), where("username", "==", username));
+    // 1. Initialize secondary app and auth instance
+    const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
+    const secondaryAuth = getAuth(secondaryApp);
+    const secondaryDb = getFirestore(secondaryApp);
+
+    // 2. Check username availability using secondaryDb
+    const qUsername = query(collection(secondaryDb, "users"), where("username", "==", username));
     const usernameSnap = await getDocs(qUsername);
 
     if (!usernameSnap.empty) {
@@ -3918,16 +3923,13 @@ directoryList.innerHTML += `
       return;
     }
 
-    // Secondary auth app to create user without logging out admin/current user
-    const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
-    const secondaryAuth = getAuth(secondaryApp);
+    // 3. Create auth user
     const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
     const newUid = userCredential.user.uid;
-
     const fullName = `${firstName} ${lastName}`.trim();
 
-    // 1. Save user profile into main 'db' instance
-    await setDoc(doc(db, "users", newUid), {
+    // 4. Save user profile document using secondaryDb
+    await setDoc(doc(secondaryDb, "users", newUid), {
       firstName: firstName,
       lastName: lastName,
       username: username,
@@ -3937,28 +3939,21 @@ directoryList.innerHTML += `
       createdAt: new Date().toISOString()
     });
 
-    // 🟢 2. PROCESS INVITE CODE AND SAVE TO 'invitations'
+    // 5. Link Invite Code (If provided)
     if (inviteCodeInput.trim()) {
       const cleanCode = inviteCodeInput.trim().toLowerCase();
 
       if (cleanCode !== username) {
-        // Search users collection for inviter (Case-Insensitive)
-        const allUsersSnap = await getDocs(collection(db, "users"));
-        let inviterDoc = null;
+        const inviterQuery = query(collection(secondaryDb, "users"), where("username", "==", cleanCode));
+        const inviterSnap = await getDocs(inviterQuery);
 
-        allUsersSnap.forEach(d => {
-          const u = d.data();
-          if (u.username && u.username.toLowerCase() === cleanCode) {
-            inviterDoc = d;
-          }
-        });
-
-        if (inviterDoc) {
+        if (!inviterSnap.empty) {
+          const inviterDoc = inviterSnap.docs[0];
           const inviterData = inviterDoc.data();
           const inviterUid = inviterDoc.id;
           const inviteId = `${inviterUid}_${newUid}`;
 
-          await setDoc(doc(db, "invitations", inviteId), {
+          await setDoc(doc(secondaryDb, "invitations", inviteId), {
             inviterUid: inviterUid,
             inviterUsername: inviterData.username || cleanCode,
             inviterName: `${inviterData.firstName || ''} ${inviterData.lastName || ''}`.trim() || inviterData.username || 'Affiliate',
@@ -3976,7 +3971,7 @@ directoryList.innerHTML += `
             receiptUrl: ''
           });
 
-          console.log("Successfully created invitation link document:", inviteId);
+          console.log("Invitation link document created successfully!");
         } else {
           console.warn("Inviter username not found in database:", cleanCode);
         }
@@ -3988,6 +3983,7 @@ directoryList.innerHTML += `
     window.toggleAuthView('success');
 
   } catch (error) {
+    console.error("Registration error:", error);
     alert("Registration failed: " + error.message);
   } finally {
     submitBtn.innerText = "Complete Registration";

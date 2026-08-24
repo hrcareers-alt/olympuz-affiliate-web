@@ -2284,7 +2284,7 @@ window.copyInviteCode = () => {
   });
 };
 
-// 🟢 3. LISTEN TO AFFILIATE INVITED DASHBOARD (REALTIME)
+// 🟢 LISTEN TO AFFILIATE INVITED DASHBOARD (REALTIME)
 window.listenToInvitedAffiliates = () => {
   const currentUid = auth.currentUser ? auth.currentUser.uid : null;
   if (!currentUid) return;
@@ -2294,7 +2294,10 @@ window.listenToInvitedAffiliates = () => {
     if (userSnap.exists()) {
       const uData = userSnap.data();
       const inviteCodeDisplay = document.getElementById('user-invite-code-display');
-      if (inviteCodeDisplay) inviteCodeDisplay.innerText = uData.username || uData.uid.substring(0, 8);
+      if (inviteCodeDisplay) {
+        // 🟢 FIX: Use userSnap.id fallback instead of uData.uid
+        inviteCodeDisplay.innerText = uData.username || userSnap.id.substring(0, 8);
+      }
     }
   });
 

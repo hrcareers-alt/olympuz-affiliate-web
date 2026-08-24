@@ -2124,6 +2124,9 @@ body.light-mode .bg-amber-500\/10 a:hover {
 
   <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
+import { 
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { 
       getAuth, 
@@ -2204,10 +2207,6 @@ body.light-mode .bg-amber-500\/10 a:hover {
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
-    import { db, auth } from './firebase-config.js';
-import { 
-  collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Global Pagination & State Tracking
 let currentInvoicePage = 1;

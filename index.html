@@ -3892,6 +3892,7 @@ directoryList.innerHTML += `
   const username = document.getElementById('reg-username').value.trim().toLowerCase();
   const password = document.getElementById('reg-password').value;
   const confirmPassword = document.getElementById('reg-confirm-password').value;
+  const inviteCodeInput = document.getElementById('reg-invite-code')?.value || '';
 
   const formattedPhone = formatPHPhoneNumber(rawPhone);
   if (!formattedPhone) {
@@ -3906,6 +3907,7 @@ directoryList.innerHTML += `
   submitBtn.disabled = true;
 
   try {
+    // Check if username is taken
     const qUsername = query(collection(db, "users"), where("username", "==", username));
     const usernameSnap = await getDocs(qUsername);
 
@@ -3916,80 +3918,81 @@ directoryList.innerHTML += `
       return;
     }
 
+    // Secondary auth app to create user without logging out admin/current user
     const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
-  const secondaryAuth = getAuth(secondaryApp);
-  const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const secondaryAuth = getAuth(secondaryApp);
+    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const newUid = userCredential.user.uid;
 
-  const secondaryDb = getFirestore(secondaryApp);
-
-  // 1. Save main user profile
-  await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
-    firstName: firstName,
-    lastName: lastName,
-    username: username,
-    email: email,
-    phoneNumber: formattedPhone, // Saves +639XXXXXXXXX
-    role: "affiliate",
-    createdAt: new Date().toISOString()
-  });
-
-  // 🟢 2. READ & PROCESS INVITE CODE
-  const inviteCodeInput = document.getElementById('reg-invite-code')?.value || '';
-  if (inviteCodeInput.trim()) {
-    const cleanCode = inviteCodeInput.trim().toLowerCase();
     const fullName = `${firstName} ${lastName}`.trim();
 
-    // Prevent self-invitation
-    if (cleanCode !== username.toLowerCase()) {
-      try {
-        // Query if the invite code matches an existing affiliate's username
-        const inviterQuery = query(collection(secondaryDb, "users"), where("username", "==", cleanCode));
-        const inviterSnap = await getDocs(inviterQuery);
+    // 1. Save user profile into main 'db' instance
+    await setDoc(doc(db, "users", newUid), {
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      email: email,
+      phoneNumber: formattedPhone,
+      role: "affiliate",
+      createdAt: new Date().toISOString()
+    });
 
-        if (!inviterSnap.empty) {
-          const inviterDoc = inviterSnap.docs[0];
+    // 🟢 2. PROCESS INVITE CODE AND SAVE TO 'invitations'
+    if (inviteCodeInput.trim()) {
+      const cleanCode = inviteCodeInput.trim().toLowerCase();
+
+      if (cleanCode !== username) {
+        // Search users collection for inviter (Case-Insensitive)
+        const allUsersSnap = await getDocs(collection(db, "users"));
+        let inviterDoc = null;
+
+        allUsersSnap.forEach(d => {
+          const u = d.data();
+          if (u.username && u.username.toLowerCase() === cleanCode) {
+            inviterDoc = d;
+          }
+        });
+
+        if (inviterDoc) {
           const inviterData = inviterDoc.data();
-          const inviteId = `${inviterDoc.id}_${userCredential.user.uid}`;
+          const inviterUid = inviterDoc.id;
+          const inviteId = `${inviterUid}_${newUid}`;
 
-          // Create permanent invitation link document
-          await setDoc(doc(secondaryDb, "invitations", inviteId), {
-            inviterUid: inviterDoc.id,
+          await setDoc(doc(db, "invitations", inviteId), {
+            inviterUid: inviterUid,
             inviterUsername: inviterData.username || cleanCode,
-            inviterName: `${inviterData.firstName || ''} ${inviterData.lastName || ''}`.trim() || 'Affiliate',
-            invitedUid: userCredential.user.uid,
+            inviterName: `${inviterData.firstName || ''} ${inviterData.lastName || ''}`.trim() || inviterData.username || 'Affiliate',
+            invitedUid: newUid,
             invitedUsername: username,
             invitedName: fullName,
             dateJoined: new Date(),
             rawReferralsCount: 0,
             targetGoal: 100,
             rewardAmount: 50,
-            status: 'IN_PROGRESS', // IN_PROGRESS -> QUALIFIED -> FOR_CREDIT -> PAID
+            status: 'IN_PROGRESS',
             qualificationDate: null,
             paidDate: null,
             adminRemarks: '',
             receiptUrl: ''
           });
 
-          console.log("Linked new affiliate to inviter:", inviterData.username);
+          console.log("Successfully created invitation link document:", inviteId);
         } else {
-          console.warn("Invite code not found. Created account without inviter.");
+          console.warn("Inviter username not found in database:", cleanCode);
         }
-      } catch (invErr) {
-        console.error("Error linking invite code:", invErr);
       }
     }
+
+    await signOut(secondaryAuth);
+    e.target.reset();
+    window.toggleAuthView('success');
+
+  } catch (error) {
+    alert("Registration failed: " + error.message);
+  } finally {
+    submitBtn.innerText = "Complete Registration";
+    submitBtn.disabled = false;
   }
-
-  await signOut(secondaryAuth);
-  e.target.reset();
-  window.toggleAuthView('success');
-
-} catch (error) {
-  alert("Registration failed: " + error.message);
-} finally {
-  submitBtn.innerText = "Complete Registration";
-  submitBtn.disabled = false;
-}
 });
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {
@@ -4030,15 +4033,16 @@ directoryList.innerHTML += `
         const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
 
         if (newWeeklyTotal > 0) {
-          await addDoc(collection(db, "raw_referrals"), {
-            userId: userId,
-            userName: affiliateName,
-            count: newWeeklyTotal,
-            monthKey: targetMonthKey,
-            type: "override_weekly",
-            timestamp: now.toISOString(),
-            createdAt: now.toISOString()
-          });
+          // Ensure raw_referrals documents store 'userId' correctly
+await addDoc(collection(db, "raw_referrals"), {
+  userId: userId, // Must match invited user's UID
+  userName: affiliateName,
+  count: count,
+  monthKey: monthKey,
+  type: "daily",
+  timestamp: new Date().toISOString(),
+  createdAt: new Date().toISOString()
+});
         }
 
         if (nonWeeklyMonthlyDiff > 0) {

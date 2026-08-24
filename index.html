@@ -595,6 +595,14 @@ body.light-mode #invited-affiliates-list .text-emerald-600 {
   color: #059669 !important;
   font-weight: 900 !important;
 }
+    /* Ensure all sidebar navigation icons share uniform width and centering */
+#sidebar-menu button i,
+#sidebar-menu a i {
+  width: 1.25rem !important; /* 20px fixed width */
+  text-align: center !important;
+  display: inline-block !important;
+  shrink: 0 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -870,8 +878,14 @@ body.light-mode #invited-affiliates-list .text-emerald-600 {
             <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm">0</span>
           </button>
 
-         <button id="nav-btn-invited-affiliates" onclick="window.switchTab('invited-affiliates')" class="sidebar-btn ...">
-  <i class="fa-solid fa-gift mr-2"></i> Invited Affiliates
+         <button 
+  id="nav-btn-invited-affiliates" 
+  onclick="switchTab('invited-affiliates')" 
+  class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"
+>
+  <i class="fa-solid fa-gift text-indigo-400 w-5 text-center"></i>
+  <span>Invited Affiliates</span>
+</button>"fa-solid fa-gift mr-2"></i> Invited Affiliates
 </button>
 
           <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" onclick="closeSidebarOnMobile()" class="block px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-indigo-400"></i> Virtual Orientation</a>
@@ -889,8 +903,13 @@ body.light-mode #invited-affiliates-list .text-emerald-600 {
           <div id="admin-menu" class="hidden pt-4 border-t border-slate-800 space-y-1">
             <span class="text-xs text-slate-500 font-bold uppercase px-3">Admin Panel</span>
             <!-- Admin Sidebar Button (Visible only to Admins) -->
-<button id="nav-btn-admin-invitations" onclick="window.switchTab('admin-invitations')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2 font-medium">
-  <i class="fa-solid fa-users-gear text-amber-500"></i> Manage Invitations
+<button 
+  id="nav-btn-admin-invitations" 
+  onclick="switchTab('admin-invitations')" 
+  class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2 font-medium"
+>
+  <i class="fa-solid fa-users-gear text-amber-500 w-5 text-center"></i>
+  <span>Manage Invitations</span>
 </button>
             <button id="nav-btn-admin-users" onclick="switchTab('admin-users')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2 font-medium"><i class="fa-solid fa-users-gear"></i> Affiliate Database</button>
             <button id="nav-btn-admin-slideshow" onclick="switchTab('admin-slideshow')" class="w-full text-left px-3 py-2 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-images"></i> Modify Slideshow</button>

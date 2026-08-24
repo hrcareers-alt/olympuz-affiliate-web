@@ -4,10 +4,7 @@
   <!-- Tailwind CDN Config -->
 <script>
   tailwind = {
-    config: {
-      // Your custom Tailwind configs here
-    },
-    suppressWarning: true // 🟢 Suppresses the production warning console log
+    suppressWarning: true // 🟢 Suppresses cdn.tailwindcss.com production warning
   }
 </script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -469,6 +466,77 @@ body.light-mode .bg-amber-500\/10 a {
 
 body.light-mode .bg-amber-500\/10 a:hover {
   color: #78350f !important;
+}
+
+    /* ------------------------------------------------------------
+   🟢 VIBRANT ORANGE/AMBER GRADIENT BANNER (LIGHT MODE)
+   ------------------------------------------------------------ */
+
+/* 1. Main Banner Background */
+body.light-mode #tab-invited-affiliates > div > div:first-child {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fef3c7 100%) !important;
+  border: 1.5px solid #fde047 !important;
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* 2. Main Title "Invite Affiliates & Earn ₱50" */
+body.light-mode #tab-invited-affiliates h2 {
+  color: #7c2d12 !important; /* Deep Burnt Orange */
+  font-weight: 900 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* 3. Subtitle Paragraph Text */
+body.light-mode #tab-invited-affiliates p {
+  color: #9a3412 !important; /* Rich Dark Amber */
+  font-weight: 600 !important;
+}
+
+/* 4. "Affiliate Referral Program" Top Badge */
+body.light-mode #tab-invited-affiliates .bg-indigo-500\/20,
+body.light-mode #tab-invited-affiliates div.inline-flex {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3) !important;
+}
+
+body.light-mode #tab-invited-affiliates div.inline-flex i {
+  color: #fef08a !important; /* Bright Yellow Icon */
+}
+
+/* 5. Inner Card: "YOUR UNIQUE INVITE CODE" Box */
+body.light-mode #tab-invited-affiliates .bg-slate-950\/80 {
+  background-color: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08) !important;
+}
+
+body.light-mode #tab-invited-affiliates .bg-slate-950\/80 span.uppercase {
+  color: #c2410c !important; /* High Contrast Orange Label */
+  font-weight: 800 !important;
+}
+
+/* 6. Code Display Box & Copy Button */
+body.light-mode #tab-invited-affiliates .bg-slate-900 {
+  background-color: #fff7ed !important;
+  border-color: #ffedd5 !important;
+}
+
+body.light-mode #user-invite-code-display {
+  color: #ea580c !important; /* Vivid Orange Code Text */
+  font-weight: 900 !important;
+}
+
+body.light-mode #tab-invited-affiliates button.bg-indigo-600 {
+  background: linear-gradient(135deg, #f97316 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3) !important;
+}
+
+body.light-mode #tab-invited-affiliates button.bg-indigo-600:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #b45309 100%) !important;
 }
 </style>
 </head>

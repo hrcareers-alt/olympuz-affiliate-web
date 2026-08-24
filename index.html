@@ -2480,6 +2480,30 @@ window.sendCommunityChatMessage = async (e) => {
       renderAdminUserPage();
     };
 
+    // 🟢 PH PHONE NUMBER FORMATTER HELPER
+function formatPHPhoneNumber(phone) {
+  if (!phone) return '';
+  // Remove non-digit characters
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // Convert 09XXXXXXXXX to +639XXXXXXXXX
+  if (cleaned.startsWith('09') && cleaned.length === 11) {
+    return '+63' + cleaned.substring(1);
+  }
+  // Convert 639XXXXXXXXX to +639XXXXXXXXX
+  if (cleaned.startsWith('639') && cleaned.length === 12) {
+    return '+' + cleaned;
+  }
+  // Convert 9XXXXXXXXX to +639XXXXXXXXX
+  if (cleaned.startsWith('9') && cleaned.length === 10) {
+    return '+63' + cleaned;
+  }
+  return phone;
+}
+
+// Make accessible globally if running inside ES Module script
+window.formatPHPhoneNumber = formatPHPhoneNumber;
+
     function renderAdminUserPage() {
       const directoryList = document.getElementById('admin-users-directory-list');
       const paginationControls = document.getElementById('admin-users-pagination');

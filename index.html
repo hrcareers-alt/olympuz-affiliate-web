@@ -2218,7 +2218,7 @@ body.light-mode .bg-amber-500\/10 a:hover {
 // ============================================================
 
 // Global Variables for Pagination & State Tracking
-let currentInvoicePage = 1;
+let currentInviteInvoicePage = 1; // 🟢 Renamed to avoid collision with weekly payout pagination
 const INVOICES_PER_PAGE = 5;
 let cachedUserInvoices = [];
 let cachedAdminInvitations = [];
@@ -2415,7 +2415,7 @@ function updateBucketStats(tot, act, qual, earn, paid, pend) {
   if (document.getElementById('inv-stat-pending')) document.getElementById('inv-stat-pending').innerText = `₱${pend}`;
 }
 
-// 🟢 4. PAGINATED INVOICE HISTORY (5 per page)
+// 🟢 PAGINATED INVOICE HISTORY (5 per page)
 function renderPaginatedInvoices() {
   const container = document.getElementById('invite-invoices-list');
   const pageInfo = document.getElementById('invoice-page-info');
@@ -2433,9 +2433,9 @@ function renderPaginatedInvoices() {
   }
 
   const totalPages = Math.ceil(cachedUserInvoices.length / INVOICES_PER_PAGE);
-  currentInvoicePage = Math.max(1, Math.min(currentInvoicePage, totalPages));
+  currentInviteInvoicePage = Math.max(1, Math.min(currentInviteInvoicePage, totalPages));
 
-  const startIdx = (currentInvoicePage - 1) * INVOICES_PER_PAGE;
+  const startIdx = (currentInviteInvoicePage - 1) * INVOICES_PER_PAGE;
   const pageData = cachedUserInvoices.slice(startIdx, startIdx + INVOICES_PER_PAGE);
 
   let html = '';
@@ -2455,13 +2455,13 @@ function renderPaginatedInvoices() {
   });
 
   container.innerHTML = html;
-  if (pageInfo) pageInfo.innerText = `Page ${currentInvoicePage} of ${totalPages}`;
-  if (prevBtn) prevBtn.disabled = currentInvoicePage === 1;
-  if (nextBtn) nextBtn.disabled = currentInvoicePage === totalPages;
+  if (pageInfo) pageInfo.innerText = `Page ${currentInviteInvoicePage} of ${totalPages}`;
+  if (prevBtn) prevBtn.disabled = currentInviteInvoicePage === 1;
+  if (nextBtn) nextBtn.disabled = currentInviteInvoicePage === totalPages;
 }
 
-window.prevInvoicePage = () => { if (currentInvoicePage > 1) { currentInvoicePage--; renderPaginatedInvoices(); } };
-window.nextInvoicePage = () => { currentInvoicePage++; renderPaginatedInvoices(); };
+window.prevInvoicePage = () => { if (currentInviteInvoicePage > 1) { currentInviteInvoicePage--; renderPaginatedInvoices(); } };
+window.nextInvoicePage = () => { currentInviteInvoicePage++; renderPaginatedInvoices(); };
 
 // 🟢 5. ADMIN PANEL INVITATION HUB
 window.listenToAdminInvitations = () => {

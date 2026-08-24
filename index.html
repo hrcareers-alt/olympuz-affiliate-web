@@ -2060,6 +2060,15 @@ body.light-mode .bg-amber-500\/10 a:hover {
         }
       }
 
+      // 🟢 TRIGGER AFFILIATE INVITATION LISTENERS
+      if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
+        window.listenToInvitedAffiliates();
+      }
+
+      if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
+        window.listenToAdminInvitations();
+      }
+
       // 🟢 TRIGGER AFFILIATE DATABASE DIRECTORY
       if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
         window.fetchAffiliateDatabase();
@@ -2204,7 +2213,338 @@ body.light-mode .bg-amber-500\/10 a:hover {
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
+// ============================================================
+// 🤝 AFFILIATE INVITATIONS & REWARDS SYSTEM
+// ============================================================
 
+// Global Variables for Pagination & State Tracking
+let currentInvoicePage = 1;
+const INVOICES_PER_PAGE = 5;
+let cachedUserInvoices = [];
+let cachedAdminInvitations = [];
+
+// 🟢 1. PROCESS REGISTRATION INVITE CODE
+window.processRegistrationInviteCode = async (newUid, newUsername, newFullName, inviteCodeInput) => {
+  if (!inviteCodeInput || !inviteCodeInput.trim()) return;
+
+  const cleanCode = inviteCodeInput.trim().toLowerCase();
+
+  // Prevent self-invitation
+  if (cleanCode === newUsername.toLowerCase()) {
+    console.warn("User attempted to invite themselves.");
+    return;
+  }
+
+  try {
+    // Check if the entered code matches an existing affiliate's username
+    const userQuery = query(collection(db, "users"), where("username", "==", cleanCode));
+    const querySnap = await getDocs(userQuery);
+
+    if (querySnap.empty) {
+      alert("Invalid Invite Code. Registration will proceed without an inviter.");
+      return;
+    }
+
+    const inviterDoc = querySnap.docs[0];
+    const inviterData = inviterDoc.data();
+
+    // Create permanent invitation record
+    const inviteId = `${inviterDoc.id}_${newUid}`;
+    await setDoc(doc(db, "invitations", inviteId), {
+      inviterUid: inviterDoc.id,
+      inviterUsername: inviterData.username || cleanCode,
+      inviterName: inviterData.fullName || inviterData.name || 'Affiliate',
+      invitedUid: newUid,
+      invitedUsername: newUsername,
+      invitedName: newFullName,
+      dateJoined: new Date(),
+      rawReferralsCount: 0,
+      targetGoal: 100,
+      rewardAmount: 50,
+      status: 'IN_PROGRESS', // IN_PROGRESS -> QUALIFIED -> FOR_CREDIT -> PAID
+      qualificationDate: null,
+      paidDate: null,
+      adminRemarks: '',
+      receiptUrl: ''
+    });
+
+    console.log("Successfully linked new affiliate to inviter:", inviterData.username);
+  } catch (err) {
+    console.error("Error processing invite code:", err);
+  }
+};
+
+// 🟢 2. COPY INVITE CODE TO CLIPBOARD
+window.copyInviteCode = () => {
+  const codeEl = document.getElementById('user-invite-code-display');
+  if (!codeEl || !codeEl.innerText) return;
+
+  navigator.clipboard.writeText(codeEl.innerText).then(() => {
+    alert(`Invite Code "${codeEl.innerText}" copied to clipboard!`);
+  });
+};
+
+// 🟢 3. LISTEN TO AFFILIATE INVITED DASHBOARD (REALTIME)
+window.listenToInvitedAffiliates = () => {
+  const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!currentUid) return;
+
+  // Display User's Username as Invite Code
+  getDoc(doc(db, "users", currentUid)).then((userSnap) => {
+    if (userSnap.exists()) {
+      const uData = userSnap.data();
+      const inviteCodeDisplay = document.getElementById('user-invite-code-display');
+      if (inviteCodeDisplay) inviteCodeDisplay.innerText = uData.username || uData.uid.substring(0, 8);
+    }
+  });
+
+  const q = query(collection(db, "invitations"), where("inviterUid", "==", currentUid));
+
+  onSnapshot(q, async (snapshot) => {
+    let totalInvited = 0;
+    let activeReferrers = 0;
+    let totalQualified = 0;
+    let totalEarned = 0;
+    let totalPaid = 0;
+    let totalPending = 0;
+
+    const listContainer = document.getElementById('invited-affiliates-list');
+    cachedUserInvoices = [];
+
+    if (snapshot.empty) {
+      if (listContainer) {
+        listContainer.innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">You haven't invited any affiliates yet. Share your Invite Code to start earning!</div>`;
+      }
+      updateBucketStats(0, 0, 0, 0, 0, 0);
+      renderPaginatedInvoices();
+      return;
+    }
+
+    let listHTML = '';
+
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      totalInvited++;
+
+      // Real-time Raw Referral Fetching for 100-target accuracy
+      const rawCount = await fetchUserRawReferralCount(data.invitedUid);
+      const isQualified = rawCount >= 100;
+      const progressPercent = Math.min(100, Math.round((rawCount / 100) * 100));
+
+      if (rawCount > 0) activeReferrers++;
+      if (isQualified) totalQualified++;
+
+      // Automatically flag qualified status when 100 raw referrals are hit
+      if (isQualified && data.status === 'IN_PROGRESS') {
+        await updateDoc(doc(db, "invitations", docSnap.id), {
+          status: 'QUALIFIED',
+          rawReferralsCount: rawCount,
+          qualificationDate: new Date()
+        });
+        sendQualificationNotification(currentUid, data.invitedName);
+      }
+
+      if (data.status === 'PAID') {
+        totalEarned += 50;
+        totalPaid += 50;
+        cachedUserInvoices.push({ id: docSnap.id, ...data });
+      } else if (data.status === 'QUALIFIED' || data.status === 'FOR_CREDIT') {
+        totalEarned += 50;
+        totalPending += 50;
+      }
+
+      // Status Badge Component
+      let statusBadge = `<span class="bg-indigo-950 text-indigo-400 border border-indigo-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">In Progress</span>`;
+      if (data.status === 'QUALIFIED') statusBadge = `<span class="bg-amber-950 text-amber-400 border border-amber-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Qualified</span>`;
+      if (data.status === 'FOR_CREDIT') statusBadge = `<span class="bg-blue-950 text-blue-400 border border-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">For Credit</span>`;
+      if (data.status === 'PAID') statusBadge = `<span class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Paid / Credited</span>`;
+
+      listHTML += `
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-sm">${data.invitedName}</span>
+              <span class="text-xs text-slate-500">(@${data.invitedUsername})</span>
+            </div>
+            <div class="text-[11px] text-slate-400">Joined: ${data.dateJoined?.toDate ? new Date(data.dateJoined.toDate()).toLocaleDateString() : 'N/A'}</div>
+          </div>
+
+          <!-- Progress Bar Component -->
+          <div class="w-full md:w-64 space-y-1">
+            <div class="flex justify-between text-[11px] font-bold">
+              <span class="text-slate-400">Progress: ${rawCount} / 100</span>
+              <span class="text-indigo-400">${progressPercent}%</span>
+            </div>
+            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+              <div class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full transition-all duration-500" style="width: ${progressPercent}%;"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            ${statusBadge}
+            <span class="font-black text-emerald-400 text-sm">₱50</span>
+          </div>
+        </div>`;
+    }
+
+    if (listContainer) listContainer.innerHTML = listHTML;
+    updateBucketStats(totalInvited, activeReferrers, totalQualified, totalEarned, totalPaid, totalPending);
+    renderPaginatedInvoices();
+  });
+};
+
+// Helper: Fetch Raw Referrals for invited affiliate
+async function fetchUserRawReferralCount(uid) {
+  try {
+    const rawSnap = await getDocs(query(collection(db, "raw_referrals"), where("userId", "==", uid)));
+    let total = 0;
+    rawSnap.forEach(d => { total += Number(d.data().count || d.data().referrals || 1); });
+    return total;
+  } catch (e) {
+    return 0;
+  }
+}
+
+// Update Bucket Metrics
+function updateBucketStats(tot, act, qual, earn, paid, pend) {
+  if (document.getElementById('inv-stat-total')) document.getElementById('inv-stat-total').innerText = tot;
+  if (document.getElementById('inv-stat-active')) document.getElementById('inv-stat-active').innerText = act;
+  if (document.getElementById('inv-stat-qualified')) document.getElementById('inv-stat-qualified').innerText = qual;
+  if (document.getElementById('inv-stat-earned')) document.getElementById('inv-stat-earned').innerText = `₱${earn}`;
+  if (document.getElementById('inv-stat-paid')) document.getElementById('inv-stat-paid').innerText = `₱${paid}`;
+  if (document.getElementById('inv-stat-pending')) document.getElementById('inv-stat-pending').innerText = `₱${pend}`;
+}
+
+// 🟢 4. PAGINATED INVOICE HISTORY (5 per page)
+function renderPaginatedInvoices() {
+  const container = document.getElementById('invite-invoices-list');
+  const pageInfo = document.getElementById('invoice-page-info');
+  const prevBtn = document.getElementById('btn-inv-prev');
+  const nextBtn = document.getElementById('btn-inv-next');
+
+  if (!container) return;
+
+  if (cachedUserInvoices.length === 0) {
+    container.innerHTML = `<div class="text-center text-slate-500 py-4 text-xs">No paid reward invoices recorded yet.</div>`;
+    if (pageInfo) pageInfo.innerText = "Page 1 of 1";
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+    return;
+  }
+
+  const totalPages = Math.ceil(cachedUserInvoices.length / INVOICES_PER_PAGE);
+  currentInvoicePage = Math.max(1, Math.min(currentInvoicePage, totalPages));
+
+  const startIdx = (currentInvoicePage - 1) * INVOICES_PER_PAGE;
+  const pageData = cachedUserInvoices.slice(startIdx, startIdx + INVOICES_PER_PAGE);
+
+  let html = '';
+  pageData.forEach(inv => {
+    html += `
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div>
+          <div class="font-bold text-slate-200">Ref: #${inv.id.substring(0, 8).toUpperCase()}</div>
+          <div class="text-slate-400 text-[11px]">Invited: ${inv.invitedName} | Paid: ${inv.paidDate?.toDate ? new Date(inv.paidDate.toDate()).toLocaleDateString() : 'N/A'}</div>
+          ${inv.adminRemarks ? `<div class="text-indigo-400 text-[10px] italic">Note: ${inv.adminRemarks}</div>` : ''}
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="font-black text-emerald-400 text-sm">₱50.00</span>
+          ${inv.receiptUrl ? `<a href="${inv.receiptUrl}" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded text-[10px] font-bold"><i class="fa-solid fa-receipt"></i> Receipt</a>` : ''}
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+  if (pageInfo) pageInfo.innerText = `Page ${currentInvoicePage} of ${totalPages}`;
+  if (prevBtn) prevBtn.disabled = currentInvoicePage === 1;
+  if (nextBtn) nextBtn.disabled = currentInvoicePage === totalPages;
+}
+
+window.prevInvoicePage = () => { if (currentInvoicePage > 1) { currentInvoicePage--; renderPaginatedInvoices(); } };
+window.nextInvoicePage = () => { currentInvoicePage++; renderPaginatedInvoices(); };
+
+// 🟢 5. ADMIN PANEL INVITATION HUB
+window.listenToAdminInvitations = () => {
+  onSnapshot(collection(db, "invitations"), (snapshot) => {
+    cachedAdminInvitations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    filterAdminInvitations();
+  });
+};
+
+window.filterAdminInvitations = () => {
+  const searchVal = (document.getElementById('admin-inv-search')?.value || '').toLowerCase();
+  const statusFilter = document.getElementById('admin-inv-status-filter')?.value || 'ALL';
+  const tableBody = document.getElementById('admin-invitations-table-body');
+
+  if (!tableBody) return;
+
+  const filtered = cachedAdminInvitations.filter(item => {
+    const matchesSearch = item.inviterName.toLowerCase().includes(searchVal) || item.invitedName.toLowerCase().includes(searchVal);
+    const matchesStatus = statusFilter === 'ALL' || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-500">No invitation records found.</td></tr>`;
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(item => {
+    html += `
+      <tr class="hover:bg-slate-900/50">
+        <td class="p-3 font-bold text-white">${item.inviterName} <span class="block text-[10px] font-normal text-slate-500">@${item.inviterUsername}</span></td>
+        <td class="p-3 text-slate-300">${item.invitedName} <span class="block text-[10px] text-slate-500">@${item.invitedUsername}</span></td>
+        <td class="p-3 text-slate-400">${item.dateJoined?.toDate ? new Date(item.dateJoined.toDate()).toLocaleDateString() : 'N/A'}</td>
+        <td class="p-3 font-extrabold text-indigo-400">${item.rawReferralsCount || 0} / 100</td>
+        <td class="p-3"><span class="font-bold text-[10px] px-2 py-1 rounded bg-slate-800 text-slate-300">${item.status}</span></td>
+        <td class="p-3 text-right">
+          ${item.status !== 'PAID' ? `
+            <button onclick="adminProcessReward('${item.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">
+              Mark as Paid (₱50)
+            </button>` : `<span class="text-emerald-400 font-bold text-[11px]"><i class="fa-solid fa-circle-check"></i> Credited</span>`}
+        </td>
+      </tr>`;
+  });
+
+  tableBody.innerHTML = html;
+};
+
+// Admin Mark Payout as Paid
+window.adminProcessReward = async (inviteId) => {
+  const remarks = prompt("Enter payment remarks / reference note:");
+  if (remarks === null) return;
+
+  const receiptUrl = prompt("Enter receipt image URL (optional):") || "";
+
+  try {
+    await updateDoc(doc(db, "invitations", inviteId), {
+      status: 'PAID',
+      paidDate: new Date(),
+      adminRemarks: remarks,
+      receiptUrl: receiptUrl
+    });
+
+    alert("Reward marked as PAID successfully!");
+  } catch (err) {
+    console.error("Error updating payout status:", err);
+    alert("Failed to update status.");
+  }
+};
+
+// Send In-App Notification
+async function sendQualificationNotification(uid, recruitName) {
+  try {
+    await addDoc(collection(db, "users", uid, "notifications"), {
+      title: "🎉 Your Invite Reward is Ready!",
+      message: `Your invited affiliate ${recruitName} has reached 100 raw referrals. You've qualified for a ₱50 invite reward!`,
+      createdAt: new Date(),
+      read: false
+    });
+  } catch (e) {
+    console.error("Failed to send notification:", e);
+  }
+}
 
 // State tracking
 window.isChatOpen = false;
@@ -3495,32 +3835,79 @@ directoryList.innerHTML += `
     }
 
     const secondaryApp = initializeApp(firebaseConfig, "RegisterApp_" + Date.now());
-    const secondaryAuth = getAuth(secondaryApp);
-    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+  const secondaryAuth = getAuth(secondaryApp);
+  const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
-    const secondaryDb = getFirestore(secondaryApp);
+  const secondaryDb = getFirestore(secondaryApp);
 
-    // Save profile WITH phone number
-    await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-      email: email,
-      phoneNumber: formattedPhone, // Saves +639XXXXXXXXX
-      role: "affiliate",
-      createdAt: new Date().toISOString()
-    });
+  // 1. Save main user profile
+  await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
+    firstName: firstName,
+    lastName: lastName,
+    username: username,
+    email: email,
+    phoneNumber: formattedPhone, // Saves +639XXXXXXXXX
+    role: "affiliate",
+    createdAt: new Date().toISOString()
+  });
 
-    await signOut(secondaryAuth);
-    e.target.reset();
-    window.toggleAuthView('success');
+  // 🟢 2. READ & PROCESS INVITE CODE
+  const inviteCodeInput = document.getElementById('reg-invite-code')?.value || '';
+  if (inviteCodeInput.trim()) {
+    const cleanCode = inviteCodeInput.trim().toLowerCase();
+    const fullName = `${firstName} ${lastName}`.trim();
 
-  } catch (error) {
-    alert("Registration failed: " + error.message);
-  } finally {
-    submitBtn.innerText = "Complete Registration";
-    submitBtn.disabled = false;
+    // Prevent self-invitation
+    if (cleanCode !== username.toLowerCase()) {
+      try {
+        // Query if the invite code matches an existing affiliate's username
+        const inviterQuery = query(collection(secondaryDb, "users"), where("username", "==", cleanCode));
+        const inviterSnap = await getDocs(inviterQuery);
+
+        if (!inviterSnap.empty) {
+          const inviterDoc = inviterSnap.docs[0];
+          const inviterData = inviterDoc.data();
+          const inviteId = `${inviterDoc.id}_${userCredential.user.uid}`;
+
+          // Create permanent invitation link document
+          await setDoc(doc(secondaryDb, "invitations", inviteId), {
+            inviterUid: inviterDoc.id,
+            inviterUsername: inviterData.username || cleanCode,
+            inviterName: `${inviterData.firstName || ''} ${inviterData.lastName || ''}`.trim() || 'Affiliate',
+            invitedUid: userCredential.user.uid,
+            invitedUsername: username,
+            invitedName: fullName,
+            dateJoined: new Date(),
+            rawReferralsCount: 0,
+            targetGoal: 100,
+            rewardAmount: 50,
+            status: 'IN_PROGRESS', // IN_PROGRESS -> QUALIFIED -> FOR_CREDIT -> PAID
+            qualificationDate: null,
+            paidDate: null,
+            adminRemarks: '',
+            receiptUrl: ''
+          });
+
+          console.log("Linked new affiliate to inviter:", inviterData.username);
+        } else {
+          console.warn("Invite code not found. Created account without inviter.");
+        }
+      } catch (invErr) {
+        console.error("Error linking invite code:", invErr);
+      }
+    }
   }
+
+  await signOut(secondaryAuth);
+  e.target.reset();
+  window.toggleAuthView('success');
+
+} catch (error) {
+  alert("Registration failed: " + error.message);
+} finally {
+  submitBtn.innerText = "Complete Registration";
+  submitBtn.disabled = false;
+}
 });
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {

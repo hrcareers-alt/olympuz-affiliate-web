@@ -1317,6 +1317,110 @@ body.light-mode #invited-affiliates-list .text-emerald-600 {
   </div>
 </section>
 
+        <!-- ADMIN AFFILIATE INVITATIONS MANAGEMENT HUB -->
+<div class="space-y-6">
+
+  <!-- TOP SUMMARY & SEARCH CONTROLS -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+        <i class="fa-solid fa-users-gear text-amber-500"></i> Manage Affiliate Invitations & Rewards
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        Inspect inviter buckets, track 100-raw referral milestones, disburse ₱50 invite rewards, and attach payment receipts.
+      </p>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      <input 
+        type="text" 
+        id="admin-inv-search" 
+        onkeyup="window.filterAdminInvitations()" 
+        placeholder="Search inviter or recruit..." 
+        class="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-full sm:w-56"
+      >
+      <select 
+        id="admin-inv-status-filter" 
+        onchange="window.filterAdminInvitations()" 
+        class="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
+      >
+        <option value="ALL">All Statuses</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="QUALIFIED">Qualified (Unpaid)</option>
+        <option value="PAID">Paid / Credited</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- INVITER SUMMARY BUCKETS TABLE -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+    <div class="p-4 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 font-bold text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between">
+      <span><i class="fa-solid fa-layer-group text-indigo-500 mr-1.5"></i> Inviter Performance Buckets</span>
+      <span id="admin-inv-bucket-count" class="text-[11px] bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-bold">0 Inviters</span>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-slate-100/70 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800">
+            <th class="p-3.5">Inviter / Affiliate</th>
+            <th class="p-3.5 text-center">Total Recruits</th>
+            <th class="p-3.5 text-center">Active (1+ Raw)</th>
+            <th class="p-3.5 text-center">Qualified (100+ Raw)</th>
+            <th class="p-3.5 text-right">Earnable / Pending</th>
+            <th class="p-3.5 text-right">Total Paid</th>
+            <th class="p-3.5 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-inviter-buckets-body" class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-800 dark:text-slate-200 font-medium">
+          <tr><td colspan="7" class="text-center py-6 text-slate-400">Loading inviter buckets...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DETAILED RECRUITS LIST (INSPECTOR MODAL / DRAWER) -->
+  <div id="admin-inviter-inspect-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+      
+      <!-- Modal Header -->
+      <div class="p-4 bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <div>
+          <h4 class="font-extrabold text-slate-900 dark:text-white text-base" id="inspect-inviter-name">Inviter Bucket Inspector</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400" id="inspect-inviter-sub">Inspect individual recruits linked to this inviter</p>
+        </div>
+        <button onclick="closeInviterInspectorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg px-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Table -->
+      <div class="p-4 overflow-y-auto space-y-3 flex-1">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800">
+                <th class="p-3">Invited Recruit</th>
+                <th class="p-3">Joined Date</th>
+                <th class="p-3 text-center">Raw Progress</th>
+                <th class="p-3 text-center">Status</th>
+                <th class="p-3 text-right">Reward</th>
+                <th class="p-3 text-right">Process Payout</th>
+              </tr>
+            </thead>
+            <tbody id="inspect-recruits-table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
         <!-- TAB: ADMIN AFFILIATE REWARDS -->
         <section id="tab-admin-rewards" class="tab-content hidden max-w-4xl space-y-8">
           <div>
@@ -2337,6 +2441,228 @@ body.light-mode #invited-affiliates-list .text-emerald-600 {
 
     let otpTimerInterval = null;
     let otpCountdown = 60;
+
+    // ============================================================
+// 🟢 ADMIN MANAGEMENT HUB: INVITER BUCKETS & PAYOUT MANAGEMENT
+// ============================================================
+
+let cachedAdminInvitations = [];
+let currentInspectedInviterUid = null;
+
+// Realtime Listener for All Invitations
+window.listenToAdminInvitations = () => {
+  if (currentUserRole !== 'admin') return;
+
+  const q = query(collection(db, "invitations"));
+  onSnapshot(q, async (snapshot) => {
+    cachedAdminInvitations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    filterAdminInvitations();
+  }, (err) => {
+    console.warn("Admin invitations listener error:", err.message);
+  });
+};
+
+// Filter & Group Invitations by Inviter
+window.filterAdminInvitations = async () => {
+  const searchVal = (document.getElementById('admin-inv-search')?.value || '').toLowerCase();
+  const statusFilter = document.getElementById('admin-inv-status-filter')?.value || 'ALL';
+  const tableBody = document.getElementById('admin-inviter-buckets-body');
+  const countSpan = document.getElementById('admin-inv-bucket-count');
+
+  if (!tableBody) return;
+
+  // Filter raw invitation records first
+  const filtered = cachedAdminInvitations.filter(item => {
+    const matchesSearch = item.inviterName.toLowerCase().includes(searchVal) || 
+                          item.invitedName.toLowerCase().includes(searchVal) ||
+                          item.inviterUsername.toLowerCase().includes(searchVal) ||
+                          item.invitedUsername.toLowerCase().includes(searchVal);
+    const matchesStatus = statusFilter === 'ALL' || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-500 font-medium">No invitation records match the current filters.</td></tr>`;
+    if (countSpan) countSpan.innerText = "0 Inviters";
+    return;
+  }
+
+  // Group by Inviter UID
+  const inviterMap = {};
+
+  for (const item of filtered) {
+    const uid = item.inviterUid;
+    if (!inviterMap[uid]) {
+      inviterMap[uid] = {
+        inviterUid: uid,
+        inviterName: item.inviterName,
+        inviterUsername: item.inviterUsername,
+        recruits: []
+      };
+    }
+
+    // Fetch real-time raw referral count for recruit progress calculation
+    const currentRawCount = await fetchUserRawReferralCount(item.invitedUid);
+    inviterMap[uid].recruits.push({
+      ...item,
+      currentRawCount
+    });
+  }
+
+  const bucketKeys = Object.keys(inviterMap);
+  if (countSpan) countSpan.innerText = `${bucketKeys.length} Inviter${bucketKeys.length === 1 ? '' : 's'}`;
+
+  let html = '';
+  bucketKeys.forEach(uid => {
+    const bucket = inviterMap[uid];
+    const totalRecruits = bucket.recruits.length;
+    const activeRecruits = bucket.recruits.filter(r => r.currentRawCount > 0).length;
+    const qualifiedRecruits = bucket.recruits.filter(r => r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'PAID').length;
+    
+    const pendingAmount = bucket.recruits.filter(r => r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT').length * 50;
+    const paidAmount = bucket.recruits.filter(r => r.status === 'PAID').length * 50;
+
+    html += `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+        <td class="p-3.5">
+          <div class="font-bold text-slate-900 dark:text-white">${bucket.inviterName}</div>
+          <div class="text-[10px] text-slate-500 font-semibold">@${bucket.inviterUsername}</div>
+        </td>
+        <td class="p-3.5 text-center font-bold text-slate-700 dark:text-slate-300">${totalRecruits}</td>
+        <td class="p-3.5 text-center font-bold text-indigo-600 dark:text-indigo-400">${activeRecruits}</td>
+        <td class="p-3.5 text-center font-extrabold text-amber-600 dark:text-amber-400">${qualifiedRecruits}</td>
+        <td class="p-3.5 text-right font-black text-amber-600 dark:text-amber-400">₱${pendingAmount.toFixed(2)}</td>
+        <td class="p-3.5 text-right font-black text-emerald-600 dark:text-emerald-400">₱${paidAmount.toFixed(2)}</td>
+        <td class="p-3.5 text-center">
+          <button onclick="openInviterInspectorModal('${uid}')" class="bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 font-bold px-3 py-1.5 rounded-lg text-[11px] transition inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-folder-open"></i> Inspect Bucket (${totalRecruits})
+          </button>
+        </td>
+      </tr>`;
+  });
+
+  tableBody.innerHTML = html;
+
+  // Refresh inspect modal if currently open
+  if (currentInspectedInviterUid) {
+    renderInspectedInviterDetails(currentInspectedInviterUid);
+  }
+};
+
+// Open Detailed Inspector Modal for a Specific Inviter
+window.openInviterInspectorModal = (inviterUid) => {
+  currentInspectedInviterUid = inviterUid;
+  renderInspectedInviterDetails(inviterUid);
+  document.getElementById('admin-inviter-inspect-modal').classList.remove('hidden');
+};
+
+window.closeInviterInspectorModal = () => {
+  document.getElementById('admin-inviter-inspect-modal').classList.add('hidden');
+  currentInspectedInviterUid = null;
+};
+
+// Render Detailed Recruits inside Inspector Modal
+async function renderInspectedInviterDetails(inviterUid) {
+  const recruitsBody = document.getElementById('inspect-recruits-table-body');
+  const inviterNameHeader = document.getElementById('inspect-inviter-name');
+  const inviterSubHeader = document.getElementById('inspect-inviter-sub');
+
+  if (!recruitsBody) return;
+
+  const inviterRecruits = cachedAdminInvitations.filter(i => i.inviterUid === inviterUid);
+  if (inviterRecruits.length === 0) {
+    recruitsBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">No recruits found in this bucket.</td></tr>`;
+    return;
+  }
+
+  const firstRec = inviterRecruits[0];
+  if (inviterNameHeader) inviterNameHeader.innerText = `Bucket: ${firstRec.inviterName} (@${firstRec.inviterUsername})`;
+  if (inviterSubHeader) inviterSubHeader.innerText = `Managing ${inviterRecruits.length} invited affiliate recruit(s)`;
+
+  let html = '';
+  for (const item of inviterRecruits) {
+    const rawCount = await fetchUserRawReferralCount(item.invitedUid);
+    const progressPercent = Math.min(100, Math.round((rawCount / 100) * 100));
+
+    let statusBadge = `<span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded text-[10px] font-bold">In Progress</span>`;
+    if (item.status === 'QUALIFIED') statusBadge = `<span class="bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded text-[10px] font-bold">Qualified</span>`;
+    if (item.status === 'PAID') statusBadge = `<span class="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold">Paid / Credited</span>`;
+
+    html += `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-950/40 transition text-xs">
+        <td class="p-3">
+          <div class="font-bold text-slate-800 dark:text-slate-200">${item.invitedName}</div>
+          <div class="text-[10px] text-slate-500">@${item.invitedUsername}</div>
+        </td>
+        <td class="p-3 text-slate-500 dark:text-slate-400">${item.dateJoined?.toDate ? new Date(item.dateJoined.toDate()).toLocaleDateString() : 'N/A'}</td>
+        <td class="p-3 text-center">
+          <div class="font-extrabold text-indigo-600 dark:text-indigo-400">${rawCount} / 100</div>
+          <div class="w-20 bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mx-auto mt-1">
+            <div class="bg-amber-500 h-full" style="width: ${progressPercent}%;"></div>
+          </div>
+        </td>
+        <td class="p-3 text-center">${statusBadge}</td>
+        <td class="p-3 text-right font-black text-emerald-600 dark:text-emerald-400">₱50.00</td>
+        <td class="p-3 text-right">
+          ${item.status !== 'PAID' ? `
+            <div class="space-y-1.5 flex flex-col items-end">
+              <input type="text" id="admin-remark-${item.id}" placeholder="Payment remarks / Ref#" class="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded px-2 py-1 text-[10px] w-36">
+              <input type="file" id="admin-receipt-${item.id}" accept="image/*,.pdf" class="text-[10px] text-slate-400 file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-300">
+              <button onclick="adminProcessRewardWithProof('${item.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px] shadow-sm">
+                Mark Paid & Attach Receipt
+              </button>
+            </div>
+          ` : `
+            <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+              <i class="fa-solid fa-circle-check"></i> Paid (${item.paidDate?.toDate ? new Date(item.paidDate.toDate()).toLocaleDateString() : 'Yes'})
+              ${item.adminRemarks ? `<div class="text-[10px] text-slate-400 italic">Note: ${item.adminRemarks}</div>` : ''}
+              ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-0.5 text-[10px] text-indigo-500 underline"><i class="fa-solid fa-receipt"></i> View Receipt</a>` : ''}
+            </div>
+          `}
+        </td>
+      </tr>`;
+  }
+
+  recruitsBody.innerHTML = html;
+}
+
+// Process Reward with Optional Proof Upload
+window.adminProcessRewardWithProof = async (inviteId, btn) => {
+  const remarkInput = document.getElementById(`admin-remark-${inviteId}`)?.value.trim() || '';
+  const fileInput = document.getElementById(`admin-receipt-${inviteId}`)?.files[0];
+
+  btn.innerText = "Processing...";
+  btn.disabled = true;
+
+  try {
+    let receiptUrl = "";
+
+    // Upload Receipt Image to Firebase Storage if provided
+    if (fileInput) {
+      const storageRef = ref(storage, `invite_receipts/${inviteId}_${Date.now()}_${fileInput.name}`);
+      await uploadBytes(storageRef, fileInput);
+      receiptUrl = await getDownloadURL(storageRef);
+    }
+
+    // Update Invitation Status
+    await updateDoc(doc(db, "invitations", inviteId), {
+      status: 'PAID',
+      paidDate: new Date(),
+      adminRemarks: remarkInput || 'Paid by Admin',
+      receiptUrl: receiptUrl
+    });
+
+    alert("Reward marked as PAID successfully!");
+  } catch (err) {
+    console.error("Error processing reward payout:", err);
+    alert("Failed to process reward payout: " + err.message);
+  } finally {
+    if (btn) {
+      btn.innerText = "Mark Paid & Attach Receipt";
+      btn.disabled = false;
+    }
+  }
+};
 
 // ============================================================
 // 🤝 AFFILIATE INVITATIONS & REWARDS SYSTEM

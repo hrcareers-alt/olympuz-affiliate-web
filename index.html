@@ -2291,37 +2291,45 @@ const INVOICES_PER_PAGE = 5;
 let cachedUserInvoices = [];
 let cachedAdminInvitations = [];
 
-// 🟢 1. PROCESS REGISTRATION INVITE CODE
+// 🟢 1. PROCESS REGISTRATION INVITE CODE (CASE-INSENSITIVE)
 window.processRegistrationInviteCode = async (newUid, newUsername, newFullName, inviteCodeInput) => {
   if (!inviteCodeInput || !inviteCodeInput.trim()) return;
 
-  const cleanCode = inviteCodeInput.trim().toLowerCase();
+  const rawCode = inviteCodeInput.trim();
+  const lowerCode = rawCode.toLowerCase();
 
   // Prevent self-invitation
-  if (cleanCode === newUsername.toLowerCase()) {
+  if (lowerCode === newUsername.toLowerCase()) {
     console.warn("User attempted to invite themselves.");
     return;
   }
 
   try {
-    // Check if the entered code matches an existing affiliate's username
-    const userQuery = query(collection(db, "users"), where("username", "==", cleanCode));
-    const querySnap = await getDocs(userQuery);
+    // 1. Fetch all users to ensure case-insensitive matching
+    const usersSnap = await getDocs(collection(db, "users"));
+    let inviterDoc = null;
 
-    if (querySnap.empty) {
-      alert("Invalid Invite Code. Registration will proceed without an inviter.");
+    usersSnap.forEach(d => {
+      const u = d.data();
+      if (u.username && u.username.toLowerCase() === lowerCode) {
+        inviterDoc = d;
+      }
+    });
+
+    if (!inviterDoc) {
+      console.warn("Invite code not found in users collection.");
       return;
     }
 
-    const inviterDoc = querySnap.docs[0];
     const inviterData = inviterDoc.data();
+    const inviterUid = inviterDoc.id;
+    const inviteId = `${inviterUid}_${newUid}`;
 
-    // Create permanent invitation record
-    const inviteId = `${inviterDoc.id}_${newUid}`;
+    // 2. Create permanent invitation record
     await setDoc(doc(db, "invitations", inviteId), {
-      inviterUid: inviterDoc.id,
-      inviterUsername: inviterData.username || cleanCode,
-      inviterName: inviterData.fullName || inviterData.name || 'Affiliate',
+      inviterUid: inviterUid,
+      inviterUsername: inviterData.username || rawCode,
+      inviterName: `${inviterData.firstName || ''} ${inviterData.lastName || ''}`.trim() || inviterData.username || 'Affiliate',
       invitedUid: newUid,
       invitedUsername: newUsername,
       invitedName: newFullName,
@@ -2336,7 +2344,7 @@ window.processRegistrationInviteCode = async (newUid, newUsername, newFullName, 
       receiptUrl: ''
     });
 
-    console.log("Successfully linked new affiliate to inviter:", inviterData.username);
+    console.log(`Successfully linked invited user (${newUsername}) to inviter UID (${inviterUid})`);
   } catch (err) {
     console.error("Error processing invite code:", err);
   }
@@ -2352,9 +2360,9 @@ window.copyInviteCode = () => {
   });
 };
 
-// 🟢 LISTEN TO AFFILIATE INVITED DASHBOARD (REALTIME)
+// 🟢 2. LISTEN TO AFFILIATE INVITED DASHBOARD (REALTIME)
 window.listenToInvitedAffiliates = () => {
-  const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+  const currentUid = window.currentUid || (auth.currentUser ? auth.currentUser.uid : null);
   if (!currentUid) return;
 
   // Display User's Username as Invite Code
@@ -2363,7 +2371,6 @@ window.listenToInvitedAffiliates = () => {
       const uData = userSnap.data();
       const inviteCodeDisplay = document.getElementById('user-invite-code-display');
       if (inviteCodeDisplay) {
-        // 🟢 FIX: Use userSnap.id fallback instead of uData.uid
         inviteCodeDisplay.innerText = uData.username || userSnap.id.substring(0, 8);
       }
     }
@@ -2384,7 +2391,7 @@ window.listenToInvitedAffiliates = () => {
 
     if (snapshot.empty) {
       if (listContainer) {
-        listContainer.innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">You haven't invited any affiliates yet. Share your Invite Code to start earning!</div>`;
+        listContainer.innerHTML = `<div class="text-center text-slate-500 dark:text-slate-400 py-6 text-xs font-semibold">You haven't invited any affiliates yet. Share your Invite Code to start earning!</div>`;
       }
       updateBucketStats(0, 0, 0, 0, 0, 0);
       renderPaginatedInvoices();
@@ -2425,35 +2432,35 @@ window.listenToInvitedAffiliates = () => {
       }
 
       // Status Badge Component
-      let statusBadge = `<span class="bg-indigo-950 text-indigo-400 border border-indigo-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">In Progress</span>`;
-      if (data.status === 'QUALIFIED') statusBadge = `<span class="bg-amber-950 text-amber-400 border border-amber-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Qualified</span>`;
-      if (data.status === 'FOR_CREDIT') statusBadge = `<span class="bg-blue-950 text-blue-400 border border-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">For Credit</span>`;
-      if (data.status === 'PAID') statusBadge = `<span class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Paid / Credited</span>`;
+      let statusBadge = `<span class="bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">In Progress</span>`;
+      if (data.status === 'QUALIFIED') statusBadge = `<span class="bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Qualified</span>`;
+      if (data.status === 'FOR_CREDIT') statusBadge = `<span class="bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">For Credit</span>`;
+      if (data.status === 'PAID') statusBadge = `<span class="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-lg text-[10px] font-bold">Paid / Credited</span>`;
 
       listHTML += `
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <span class="font-bold text-white text-sm">${data.invitedName}</span>
-              <span class="text-xs text-slate-500">(@${data.invitedUsername})</span>
+              <span class="font-bold text-slate-800 dark:text-white text-sm">${data.invitedName}</span>
+              <span class="text-xs text-slate-500 font-semibold">(@${data.invitedUsername})</span>
             </div>
-            <div class="text-[11px] text-slate-400">Joined: ${data.dateJoined?.toDate ? new Date(data.dateJoined.toDate()).toLocaleDateString() : 'N/A'}</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Joined: ${data.dateJoined?.toDate ? new Date(data.dateJoined.toDate()).toLocaleDateString() : 'N/A'}</div>
           </div>
 
           <!-- Progress Bar Component -->
           <div class="w-full md:w-64 space-y-1">
             <div class="flex justify-between text-[11px] font-bold">
-              <span class="text-slate-400">Progress: ${rawCount} / 100</span>
-              <span class="text-indigo-400">${progressPercent}%</span>
+              <span class="text-slate-600 dark:text-slate-400">Progress: ${rawCount} / 100</span>
+              <span class="text-indigo-600 dark:text-indigo-400">${progressPercent}%</span>
             </div>
-            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
-              <div class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full transition-all duration-500" style="width: ${progressPercent}%;"></div>
+            <div class="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-200 dark:border-slate-800">
+              <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-500 h-full transition-all duration-500" style="width: ${progressPercent}%;"></div>
             </div>
           </div>
 
           <div class="flex items-center gap-3 shrink-0">
             ${statusBadge}
-            <span class="font-black text-emerald-400 text-sm">₱50</span>
+            <span class="font-black text-emerald-600 dark:text-emerald-400 text-sm">₱50</span>
           </div>
         </div>`;
     }
@@ -2464,18 +2471,22 @@ window.listenToInvitedAffiliates = () => {
   });
 };
 
-// Helper: Fetch Raw Referrals for invited affiliate
+// 🟢 Helper: Sum raw referrals across count, referrals, or rawReferrals fields
 async function fetchUserRawReferralCount(uid) {
   try {
     const rawSnap = await getDocs(query(collection(db, "raw_referrals"), where("userId", "==", uid)));
     let total = 0;
-    rawSnap.forEach(d => { total += Number(d.data().count || d.data().referrals || 1); });
+    rawSnap.forEach(d => {
+      const data = d.data();
+      const val = Number(data.count || data.referrals || data.rawReferrals || 0);
+      total += isNaN(val) ? 0 : val;
+    });
     return total;
   } catch (e) {
+    console.warn("Error fetching raw count for user", uid, e);
     return 0;
   }
 }
-
 // Update Bucket Metrics
 function updateBucketStats(tot, act, qual, earn, paid, pend) {
   if (document.getElementById('inv-stat-total')) document.getElementById('inv-stat-total').innerText = tot;

@@ -4464,77 +4464,83 @@ directoryList.innerHTML += `
 });
 
     document.getElementById('admin-override-raw-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button');
-      const userId = document.getElementById('override-raw-user-select').value;
-      const targetMonthKey = document.getElementById('override-raw-month').value;
-      const newWeeklyTotal = parseInt(document.getElementById('override-weekly-count').value, 10);
-      const newMonthlyTotal = parseInt(document.getElementById('override-monthly-count').value, 10);
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button');
+  const userId = document.getElementById('override-raw-user-select').value;
+  const targetMonthKey = document.getElementById('override-raw-month').value;
+  const newWeeklyTotal = parseInt(document.getElementById('override-weekly-count').value, 10);
+  const newMonthlyTotal = parseInt(document.getElementById('override-monthly-count').value, 10);
 
-      if (!userId || !targetMonthKey || isNaN(newWeeklyTotal) || isNaN(newMonthlyTotal)) {
-        return alert("Please select an affiliate and enter valid numbers.");
-      }
+  if (!userId || !targetMonthKey || isNaN(newWeeklyTotal) || isNaN(newMonthlyTotal)) {
+    return alert("Please select an affiliate and enter valid numbers.");
+  }
 
-      submitBtn.innerText = "Syncing Totals...";
-      submitBtn.disabled = true;
+  submitBtn.innerText = "Syncing Totals...";
+  submitBtn.disabled = true;
 
-      try {
-        const q = query(collection(db, "raw_referrals"), where("userId", "==", userId));
-        const querySnapshot = await getDocs(q);
+  try {
+    // 1. Delete existing raw records for this user in the targeted month
+    const q = query(collection(db, "raw_referrals"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
 
-        const deletePromises = [];
-        querySnapshot.forEach((docSnap) => {
-          const item = docSnap.data();
-          const docDate = new Date(item.timestamp || item.createdAt);
-          const itemMonthKey = item.monthKey || `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}`;
+    const deletePromises = [];
+    querySnapshot.forEach((docSnap) => {
+      const item = docSnap.data();
+      const docDate = new Date(item.timestamp || item.createdAt);
+      const itemMonthKey = item.monthKey || `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}`;
 
-          if (itemMonthKey === targetMonthKey) {
-            deletePromises.push(deleteDoc(doc(db, "raw_referrals", docSnap.id)));
-          }
-        });
-
-        await Promise.all(deletePromises);
-
-        const now = new Date();
-        const nonWeeklyMonthlyDiff = Math.max(0, newMonthlyTotal - newWeeklyTotal);
-        const targetUser = allAffiliates.find(u => u.id === userId);
-        const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
-
-        if (newWeeklyTotal > 0) {
-          // Ensure raw_referrals documents store 'userId' correctly
-await addDoc(collection(db, "raw_referrals"), {
-  userId: userId, // Must match invited user's UID
-  userName: affiliateName,
-  count: count,
-  monthKey: monthKey,
-  type: "daily",
-  timestamp: new Date().toISOString(),
-  createdAt: new Date().toISOString()
-});
-        }
-
-        if (nonWeeklyMonthlyDiff > 0) {
-          const pastDate = new Date(`${targetMonthKey}-01T00:00:00`);
-          await addDoc(collection(db, "raw_referrals"), {
-            userId: userId,
-            userName: affiliateName,
-            count: nonWeeklyMonthlyDiff,
-            monthKey: targetMonthKey,
-            type: "override_monthly_base",
-            timestamp: pastDate.toISOString(),
-            createdAt: pastDate.toISOString()
-          });
-        }
-
-        alert("Raw referral totals successfully updated and synced across all dashboards!");
-        window.listenToRawLeaderboard();
-      } catch (err) {
-        alert("Error syncing raw totals: " + err.message);
-      } finally {
-        submitBtn.innerText = "Sync & Save Overridden Totals";
-        submitBtn.disabled = false;
+      if (itemMonthKey === targetMonthKey) {
+        deletePromises.push(deleteDoc(doc(db, "raw_referrals", docSnap.id)));
       }
     });
+
+    await Promise.all(deletePromises);
+
+    // 2. Fetch affiliate name
+    const targetUser = allAffiliates.find(u => u.id === userId);
+    const affiliateName = targetUser ? `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() : (targetUser?.username || targetUser?.email || "Affiliate");
+
+    const nonWeeklyMonthlyDiff = Math.max(0, newMonthlyTotal - newWeeklyTotal);
+
+    // 3. Write new weekly count if > 0 (uses 'newWeeklyTotal')
+    if (newWeeklyTotal > 0) {
+      await addDoc(collection(db, "raw_referrals"), {
+        userId: userId,
+        userName: affiliateName,
+        count: newWeeklyTotal, // 🟢 FIXED: Used newWeeklyTotal instead of undefined 'count'
+        monthKey: targetMonthKey,
+        type: "daily",
+        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    // 4. Write non-weekly monthly difference if > 0
+    if (nonWeeklyMonthlyDiff > 0) {
+      const pastDate = new Date(`${targetMonthKey}-01T00:00:00`);
+      await addDoc(collection(db, "raw_referrals"), {
+        userId: userId,
+        userName: affiliateName,
+        count: nonWeeklyMonthlyDiff,
+        monthKey: targetMonthKey,
+        type: "override_monthly_base",
+        timestamp: pastDate.toISOString(),
+        createdAt: pastDate.toISOString()
+      });
+    }
+
+    alert("Raw referral totals successfully updated and synced across all dashboards!");
+    if (typeof window.listenToRawLeaderboard === 'function') {
+      window.listenToRawLeaderboard();
+    }
+  } catch (err) {
+    console.error("Error syncing raw totals:", err);
+    alert("Error syncing raw totals: " + err.message);
+  } finally {
+    submitBtn.innerText = "Sync & Save Overridden Totals";
+    submitBtn.disabled = false;
+  }
+});
 
     document.getElementById('admin-daily-raw-form').addEventListener('submit', async (e) => {
       e.preventDefault();

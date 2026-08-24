@@ -5811,30 +5811,38 @@ window.init30thMonthFilter = () => {
       submitBtn.innerText = "Creating Account...";
       submitBtn.disabled = true;
       try {
-        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
-        const secondaryAuth = getAuth(secondaryApp);
-        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, document.getElementById('create-email').value, document.getElementById('create-password').value);
-        
-        await setDoc(doc(db, "users", userCredential.user.uid), {
-          firstName: document.getElementById('create-firstname').value,
-          lastName: document.getElementById('create-lastname').value,
-          username: document.getElementById('create-username').value,
-          email: document.getElementById('create-email').value,
-          role: "affiliate", 
-          createdAt: new Date().toISOString()
-        });
+       const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp_" + Date.now());
+    const secondaryAuth = getAuth(secondaryApp);
+    const userCredential = await createUserWithEmailAndPassword(
+      secondaryAuth, 
+      document.getElementById('create-email').value, 
+      document.getElementById('create-password').value
+    );
+    
+    // 🟢 Fix: Initialize getFirestore using secondaryApp
+    const secondaryDb = getFirestore(secondaryApp);
 
-        await signOut(secondaryAuth);
-        alert("Account created successfully!");
-        e.target.reset(); 
-        loadAffiliates(); 
-      } catch (error) {
-        alert("Failed to create account: " + error.message);
-      } finally {
-        submitBtn.innerText = "Create Account";
-        submitBtn.disabled = false;
-      }
+    // 🟢 Fix: Write using secondaryDb instead of primary db
+    await setDoc(doc(secondaryDb, "users", userCredential.user.uid), {
+      firstName: document.getElementById('create-firstname').value,
+      lastName: document.getElementById('create-lastname').value,
+      username: document.getElementById('create-username').value,
+      email: document.getElementById('create-email').value,
+      role: "affiliate", 
+      createdAt: new Date().toISOString()
     });
+
+    await signOut(secondaryAuth);
+    alert("Account created successfully!");
+    e.target.reset(); 
+    loadAffiliates(); 
+  } catch (error) {
+    alert("Failed to create account: " + error.message);
+  } finally {
+    submitBtn.innerText = "Create Account";
+    submitBtn.disabled = false;
+  }
+});
 
     async function loadAffiliates() {
       try {

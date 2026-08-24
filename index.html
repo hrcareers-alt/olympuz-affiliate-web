@@ -2661,6 +2661,19 @@ window.filterAdminInvitations = async () => {
 
     // Fetch real-time raw referral count for recruit progress calculation
     const currentRawCount = await fetchUserRawReferralCount(item.invitedUid);
+
+    if (currentRawCount >= 100 && item.status === 'IN_PROGRESS') {
+      try {
+        await updateDoc(doc(db, "invitations", item.id), {
+          status: 'QUALIFIED',
+          rawReferralsCount: currentRawCount,
+          qualificationDate: new Date()
+        });
+        item.status = 'QUALIFIED'; // Sync local object state
+      } catch (err) {
+        console.warn("Auto-sync qualification error:", err.message);
+      }
+    }
     inviterMap[uid].recruits.push({
       ...item,
       currentRawCount
@@ -2675,9 +2688,13 @@ window.filterAdminInvitations = async () => {
     const bucket = inviterMap[uid];
     const totalRecruits = bucket.recruits.length;
     const activeRecruits = bucket.recruits.filter(r => r.currentRawCount > 0).length;
-    const qualifiedRecruits = bucket.recruits.filter(r => r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'PAID').length;
+    const qualifiedRecruits = bucket.recruits.filter(r => 
+      r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT' || r.status === 'PAID'
+    ).length;
     
-    const pendingAmount = bucket.recruits.filter(r => r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT').length * 50;
+    const pendingAmount = bucket.recruits.filter(r => 
+      (r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT') && r.status !== 'PAID'
+    ).length * 50;
     const paidAmount = bucket.recruits.filter(r => r.status === 'PAID').length * 50;
 
     html += `

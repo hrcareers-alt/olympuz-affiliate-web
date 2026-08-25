@@ -932,6 +932,45 @@ body.light-mode #admin-manual-assign-form button {
 body.light-mode #admin-manual-assign-form button:hover {
   background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE OVERRIDE: MANUAL ASSIGNMENT CARD LIGHT MODE
+   ------------------------------------------------------------ */
+
+/* Target card container using id to bypass Tailwind dark class */
+html.dark body.light-mode #admin-assign-card,
+body.light-mode #admin-assign-card {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1.5px solid #fed7aa !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08) !important;
+}
+
+/* Card Titles & Text */
+html.dark body.light-mode #admin-assign-card h3,
+html.dark body.light-mode #admin-assign-card label,
+body.light-mode #admin-assign-card h3,
+body.light-mode #admin-assign-card label {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html.dark body.light-mode #admin-assign-card p,
+body.light-mode #admin-assign-card p {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+/* Card Inputs / Dropdowns */
+html.dark body.light-mode #assign-inviter-select,
+html.dark body.light-mode #assign-recruit-select,
+body.light-mode #assign-inviter-select,
+body.light-mode #assign-recruit-select {
+  background-color: #fff7ed !important;
+  border: 1px solid #ffedd5 !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1671,28 +1710,28 @@ body.light-mode #admin-manual-assign-form button:hover {
       </div>
     </div>
 
-    <!-- MANUAL AFFILIATE INVITATION ASSIGNMENT FORM -->
-<div class="bg-white dark:bg-slate-900 border border-amber-300 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+   <!-- MANUAL AFFILIATE INVITATION ASSIGNMENT FORM -->
+<div id="admin-assign-card" class="bg-amber-500/10 dark:bg-slate-900 border border-amber-300 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+  <div class="flex items-center gap-2 border-b border-amber-200 dark:border-slate-800 pb-3">
     <i class="fa-solid fa-link text-amber-500 text-base"></i>
     <h3 class="font-extrabold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
       Manually Assign Affiliate to Inviter Bucket
     </h3>
   </div>
-  <p class="text-xs text-slate-600 dark:text-slate-400">
+  <p class="text-xs text-slate-700 dark:text-slate-400 font-medium">
     Retroactively link or assign an existing affiliate recruit under an Inviter's referral bucket.
   </p>
 
   <form id="admin-manual-assign-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
     <!-- Select Inviter -->
     <div>
-      <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+      <label class="block text-xs font-extrabold text-slate-800 dark:text-slate-300 mb-1.5 uppercase">
         Select Inviter (Uploader) *
       </label>
       <select 
         id="assign-inviter-select" 
         required 
-        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500"
+        class="w-full bg-white dark:bg-slate-950 border border-amber-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-amber-500 font-medium"
       >
         <option value="">-- Choose Inviter --</option>
       </select>
@@ -1700,13 +1739,13 @@ body.light-mode #admin-manual-assign-form button:hover {
 
     <!-- Select Recruit -->
     <div>
-      <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+      <label class="block text-xs font-extrabold text-slate-800 dark:text-slate-300 mb-1.5 uppercase">
         Select Recruit (Invited Affiliate) *
       </label>
       <select 
         id="assign-recruit-select" 
         required 
-        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500"
+        class="w-full bg-white dark:bg-slate-950 border border-amber-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-amber-500 font-medium"
       >
         <option value="">-- Choose Recruit --</option>
       </select>

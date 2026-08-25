@@ -1554,6 +1554,9 @@ body.light-mode .tab-content span {
     </div>
   </div>
 
+  <!-- MAIN DASHBOARD CONTAINER -->
+<div id="dashboard-screen" class="hidden min-h-screen flex flex-col w-full">
+
 <!-- TOP NAVIGATION BAR (FULL WIDTH & OPTIMIZED SPACING) -->
 <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 shadow-sm transition-colors">
   <div class="max-w-[95%] mx-auto px-2 sm:px-4 py-2.5 flex items-center justify-between gap-4">
@@ -3123,6 +3126,8 @@ body.light-mode .tab-content span {
     </main>
   </div>
 
+</div>
+
   <!-- POPUP AD MODAL CONTAINER -->
   <div id="ad-popup-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="relative bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/80 border border-indigo-500/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl shadow-indigo-500/20 transform transition-all duration-300 scale-100">
@@ -3223,14 +3228,14 @@ body.light-mode .tab-content span {
   // 1. Hide ALL tab sections
   document.querySelectorAll('.tab-content').forEach(el => {
     el.classList.add('hidden');
-    el.style.display = 'none';
+    el.style.setProperty('display', 'none', 'important');
   });
-  
+
   // 2. Un-hide target tab section
   const activeTab = document.getElementById(`tab-${tabName}`);
   if (activeTab) {
     activeTab.classList.remove('hidden');
-    activeTab.style.display = 'block';
+    activeTab.style.setProperty('display', 'block', 'important');
   } else {
     console.error(`Tab section "tab-${tabName}" not found in HTML.`);
     return;
@@ -3241,27 +3246,23 @@ body.light-mode .tab-content span {
     if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
       window.listenToRawLeaderboard();
     }
-
     if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
       window.listenTo30thLeaderboard();
       if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
         window.listenToUser30thInvoices(window.currentUid);
       }
     }
-
     if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
       window.listenToInvitedAffiliates();
     }
-
     if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
       window.listenToAdminInvitations();
     }
-
     if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
       window.fetchAffiliateDatabase();
     }
   } catch (err) {
-    console.warn("Tab listener initialization warning:", err.message);
+    console.warn("Tab listener warning:", err.message);
   }
 
   // 4. Close mobile menu dropdown if open
@@ -3270,7 +3271,7 @@ body.light-mode .tab-content span {
     mobileDropdown.classList.add('hidden');
   }
 
-  // 5. Scroll page smoothly to top
+  // 5. Scroll smoothly to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -3279,19 +3280,6 @@ window.handleMorphNav = function(targetTab) {
   window.switchTab(targetTab);
 };
     
-    window.handleMorphNav = function(targetTab) {
-      const grid = document.getElementById('home-nav-grid');
-      if (grid) {
-        grid.classList.add('opacity-0', 'scale-95', '-translate-x-4');
-        setTimeout(() => {
-          grid.classList.remove('opacity-0', 'scale-95', '-translate-x-4');
-          window.switchTab(targetTab);
-        }, 300);
-      } else {
-        window.switchTab(targetTab);
-      }
-    };
-
    window.toggleMobileSidebar = function() {
   const dropdown = document.getElementById('mobile-top-dropdown');
   if (dropdown) {
@@ -5578,9 +5566,9 @@ directoryList.innerHTML += `
     });
 
     window.openRewardModal = (id, rawTitle, rawMessage, imgUrl, status) => {
-      currentSelectedRewardId = id;
-      document.getElementById('modal-reward-title').innerText = unescape(rawTitle);
-      document.getElementById('modal-reward-message').innerText = unescape(rawMessage);
+  currentSelectedRewardId = id;
+  document.getElementById('modal-reward-title').innerText = decodeURIComponent(rawTitle);
+  document.getElementById('modal-reward-message').innerText = decodeURIComponent(rawMessage);
 
       const imgContainer = document.getElementById('modal-reward-image-container');
       const imgTag = document.getElementById('modal-reward-img');
@@ -6433,7 +6421,7 @@ directoryList.innerHTML += `
                 <p class="text-xs text-slate-300 line-clamp-2 mb-3">${data.message}</p>
               </div>
 
-              <button onclick="openRewardModal('${data.id}', '${escape(data.title)}', '${escape(data.message)}', '${data.rewardImageUrl}', '${data.status}')" class="w-full bg-pink-600/20 hover:bg-pink-600/30 text-pink-400 border border-pink-500/40 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-2">
+              <button onclick="openRewardModal('${data.id}', '${encodeURIComponent(data.title || '')}', '${encodeURIComponent(data.message || '')}', '${data.rewardImageUrl || ''}', '${data.status}')" ...
                 <i class="fa-solid fa-gift"></i> View Reward & Details
               </button>
             </div>

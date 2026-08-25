@@ -3454,6 +3454,7 @@ window.closeSidebarOnMobile = function() {
     let unsubAdminPendingPayouts = null;
     let unsubAdminRewards = null;
     let unsubAdminRaw = null;
+    let unsubAdminInvitations = null;
 
     let activeAdsList = [];
     let adTimer = null;
@@ -3615,8 +3616,11 @@ let currentInspectedInviterUid = null;
 window.listenToAdminInvitations = () => {
   if (currentUserRole !== 'admin') return;
 
+  // 🟢 Prevent stacking duplicate listeners every time this tab is opened
+  if (unsubAdminInvitations) unsubAdminInvitations();
+
   const q = query(collection(db, "invitations"));
-  onSnapshot(q, async (snapshot) => {
+  unsubAdminInvitations = onSnapshot(q, async (snapshot) => {
     cachedAdminInvitations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     filterAdminInvitations();
     
@@ -7542,6 +7546,7 @@ window.init30thMonthFilter = () => {
   if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
   if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
   if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
+  if (unsubAdminInvitations) { unsubAdminInvitations(); unsubAdminInvitations = null; }
   if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
 
   await signOut(auth);

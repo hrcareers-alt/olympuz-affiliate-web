@@ -1512,37 +1512,36 @@ body.light-mode #home-nav-grid > a:hover {
        <!-- 🏠 TAB: HOME PAGE -->
 <section id="tab-home" class="tab-content w-full space-y-8">
   
-  <!-- HERO SLIDESHOW BANNER (COMPACT PROPORTIONAL HEIGHT) -->
-  <div class="relative w-full h-[220px] sm:h-[300px] md:h-[360px] max-h-[360px] rounded-2xl overflow-hidden shadow-2xl border border-indigo-500/30 bg-slate-900 group">
-    <div id="slideshow-slides-container" class="relative w-full h-full">
-      <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
-        <img src="Logo New.png" class="w-full h-full object-cover blur-sm brightness-50" alt="Olympuz Banner">
-        <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent flex flex-col justify-end p-6 md:p-10">
-          <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
-            Official Announcement
-          </span>
-          <h2 class="text-xl md:text-3xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
-          <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
-        </div>
+  <!-- HERO SLIDESHOW BANNER (PROPORTIONAL & NO CROPPING) -->
+<div class="max-w-4xl mx-auto w-full h-[320px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-2xl border border-indigo-500/30 bg-slate-950 relative group">
+  <div id="slideshow-slides-container" class="relative w-full h-full">
+    <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800 bg-slate-950">
+      <img src="Logo New.png" class="w-full h-full object-contain object-center p-4" alt="Olympuz Banner">
+      <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent flex flex-col justify-end p-6 md:p-8 z-20">
+        <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
+          Official Announcement
+        </span>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
+        <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
       </div>
-    </div>
-
-    <!-- Navigation Arrows -->
-    <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-950/60 hover:bg-indigo-600 text-white w-8 h-8 md:w-10 md:h-10 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-md">
-      <i class="fa-solid fa-chevron-left text-xs md:text-sm"></i>
-    </button>
-    <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-950/60 hover:bg-indigo-600 text-white w-9 h-9 md:w-10 md:h-10 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-md">
-      <i class="fa-solid fa-chevron-right text-xs md:text-sm"></i>
-    </button>
-
-    <!-- Slide Indicators -->
-    <div id="slideshow-dots-container" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-      <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 transition-all"></span>
     </div>
   </div>
 
-  <!-- CENTRAL QUICK NAVIGATION (LIGHT MODE COMPATIBLE) -->
-  <!-- CENTRAL QUICK NAVIGATION (LIGHT & DARK ADAPTIVE) -->
+  <!-- Navigation Arrows -->
+  <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-950/70 hover:bg-indigo-600 text-white w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-lg z-20">
+    <i class="fa-solid fa-chevron-left text-xs md:text-sm"></i>
+  </button>
+  <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-950/70 hover:bg-indigo-600 text-white w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-700/60 flex items-center justify-center transition opacity-80 hover:opacity-100 shadow-lg z-20">
+    <i class="fa-solid fa-chevron-right text-xs md:text-sm"></i>
+  </button>
+
+  <!-- Slide Indicators -->
+  <div id="slideshow-dots-container" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 transition-all"></span>
+  </div>
+</div>
+
+   <!-- CENTRAL QUICK NAVIGATION (LIGHT & DARK ADAPTIVE) -->
 <div>
   <h3 class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
     <i class="fa-solid fa-compass text-indigo-500 dark:text-indigo-400"></i> Central Quick Navigation
@@ -4675,51 +4674,57 @@ directoryList.innerHTML += `
     }
 
     function renderSlideshow() {
-      const slidesContainer = document.getElementById('slideshow-slides-container');
-      const dotsContainer = document.getElementById('slideshow-dots-container');
+  const slidesContainer = document.getElementById('slideshow-slides-container');
+  const dotsContainer = document.getElementById('slideshow-dots-container');
 
-      if (!slidesContainer || !dotsContainer) return;
+  if (!slidesContainer || !dotsContainer) return;
 
-      slidesContainer.innerHTML = "";
-      dotsContainer.innerHTML = "";
+  slidesContainer.innerHTML = "";
+  dotsContainer.innerHTML = "";
 
-      if (slideshowList.length === 0) {
-        slidesContainer.innerHTML = `
-          <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
-            <img src="Logo New.png" class="w-full h-full object-cover blur-sm brightness-50" alt="Olympuz Banner">
-            <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent flex flex-col justify-end p-6 md:p-10">
-              <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
-                Official Announcement
-              </span>
-              <h2 class="text-xl md:text-3xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
-              <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
-            </div>
-          </div>
-        `;
-        dotsContainer.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>`;
-        return;
-      }
+  if (slideshowList.length === 0) {
+    slidesContainer.innerHTML = `
+      <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-800">
+        <img src="Logo New.png" class="w-full h-full object-contain bg-slate-950 p-4" alt="Olympuz Banner">
+        <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent flex flex-col justify-end p-6 md:p-8">
+          <span class="inline-block bg-indigo-600 text-white font-extrabold text-[10px] md:text-xs uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">
+            Official Announcement
+          </span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white drop-shadow-md">Welcome to Olympuz Affiliate Portal</h2>
+          <p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">Boost your earnings, track raw referrals, and claim exclusive community treats!</p>
+        </div>
+      </div>
+    `;
+    dotsContainer.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>`;
+    return;
+  }
 
-      currentSlideIndex = 0;
+  currentSlideIndex = 0;
 
-      slideshowList.forEach((slide, idx) => {
-        slidesContainer.innerHTML += `
-          <div class="slide-item absolute inset-0 ${idx === 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-800" data-index="${idx}">
-            <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Slide ${idx + 1}">
-            <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent flex flex-col justify-end p-6 md:p-10">
-              <h2 class="text-xl md:text-3xl font-extrabold text-white leading-tight drop-shadow-md">${slide.title || ''}</h2>
-              ${slide.subtitle ? `<p class="text-xs md:text-sm text-slate-100 mt-1 max-w-2xl drop-shadow">${slide.subtitle}</p>` : ''}
-            </div>
-          </div>
-        `;
+  slideshowList.forEach((slide, idx) => {
+    slidesContainer.innerHTML += `
+      <div class="slide-item absolute inset-0 ${idx === 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-800 bg-slate-950" data-index="${idx}">
+        <!-- Blurred background image fill for aesthetic padding -->
+        <img src="${slide.imageUrl}" class="absolute inset-0 w-full h-full object-cover blur-md opacity-30 scale-105 pointer-events-none" alt="Backdrop">
+        
+        <!-- Full Image Fitted without Cropping -->
+        <img src="${slide.imageUrl}" class="relative w-full h-full object-contain object-center z-10" alt="Slide ${idx + 1}">
+        
+        <!-- Text Caption Overlay -->
+        <div class="slide-text-overlay absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-6 md:p-8 z-20">
+          <h2 class="text-xl md:text-2xl font-extrabold text-white leading-tight drop-shadow-md">${slide.title || ''}</h2>
+          ${slide.subtitle ? `<p class="text-xs md:text-sm text-slate-100 mt-1 max-w-xl drop-shadow">${slide.subtitle}</p>` : ''}
+        </div>
+      </div>
+    `;
 
-        dotsContainer.innerHTML += `
-          <button onclick="goToSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === 0 ? 'bg-indigo-500 w-6' : 'bg-slate-600 hover:bg-slate-400'}" data-dot="${idx}"></button>
-        `;
-      });
+    dotsContainer.innerHTML += `
+      <button onclick="goToSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === 0 ? 'bg-indigo-500 w-6' : 'bg-slate-600 hover:bg-slate-400'}" data-dot="${idx}"></button>
+    `;
+  });
 
-      startSlideTimer();
-    }
+  startSlideTimer();
+}
 
     document.getElementById('admin-slideshow-form').addEventListener('submit', async (e) => {
       e.preventDefault();

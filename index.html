@@ -882,6 +882,56 @@ body.light-mode #tab-invited-affiliates .bg-slate-900 {
   background-color: #fff7ed !important;
   border-color: #ffedd5 !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE FIX: MANUAL ASSIGNMENT CARD CONTAINER
+   ------------------------------------------------------------ */
+
+/* Card Background, Borders, and Shadow */
+body.light-mode #admin-manual-assign-form,
+body.light-mode #admin-manual-assign-form/..,
+body.light-mode #tab-admin-invitations > div > div:first-child {
+  background-color: #ffffff !important;
+  border: 1.5px solid #fed7aa !important; /* Soft Amber/Orange Border */
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08) !important;
+}
+
+/* Card Header Title and Text Elements */
+body.light-mode #tab-admin-invitations h3,
+body.light-mode #tab-admin-invitations label {
+  color: #0f172a !important; /* High-contrast Slate Text */
+  font-weight: 800 !important;
+}
+
+body.light-mode #tab-admin-invitations p {
+  color: #475569 !important; /* Readable Subtext */
+}
+
+/* Dropdown Inputs */
+body.light-mode #assign-inviter-select,
+body.light-mode #assign-recruit-select {
+  background-color: #fff7ed !important; /* Warm Cream Background */
+  border: 1px solid #ffedd5 !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+body.light-mode #assign-inviter-select:focus,
+body.light-mode #assign-recruit-select:focus {
+  border-color: #f97316 !important;
+}
+
+/* Assign Button Gradient & Hover */
+body.light-mode #admin-manual-assign-form button {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25) !important;
+  border: none !important;
+}
+
+body.light-mode #admin-manual-assign-form button:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

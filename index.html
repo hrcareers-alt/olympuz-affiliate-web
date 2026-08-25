@@ -792,103 +792,62 @@ body.light-mode #inspect-recruits-table-body button.bg-emerald-600 {
 body.light-mode #inspect-recruits-table-body button.bg-emerald-600:hover {
   background-color: #047857 !important;
 }
-    /* ------------------------------------------------------------
-   🟢 LIGHT MODE FIX: TOTAL INVITED & POSTER LIGHTBOX MODAL
+/* ------------------------------------------------------------
+   🟢 ABSOLUTE OVERRIDE: INVITE & EARN HERO BANNER LIGHT MODE
    ------------------------------------------------------------ */
 
-/* 1. Fix "Total Invited" number visibility in Light Mode */
-body.light-mode #inv-stat-total {
-  color: #0f172a !important; /* High contrast dark slate */
-  font-weight: 900 !important;
-}
-
-/* 2. Light Mode for Poster Lightbox Modal Backdrop & Card */
-body.light-mode #poster-lightbox-modal {
-  background-color: rgba(15, 23, 42, 0.75) !important;
-  backdrop-filter: blur(8px) !important;
-}
-
-body.light-mode #poster-lightbox-modal button {
-  color: #ffffff !important;
-}
-
-body.light-mode #poster-lightbox-modal button:hover {
-  color: #f59e0b !important;
-}
-
-/* Download Poster Button in Light Mode */
-body.light-mode #poster-download-btn {
-  background: linear-gradient(135deg, #f97316 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
-}
-
-body.light-mode #poster-download-btn:hover {
-  background: linear-gradient(135deg, #ea580c 0%, #b45309 100%) !important;
-}
-    /* ------------------------------------------------------------
-   🟢 LIGHT MODE FORCE OVERRIDES: INVITE & EARN HERO BANNER
-   ------------------------------------------------------------ */
-
-/* Main Banner Container Background */
+/* Force Banner Container Background */
+html.dark body.light-mode #tab-invited-affiliates > div > div:first-child,
 body.light-mode #tab-invited-affiliates > div > div:first-child {
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fef3c7 100%) !important;
+  background: #fff7ed !important;
+  background-image: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fef3c7 100%) !important;
   border: 1.5px solid #fde047 !important;
-  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15) !important;
+  color: #0f172a !important;
 }
 
-/* Main Heading Text */
+/* Force Header Title */
+html.dark body.light-mode #tab-invited-affiliates h2,
 body.light-mode #tab-invited-affiliates h2 {
-  color: #7c2d12 !important; /* Burnt Orange */
+  color: #7c2d12 !important;
   font-weight: 900 !important;
 }
 
-/* Body Description Paragraph */
+/* Force Paragraph Text */
+html.dark body.light-mode #tab-invited-affiliates p,
 body.light-mode #tab-invited-affiliates p {
-  color: #9a3412 !important; /* Dark Amber */
+  color: #9a3412 !important;
   font-weight: 600 !important;
 }
 
-/* "Affiliate Referral Program" Top Badge */
-body.light-mode #tab-invited-affiliates .inline-flex {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-}
-
-/* Unique Invite Code Outer Box */
-body.light-mode #tab-invited-affiliates .bg-slate-950\/80,
-body.light-mode #tab-invited-affiliates div.bg-white {
+/* Force Code Card Box */
+html.dark body.light-mode #tab-invited-affiliates .bg-slate-950\/80,
+html.dark body.light-mode #tab-invited-affiliates div.bg-white,
+body.light-mode #tab-invited-affiliates .bg-slate-950\/80 {
   background-color: #ffffff !important;
   border: 1.5px solid #fed7aa !important;
 }
 
-body.light-mode #tab-invited-affiliates span.uppercase {
-  color: #c2410c !important;
-  font-weight: 800 !important;
-}
-
-/* Code Display Box Inner Pill */
-body.light-mode #tab-invited-affiliates .bg-slate-900,
-body.light-mode #tab-invited-affiliates .bg-amber-50 {
+/* Force Code Inner Pill */
+html.dark body.light-mode #tab-invited-affiliates .bg-slate-900,
+html.dark body.light-mode #tab-invited-affiliates .bg-amber-50,
+body.light-mode #tab-invited-affiliates .bg-slate-900 {
   background-color: #fff7ed !important;
   border-color: #ffedd5 !important;
 }
 
+/* Force Code Display Text */
+html.dark body.light-mode #user-invite-code-display,
 body.light-mode #user-invite-code-display {
-  color: #ea580c !important; /* Bright Orange Code */
+  color: #ea580c !important;
   font-weight: 900 !important;
 }
 
-/* Copy Code Button */
+/* Force Copy Code Button */
+html.dark body.light-mode #tab-invited-affiliates button,
 body.light-mode #tab-invited-affiliates button {
   background: linear-gradient(135deg, #f97316 0%, #d97706 100%) !important;
   color: #ffffff !important;
-}
-
-body.light-mode #tab-invited-affiliates button:hover {
-  background: linear-gradient(135deg, #ea580c 0%, #b45309 100%) !important;
+  border: none !important;
 }
 </style>
 </head>

@@ -3275,28 +3275,26 @@ main > div,
     window.switchTab = function(tabName) {
   if (!tabName) return;
 
-  // 1. Force ALL tab sections to hide completely
+  // 1. Hide ALL tab sections completely
   document.querySelectorAll('.tab-content').forEach(el => {
     el.classList.add('hidden');
     el.style.setProperty('display', 'none', 'important');
     el.style.setProperty('opacity', '0', 'important');
   });
 
-  // 2. Locate target tab section
+  // 2. Reveal ONLY the active target section
   const activeTab = document.getElementById(`tab-${tabName}`);
   if (activeTab) {
-    // Un-hide and force container render
     activeTab.classList.remove('hidden');
     activeTab.style.setProperty('display', 'block', 'important');
     activeTab.style.setProperty('opacity', '1', 'important');
     activeTab.style.setProperty('visibility', 'visible', 'important');
-    activeTab.style.setProperty('min-height', '400px', 'important');
   } else {
-    console.error(`Tab section "tab-${tabName}" was not found in HTML.`);
+    console.error(`Section "tab-${tabName}" was not found in your HTML.`);
     return;
   }
 
-  // 3. Trigger Data Listeners for Active Tab
+  // 3. Trigger Real-time Data Listeners
   try {
     if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
       window.listenToRawLeaderboard();
@@ -3317,7 +3315,7 @@ main > div,
       window.fetchAffiliateDatabase();
     }
   } catch (err) {
-    console.warn("Tab trigger listener warning:", err.message);
+    console.warn("Tab trigger warning:", err.message);
   }
 
   // 4. Close mobile menu if open
@@ -3326,7 +3324,7 @@ main > div,
     mobileDropdown.classList.add('hidden');
   }
 
-  // 5. Scroll page cleanly back to top
+  // 5. Scroll smoothly back to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 

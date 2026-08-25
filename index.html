@@ -3250,13 +3250,18 @@ body.light-mode .tab-content span {
   document.querySelectorAll('.tab-content').forEach(el => {
     el.classList.add('hidden');
     el.style.setProperty('display', 'none', 'important');
+    el.style.setProperty('opacity', '0', 'important');
   });
 
-  // 2. Un-hide ONLY the targeted tab section
+  // 2. Locate target tab section
   const activeTab = document.getElementById(`tab-${tabName}`);
   if (activeTab) {
+    // Un-hide and force container render
     activeTab.classList.remove('hidden');
     activeTab.style.setProperty('display', 'block', 'important');
+    activeTab.style.setProperty('opacity', '1', 'important');
+    activeTab.style.setProperty('visibility', 'visible', 'important');
+    activeTab.style.setProperty('min-height', '400px', 'important');
   } else {
     console.error(`Tab section "tab-${tabName}" was not found in HTML.`);
     return;
@@ -3283,7 +3288,7 @@ body.light-mode .tab-content span {
       window.fetchAffiliateDatabase();
     }
   } catch (err) {
-    console.warn("Tab trigger warning:", err.message);
+    console.warn("Tab trigger listener warning:", err.message);
   }
 
   // 4. Close mobile menu if open

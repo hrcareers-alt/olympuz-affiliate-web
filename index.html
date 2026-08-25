@@ -1577,93 +1577,93 @@ body.light-mode #home-nav-grid > a:hover {
   </div>
 </div>
 
-   <!-- CENTRAL QUICK NAVIGATION (LIGHT & DARK ADAPTIVE) -->
-<div>
-  <h3 class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+   <!-- CENTRAL QUICK NAVIGATION (CONSTRAINED & PROPORTIONAL) -->
+<div class="max-w-4xl mx-auto w-full">
+  <h3 class="text-xs md:text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3 flex items-center gap-2">
     <i class="fa-solid fa-compass text-indigo-500 dark:text-indigo-400"></i> Central Quick Navigation
   </h3>
 
-  <div id="home-nav-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 morph-nav-anim">
+  <div id="home-nav-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 morph-nav-anim">
     
     <!-- Every 30th -->
-    <button onclick="handleMorphNav('payout-30th')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('payout-30th')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-calendar-check"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Every 30th (Hires)</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Monthly hire payout earnings</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Every 30th (Hires)</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Monthly hire payout earnings</p>
     </button>
 
     <!-- Leaderboard -->
-    <button onclick="handleMorphNav('leaderboard')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('leaderboard')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-trophy"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Leaderboard</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">View monthly standings</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Leaderboard</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">View monthly standings</p>
     </button>
 
     <!-- Daily Raw Referrals -->
-    <button onclick="handleMorphNav('raw-referrals')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('raw-referrals')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-chart-simple"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Daily Raw Referrals</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Track daily applicant count</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Daily Raw Referrals</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Track daily applicant count</p>
     </button>
 
     <!-- Weekly Payout -->
-    <button onclick="handleMorphNav('payout')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('payout')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-wallet"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Weekly Payout</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Invoices & valid earnings</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Weekly Payout</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Invoices & valid earnings</p>
     </button>
 
     <!-- Treats & Rewards -->
-    <button onclick="handleMorphNav('treats')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-pink-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('treats')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-pink-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-gift"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Treats & Rewards</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Claim special gifts</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Treats & Rewards</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Claim special gifts</p>
     </button>
 
     <!-- Official Channels -->
-    <button onclick="handleMorphNav('channels')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('channels')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-comments"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Official Channels</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Join updates GC</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Official Channels</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Join updates GC</p>
     </button>
 
     <!-- Refer & Earn -->
-    <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-share-nodes"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Refer & Earn</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Get referral links</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Refer & Earn</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Get referral links</p>
     </a>
 
     <!-- Send Feedback -->
-    <button onclick="handleMorphNav('feedback')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('feedback')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-comment-dots"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Send Feedback</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Contact management</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Send Feedback</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Contact management</p>
     </button>
 
     <!-- Account Settings -->
-    <button onclick="handleMorphNav('settings')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-500/50 p-4 rounded-2xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+    <button onclick="handleMorphNav('settings')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-gear"></i>
       </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-sm">Account Settings</h4>
-      <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Theme & profile</p>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Account Settings</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Theme & profile</p>
     </button>
 
   </div>

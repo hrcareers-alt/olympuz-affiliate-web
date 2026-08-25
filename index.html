@@ -1251,7 +1251,36 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
   display: none !important;
 }
 
-    
+ /* ------------------------------------------------------------
+   🟢 ABSOLUTE BLANK SCREEN FIX: TAB CONTENT VISIBILITY
+   ------------------------------------------------------------ */
+
+/* Ensure main content wrapper takes full width and height */
+main {
+  width: 100% !important;
+  min-height: calc(100vh - 70px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure active tab sections render clearly in Light Mode */
+.tab-content:not(.hidden) {
+  display: block !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Fix light mode section text & background overrides */
+body.light-mode .tab-content {
+  color: #0f172a !important;
+}
+
+body.light-mode .tab-content h2,
+body.light-mode .tab-content h3,
+body.light-mode .tab-content h4 {
+  color: #0f172a !important;
+}   
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -3145,45 +3174,65 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
     window.switchTab = function(tabName) {
-  // 1. Hide all tab content sections
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  if (!tabName) return;
+
+  // 1. Hide ALL tab sections
+  document.querySelectorAll('.tab-content').forEach(el => {
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  });
   
-  // 2. Un-hide the target section
+  // 2. Un-hide target tab section
   const activeTab = document.getElementById(`tab-${tabName}`);
   if (activeTab) {
     activeTab.classList.remove('hidden');
+    activeTab.style.display = 'block';
   } else {
-    console.warn(`Tab section "tab-${tabName}" not found in HTML.`);
+    console.error(`Tab section "tab-${tabName}" not found in HTML.`);
+    return;
   }
 
-  // 3. Tab-specific data triggers
-  if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
-    window.listenToRawLeaderboard();
-  }
-
-  if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
-    window.listenTo30thLeaderboard();
-    if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
-      window.listenToUser30thInvoices(window.currentUid);
+  // 3. Tab-specific Data Triggers
+  try {
+    if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
+      window.listenToRawLeaderboard();
     }
+
+    if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
+      window.listenTo30thLeaderboard();
+      if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
+        window.listenToUser30thInvoices(window.currentUid);
+      }
+    }
+
+    if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
+      window.listenToInvitedAffiliates();
+    }
+
+    if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
+      window.listenToAdminInvitations();
+    }
+
+    if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
+      window.fetchAffiliateDatabase();
+    }
+  } catch (err) {
+    console.warn("Tab listener initialization warning:", err.message);
   }
 
-  if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
-    window.listenToInvitedAffiliates();
+  // 4. Close mobile menu dropdown if open
+  const mobileDropdown = document.getElementById('mobile-top-dropdown');
+  if (mobileDropdown && !mobileDropdown.classList.contains('hidden')) {
+    mobileDropdown.classList.add('hidden');
   }
 
-  if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
-    window.listenToAdminInvitations();
-  }
+  // 5. Scroll page smoothly to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
-  if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
-    window.fetchAffiliateDatabase();
-  }
-
-  // 4. Close mobile dropdown menu if open
-  if (typeof window.closeSidebarOnMobile === 'function') {
-    window.closeSidebarOnMobile();
-  }
+window.handleMorphNav = function(targetTab) {
+  // Directly switch tabs without waiting for grid animations
+  window.switchTab(targetTab);
 };
     
     window.handleMorphNav = function(targetTab) {

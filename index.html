@@ -1345,6 +1345,35 @@ body.light-mode .tab-content span {
   width: 100% !important;
   min-height: calc(100vh - 120px) !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX: FORCE VISIBILITY OF ACTIVE TAB SECTIONS
+   ------------------------------------------------------------ */
+
+/* Force tab content wrapper visibility */
+main,
+main > div,
+.tab-content {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Force visible tab sections to display */
+.tab-content:not(.hidden) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 400px !important;
+}
+
+/* Force hidden tabs to occupy zero space */
+.tab-content.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

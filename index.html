@@ -1374,6 +1374,36 @@ main > div,
   height: 0 !important;
   overflow: hidden !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 STRICT TAB VISIBILITY & DISPLAY FIX
+   ------------------------------------------------------------ */
+
+/* Force main content container to display */
+main, 
+#dashboard-screen main {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-height: calc(100vh - 80px) !important;
+}
+
+/* Force visible tab sections to render */
+.tab-content:not(.hidden) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  min-height: 400px !important;
+}
+
+/* Strictly collapse hidden tab sections */
+.tab-content.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

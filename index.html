@@ -1389,32 +1389,59 @@ body.light-mode #inspect-recruits-table-body button.bg-emerald-600:hover {
           </div>
         </section>
 
-       <!-- TAB: INVITED AFFILIATES (AFFILIATE DASHBOARD) -->
-<section id="tab-invited-affiliates" class="tab-content hidden w-full">
-  <div class="max-w-5xl space-y-6">
-    
-    <!-- Hero Banner & Invite Code Copy Tool -->
-    <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div>
-        <div class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
-          <i class="fa-solid fa-gift"></i> Affiliate Referral Program
-        </div>
-        <h2 class="text-xl sm:text-2xl font-extrabold text-white">Invite Affiliates & Earn ₱50</h2>
-        <p class="text-xs text-slate-300 mt-1 max-w-xl">Invite friends to become Olympuz Affiliates. Once your invited affiliate reaches 100 raw referrals, you'll earn a ₱50 invite reward and plus a random Jollibee Supermeals/Meals Giveaway!</p>
-      </div>
+       <!-- DUAL-COLUMN PROMOTIONAL HERO BANNER -->
+<div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-indigo-950/80 dark:via-slate-900 dark:to-slate-900 p-5 md:p-6 rounded-2xl border border-amber-500/30 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
+  
+  <!-- LEFT: PROMOTIONAL GRAPHIC BANNER WITH LIGHTBOX PREVIEW -->
+  <div class="w-full lg:w-1/2 relative group rounded-xl overflow-hidden border border-amber-500/30 shadow-lg cursor-pointer" onclick="openPosterModal('InviteandEarn.jpg')">
+    <img src="InviteandEarn.jpg" alt="Invite & Earn Promo" class="w-full h-48 md:h-56 object-cover object-top group-hover:scale-105 transition duration-300">
+    <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 text-white font-bold text-xs backdrop-blur-[2px]">
+      <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+      <span>Click to View Full Poster</span>
+    </div>
+    <span class="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-amber-500/30">
+      🔥 Official Promo Flyer
+    </span>
+  </div>
 
-      <!-- Invite Code Card -->
-      <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 shrink-0 text-center space-y-2">
-        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Your Unique Invite Code</span>
-        <div class="flex items-center gap-2 bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5">
-          <span id="user-invite-code-display" class="font-extrabold text-sm text-indigo-400">LOADING...</span>
-          <button onclick="copyInviteCode()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1 rounded-md transition flex items-center gap-1.5">
-            <i class="fa-solid fa-copy"></i> Copy Code
-          </button>
-        </div>
+  <!-- RIGHT: PROGRAM DESCRIPTION & INVITE CODE TOOL -->
+  <div class="w-full lg:w-1/2 space-y-4">
+    <div>
+      <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full mb-2">
+        <i class="fa-solid fa-gift"></i> Affiliate Referral Program
       </div>
+      <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Invite Affiliates & Earn ₱50</h2>
+      <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+        Invite friends to become Olympuz Affiliates. Once your invited affiliate reaches <strong>100 raw referrals</strong>, you'll earn a ₱50 invite reward plus random Jollibee treat giveaways!
+      </p>
     </div>
 
+    <!-- Unique Invite Code Box -->
+    <div class="bg-white dark:bg-slate-950/80 border border-amber-500/30 dark:border-slate-800 rounded-xl p-4 text-center space-y-2 shadow-sm">
+      <span class="text-[10px] uppercase font-extrabold tracking-wider text-amber-600 dark:text-slate-400 block">Your Unique Invite Code</span>
+      <div class="flex items-center justify-between gap-2 bg-amber-50 dark:bg-slate-900 border border-amber-200 dark:border-slate-700/60 rounded-lg px-3 py-1.5">
+        <span id="user-invite-code-display" class="font-black text-base text-amber-600 dark:text-indigo-400 tracking-wide">LOADING...</span>
+        <button onclick="copyInviteCode()" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-[11px] font-extrabold px-3.5 py-1.5 rounded-md transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-copy"></i> Copy Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LIGHTBOX MODAL FOR FULL-SIZE POSTER PREVIEW -->
+<div id="poster-lightbox-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4" onclick="closePosterModal()">
+  <div class="relative max-w-lg w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+    <button onclick="closePosterModal()" class="absolute -top-10 right-0 text-white hover:text-amber-400 text-xl font-bold">
+      <i class="fa-solid fa-xmark mr-1"></i> Close
+    </button>
+    <img id="poster-modal-img" src="" alt="Full Promo Poster" class="w-full h-auto max-h-[80vh] object-contain rounded-xl shadow-2xl border border-amber-500/30">
+    <a id="poster-download-btn" href="" download="InviteandEarn.jpg" target="_blank" class="mt-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition shadow-lg inline-flex items-center gap-2">
+      <i class="fa-solid fa-download"></i> Download High-Res Poster
+    </a>
+  </div>
+</div>
     <!-- Bucket Summary Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
@@ -2600,6 +2627,25 @@ body.light-mode #inspect-recruits-table-body button.bg-emerald-600:hover {
 
     let otpTimerInterval = null;
     let otpCountdown = 60;
+
+    // Open Full-Size Poster Modal
+window.openPosterModal = function(imgSrc) {
+  const modal = document.getElementById('poster-lightbox-modal');
+  const img = document.getElementById('poster-modal-img');
+  const dlBtn = document.getElementById('poster-download-btn');
+  
+  if (modal && img) {
+    img.src = imgSrc;
+    if (dlBtn) dlBtn.href = imgSrc;
+    modal.classList.remove('hidden');
+  }
+};
+
+// Close Poster Modal
+window.closePosterModal = function() {
+  const modal = document.getElementById('poster-lightbox-modal');
+  if (modal) modal.classList.add('hidden');
+};
 
     // ============================================================
 // 🟢 ADMIN MANAGEMENT HUB: INVITER BUCKETS & PAYOUT MANAGEMENT

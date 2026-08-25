@@ -2871,20 +2871,41 @@ window.closePosterModal = function() {
   if (modal) modal.classList.add('hidden');
 };
 
-    // 🟢 POPULATE INVITER AND RECRUIT DROPDOWNS
-window.populateManualAssignDropdowns = () => {
+    // 🟢 POPULATE INVITER AND RECRUIT DROPDOWNS (WITH AUTOMATIC FIRESTORE FETCH FALLBACK)
+window.populateManualAssignDropdowns = async () => {
   const inviterSelect = document.getElementById('assign-inviter-select');
   const recruitSelect = document.getElementById('assign-recruit-select');
 
   if (!inviterSelect || !recruitSelect) return;
 
+  // 1. If allAffiliates is empty, fetch fresh list directly from Firestore
+  if (!allAffiliates || allAffiliates.length === 0) {
+    try {
+      const qSnap = await getDocs(collection(db, "users"));
+      allAffiliates = [];
+      qSnap.forEach(d => allAffiliates.push({ id: d.id, ...d.data() }));
+    } catch (err) {
+      console.warn("Error fetching users for dropdowns:", err.message);
+    }
+  }
+
+  // 2. Clear & set default placeholder option
   const defaultOption = '<option value="">-- Choose Affiliate --</option>';
   inviterSelect.innerHTML = defaultOption;
   recruitSelect.innerHTML = defaultOption;
 
-  allAffiliates.forEach(u => {
+  // 3. Sort alphabetically by name
+  const sortedList = [...allAffiliates].sort((a, b) => {
+    const nameA = `${a.firstName || ''} ${a.lastName || ''}`.trim() || a.username || '';
+    const nameB = `${b.firstName || ''} ${b.lastName || ''}`.trim() || b.username || '';
+    return nameA.localeCompare(nameB);
+  });
+
+  // 4. Render names into select options
+  sortedList.forEach(u => {
     const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || u.email || 'Affiliate';
     const optHTML = `<option value="${u.id}">${fullName} (@${u.username || 'no-username'})</option>`;
+    
     inviterSelect.innerHTML += optHTML;
     recruitSelect.innerHTML += optHTML;
   });
@@ -2957,7 +2978,6 @@ document.getElementById('admin-manual-assign-form')?.addEventListener('submit', 
 
 let currentInspectedInviterUid = null;
 
-// Realtime Listener for All Invitations
 window.listenToAdminInvitations = () => {
   if (currentUserRole !== 'admin') return;
 
@@ -2965,6 +2985,11 @@ window.listenToAdminInvitations = () => {
   onSnapshot(q, async (snapshot) => {
     cachedAdminInvitations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     filterAdminInvitations();
+    
+    // 🟢 Populates dropdowns automatically
+    if (typeof window.populateManualAssignDropdowns === 'function') {
+      window.populateManualAssignDropdowns();
+    }
   }, (err) => {
     console.warn("Admin invitations listener error:", err.message);
   });

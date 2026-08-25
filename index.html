@@ -1777,16 +1777,6 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
 </div>
 
    <!-- CENTRAL QUICK NAVIGATION (CONSTRAINED & PROPORTIONAL) -->
-  
-<!-- Refer & Earn -->
-    <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
-      <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
-        <i class="fa-solid fa-share-nodes"></i>
-      </div>
-      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Refer & Earn</h4>
-      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Refer Interested Applicants Across PH</p>
-    </a>
-  
 <div class="max-w-4xl mx-auto w-full">
   <h3 class="text-xs md:text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3 flex items-center gap-2">
     <i class="fa-solid fa-compass text-indigo-500 dark:text-indigo-400"></i> Central Quick Navigation
@@ -1794,7 +1784,25 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
 
   <div id="home-nav-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 morph-nav-anim">
     
-    <!-- Every 30th -->
+    <!-- 1. Refer & Earn -->
+    <a href="https://olympuz-org.com/remotejobs" target="_blank" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
+        <i class="fa-solid fa-share-nodes"></i>
+      </div>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Refer & Earn</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Refer Interested Applicants Across PH</p>
+    </a>
+
+    <!-- 🟢 2. Invite Earnings (ADDED RIGHT AFTER REFER & EARN) -->
+    <button onclick="handleMorphNav('invited-affiliates')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
+        <i class="fa-solid fa-user-plus"></i>
+      </div>
+      <h4 class="font-bold text-slate-900 dark:text-white text-xs">Invite Earnings</h4>
+      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Track Invited Affiliates & ₱50 Rewards</p>
+    </button>
+
+    <!-- 3. Every 30th -->
     <button onclick="handleMorphNav('payout-30th')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-calendar-check"></i>
@@ -1803,7 +1811,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Monthly hire payout earnings</p>
     </button>
 
-    <!-- Leaderboard -->
+    <!-- 4. Leaderboard -->
     <button onclick="handleMorphNav('leaderboard')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-trophy"></i>
@@ -1812,7 +1820,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">View monthly standings</p>
     </button>
 
-    <!-- Daily Raw Referrals -->
+    <!-- 5. Daily Raw Referrals -->
     <button onclick="handleMorphNav('raw-referrals')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-chart-simple"></i>
@@ -1821,7 +1829,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Track Daily Applicant Received - Not validated yet</p>
     </button>
 
-    <!-- Weekly Payout -->
+    <!-- 6. Weekly Payout -->
     <button onclick="handleMorphNav('payout')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-wallet"></i>
@@ -1830,7 +1838,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Invoices & valid earnings</p>
     </button>
 
-    <!-- Treats & Rewards -->
+    <!-- 7. Treats & Rewards -->
     <button onclick="handleMorphNav('treats')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-pink-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-gift"></i>
@@ -1839,7 +1847,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Claim special gifts</p>
     </button>
 
-    <!-- Official Channels -->
+    <!-- 8. Official Channels -->
     <button onclick="handleMorphNav('channels')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-comments"></i>
@@ -1848,7 +1856,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Join updates GC</p>
     </button>
 
-    <!-- Send Feedback -->
+    <!-- 9. Send Feedback -->
     <button onclick="handleMorphNav('feedback')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-comment-dots"></i>
@@ -1857,7 +1865,7 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
       <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Contact management</p>
     </button>
 
-    <!-- Account Settings -->
+    <!-- 10. Account Settings -->
     <button onclick="handleMorphNav('settings')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-500/50 p-3 rounded-xl text-left flex flex-col justify-between transition group shadow-sm hover:shadow-md">
       <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition">
         <i class="fa-solid fa-gear"></i>
@@ -1868,7 +1876,6 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
 
   </div>
 </div>
-</section>
 
         
 

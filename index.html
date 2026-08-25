@@ -1404,6 +1404,52 @@ main,
   height: 0 !important;
   overflow: hidden !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE FIX: LEADERBOARD STANDING PILL & RANK BADGES
+   ------------------------------------------------------------ */
+
+/* 1. "Your Current Standing" Top Right Box */
+body.light-mode #tab-leaderboard .bg-indigo-950\/80,
+html.dark body.light-mode #tab-leaderboard .bg-indigo-950\/80 {
+  background-color: #e0e7ff !important; /* Soft Indigo Light Background */
+  border-color: #c7d2fe !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08) !important;
+}
+
+body.light-mode #tab-leaderboard .bg-indigo-950\/80 span.text-indigo-300,
+html.dark body.light-mode #tab-leaderboard .bg-indigo-950\/80 span.text-indigo-300 {
+  color: #3730a3 !important; /* Deep Indigo Label Text */
+  font-weight: 800 !important;
+}
+
+body.light-mode #user-current-rank,
+html.dark body.light-mode #user-current-rank {
+  color: #d97706 !important; /* High-Contrast Amber Rank Text */
+  font-weight: 900 !important;
+}
+
+/* 2. Top Rank Badges Pills (e.g. Rank 4 / Rank 5 Black Boxes) */
+body.light-mode #top-5-container .bg-indigo-50,
+body.light-mode #top-5-container .bg-slate-900,
+html.dark body.light-mode #top-5-container .bg-indigo-50,
+html.dark body.light-mode #top-5-container .bg-slate-900 {
+  background-color: #e0e7ff !important;
+  border-color: #c7d2fe !important;
+  color: #3730a3 !important;
+  font-weight: 800 !important;
+}
+
+/* 3. Stat Subtext & Names Inside Rank Cards */
+body.light-mode #top-5-container h4 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-mode #top-5-container .text-slate-400 {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

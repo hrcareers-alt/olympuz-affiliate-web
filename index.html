@@ -1450,6 +1450,33 @@ body.light-mode #top-5-container .text-slate-400 {
   color: #475569 !important;
   font-weight: 600 !important;
 }
+    /* ------------------------------------------------------------
+   🟢 FORCE BURGER BUTTON VISIBILITY ON MOBILE & TABLET
+   ------------------------------------------------------------ */
+
+/* Ensure button displays on all screens smaller than lg (1024px) */
+@media (max-width: 1023px) {
+  header button[onclick="toggleMobileSidebar()"],
+  header .lg\:hidden {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Light mode background and contrast fix */
+body.light-mode header button[onclick="toggleMobileSidebar()"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-mode header button[onclick="toggleMobileSidebar()"]:hover {
+  background-color: #e2e8f0 !important;
+  color: #4f46e5 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1833,23 +1860,24 @@ body.light-mode #top-5-container .text-slate-400 {
 </nav>
 
     <!-- RIGHT PROFILE & LOGOUT CONTROLS -->
-    <div class="flex items-center gap-3 shrink-0">
-      <div class="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="switchTab('settings')">
-        <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-          <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
-          <i id="header-avatar-icon" class="fa-solid fa-user text-xs text-slate-400"></i>
-        </div>
-        <span id="welcome-message" class="hidden xl:inline font-extrabold text-xs text-slate-800 dark:text-slate-200">Welcome, Affiliate</span>
-      </div>
-
-      <button onclick="logout()" class="hidden sm:inline-block text-xs bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-2 rounded-xl hover:bg-red-600 hover:text-white transition font-bold shadow-sm">
-        Logout
-      </button>
-
-      <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-base">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+<div class="flex items-center gap-3 shrink-0">
+  <div class="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="switchTab('settings')">
+    <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+      <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+      <i id="header-avatar-icon" class="fa-solid fa-user text-xs text-slate-400"></i>
     </div>
+    <span id="welcome-message" class="hidden xl:inline font-extrabold text-xs text-slate-800 dark:text-slate-200">Welcome, Affiliate</span>
+  </div>
+
+  <button onclick="logout()" class="hidden sm:inline-block text-xs bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-2 rounded-xl hover:bg-red-600 hover:text-white transition font-bold shadow-sm">
+    Logout
+  </button>
+
+  <!-- 🟢 MOBILE BURGER BUTTON -->
+  <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-lg shadow-sm border border-slate-200 dark:border-slate-700/60 transition">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+</div>
 
   </div>
 </header>

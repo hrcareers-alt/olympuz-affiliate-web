@@ -792,6 +792,41 @@ body.light-mode #inspect-recruits-table-body button.bg-emerald-600 {
 body.light-mode #inspect-recruits-table-body button.bg-emerald-600:hover {
   background-color: #047857 !important;
 }
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE FIX: TOTAL INVITED & POSTER LIGHTBOX MODAL
+   ------------------------------------------------------------ */
+
+/* 1. Fix "Total Invited" number visibility in Light Mode */
+body.light-mode #inv-stat-total {
+  color: #0f172a !important; /* High contrast dark slate */
+  font-weight: 900 !important;
+}
+
+/* 2. Light Mode for Poster Lightbox Modal Backdrop & Card */
+body.light-mode #poster-lightbox-modal {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.light-mode #poster-lightbox-modal button {
+  color: #ffffff !important;
+}
+
+body.light-mode #poster-lightbox-modal button:hover {
+  color: #f59e0b !important;
+}
+
+/* Download Poster Button in Light Mode */
+body.light-mode #poster-download-btn {
+  background: linear-gradient(135deg, #f97316 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
+}
+
+body.light-mode #poster-download-btn:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #b45309 100%) !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

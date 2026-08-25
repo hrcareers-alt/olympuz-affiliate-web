@@ -3145,50 +3145,47 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
     window.switchTab = function(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      const activeTab = document.getElementById(`tab-${tabName}`);
-      if (activeTab) {
-        activeTab.classList.remove('hidden');
-      }
-      
-      // Update sidebar highlight
-      document.querySelectorAll('#sidebar-menu button, #sidebar-menu a').forEach(btn => {
-        btn.classList.remove('bg-slate-800', 'font-bold', 'text-indigo-400');
-      });
-      const activeNavBtn = document.getElementById(`nav-btn-${tabName}`);
-      if (activeNavBtn) {
-        activeNavBtn.classList.add('bg-slate-800', 'font-bold', 'text-indigo-400');
-      }
+  // 1. Hide all tab content sections
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  
+  // 2. Un-hide the target section
+  const activeTab = document.getElementById(`tab-${tabName}`);
+  if (activeTab) {
+    activeTab.classList.remove('hidden');
+  } else {
+    console.warn(`Tab section "tab-${tabName}" not found in HTML.`);
+  }
 
-      // Tab triggers
-      if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
-        window.listenToRawLeaderboard();
-      }
+  // 3. Tab-specific data triggers
+  if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
+    window.listenToRawLeaderboard();
+  }
 
-      if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
-        window.listenTo30thLeaderboard();
-        if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
-          window.listenToUser30thInvoices(window.currentUid);
-        }
-      }
+  if (tabName === 'payout-30th' && typeof window.listenTo30thLeaderboard === 'function') {
+    window.listenTo30thLeaderboard();
+    if (typeof window.listenToUser30thInvoices === 'function' && window.currentUid) {
+      window.listenToUser30thInvoices(window.currentUid);
+    }
+  }
 
-      // 🟢 TRIGGER AFFILIATE INVITATION LISTENERS
-      if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
-        window.listenToInvitedAffiliates();
-      }
+  if (tabName === 'invited-affiliates' && typeof window.listenToInvitedAffiliates === 'function') {
+    window.listenToInvitedAffiliates();
+  }
 
-      if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
-        window.listenToAdminInvitations();
-      }
+  if (tabName === 'admin-invitations' && typeof window.listenToAdminInvitations === 'function') {
+    window.listenToAdminInvitations();
+  }
 
-      // 🟢 TRIGGER AFFILIATE DATABASE DIRECTORY
-      if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
-        window.fetchAffiliateDatabase();
-      }
+  if (tabName === 'admin-users' && typeof window.fetchAffiliateDatabase === 'function') {
+    window.fetchAffiliateDatabase();
+  }
 
-      closeSidebarOnMobile();
-    };
-
+  // 4. Close mobile dropdown menu if open
+  if (typeof window.closeSidebarOnMobile === 'function') {
+    window.closeSidebarOnMobile();
+  }
+};
+    
     window.handleMorphNav = function(targetTab) {
       const grid = document.getElementById('home-nav-grid');
       if (grid) {

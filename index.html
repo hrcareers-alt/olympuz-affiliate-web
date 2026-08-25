@@ -1575,17 +1575,20 @@ body.light-mode #assign-recruit-select {
     <!-- Hero Banner & Invite Code Copy Tool -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-indigo-950/80 dark:via-slate-900 dark:to-slate-900 p-6 rounded-2xl border border-amber-300 dark:border-indigo-500/30 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
       
-      <!-- Promo Flyer Banner Image -->
-      <div class="w-full lg:w-1/2 relative group rounded-xl overflow-hidden border border-amber-400 dark:border-amber-500/30 shadow-lg cursor-pointer" onclick="openPosterModal('InviteandEarn.jpg')">
-        <img src="InviteandEarn.jpg" alt="Invite & Earn Promo" class="w-full h-48 md:h-52 object-cover object-top group-hover:scale-105 transition duration-300">
-        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 text-white font-bold text-xs backdrop-blur-[2px]">
-          <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
-          <span>Click to View Full Poster</span>
-        </div>
-        <span class="absolute bottom-2 left-2 bg-slate-900/90 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-amber-500/30 shadow-sm">
-          🔥 Official Promo Flyer
-        </span>
-      </div>
+     <!-- PROMO POSTER CARD WITH WORKING CLICK LISTENER -->
+<div 
+  class="w-full lg:w-1/2 relative group rounded-xl overflow-hidden border border-amber-400 dark:border-amber-500/30 shadow-lg cursor-pointer" 
+  onclick="window.openPosterModal('InviteandEarn.jpg')"
+>
+  <img src="InviteandEarn.jpg" alt="Invite & Earn Promo" class="w-full h-48 md:h-52 object-cover object-top group-hover:scale-105 transition duration-300">
+  <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 text-white font-bold text-xs backdrop-blur-[2px]">
+    <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+    <span>Click to View Full Poster</span>
+  </div>
+  <span class="absolute bottom-2 left-2 bg-slate-900/90 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-amber-500/30 shadow-sm pointer-events-none">
+    🔥 Official Promo Flyer
+  </span>
+</div>
 
       <!-- Hero Program Description & Invite Code Box -->
       <div class="w-full lg:w-1/2 space-y-4">
@@ -1826,6 +1829,17 @@ body.light-mode #assign-recruit-select {
           </div>
         </div>
 
+      </div>
+    </div>
+<div id="poster-lightbox-modal" class="hidden fixed inset-0 z-[999] bg-slate-950/80 backdrop-blur-md items-center justify-center p-4" onclick="window.closePosterModal()">
+      <div class="relative max-w-lg w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+        <button onclick="window.closePosterModal()" class="absolute -top-10 right-0 text-white hover:text-amber-400 text-xl font-bold transition">
+          <i class="fa-solid fa-xmark mr-1"></i> Close
+        </button>
+        <img id="poster-modal-img" src="InviteandEarn.jpg" alt="Full Promo Poster" class="w-full h-auto max-h-[80vh] object-contain rounded-xl shadow-2xl border border-amber-500/30">
+        <a id="poster-download-btn" href="InviteandEarn.jpg" download="InviteandEarn.jpg" target="_blank" class="mt-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-lg inline-flex items-center gap-2">
+          <i class="fa-solid fa-download"></i> Download High-Res Poster
+        </a>
       </div>
     </div>
 

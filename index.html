@@ -1815,13 +1815,11 @@ body.light-mode .tab-content span {
   <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
     <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-2 rounded-xl text-center">Logout</button>
   </div>
-</div>
+</div> <!-- End of mobile-top-dropdown -->
 
-      <!-- TAB CONTENTS CONTAINER -->
-      <div class="w-full">
-
-       <!-- 🏠 TAB: HOME PAGE -->
-<section id="tab-home" class="tab-content w-full space-y-8">
+<!-- MAIN CONTENT WRAPPER -->
+<main class="flex-1 p-4 md:p-8 flex flex-col gap-6 w-full max-w-7xl mx-auto overflow-y-auto">
+  <div class="w-full">
   
   <!-- HERO SLIDESHOW BANNER (PROPORTIONAL & NO CROPPING) -->
 <div class="max-w-4xl mx-auto w-full h-[320px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-2xl border border-indigo-500/30 bg-slate-950 relative group">
@@ -3271,12 +3269,11 @@ body.light-mode .tab-content span {
     mobileDropdown.classList.add('hidden');
   }
 
-  // 5. Scroll smoothly to top
+  // 5. Scroll page smoothly to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.handleMorphNav = function(targetTab) {
-  // Directly switch tabs without waiting for grid animations
   window.switchTab(targetTab);
 };
     
@@ -6421,9 +6418,9 @@ directoryList.innerHTML += `
                 <p class="text-xs text-slate-300 line-clamp-2 mb-3">${data.message}</p>
               </div>
 
-              <button onclick="openRewardModal('${data.id}', '${encodeURIComponent(data.title || '')}', '${encodeURIComponent(data.message || '')}', '${data.rewardImageUrl || ''}', '${data.status}')" ...
-                <i class="fa-solid fa-gift"></i> View Reward & Details
-              </button>
+              <button onclick="openRewardModal('${data.id}', '${encodeURIComponent(data.title || '')}', '${encodeURIComponent(data.message || '')}', '${data.rewardImageUrl || ''}', '${data.status}')" class="w-full bg-pink-600/20 hover:bg-pink-600/30 text-pink-400 border border-pink-500/40 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-2">
+  <i class="fa-solid fa-gift"></i> View Reward & Details
+</button>
             </div>
           `;
         });

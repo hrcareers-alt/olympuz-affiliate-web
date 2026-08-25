@@ -1131,6 +1131,59 @@ body.light-mode #admin-menu button:hover {
   color: #ea580c !important;
   background-color: #fff7ed !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE HOVER FIX: USER PROFILE PILL CONTAINER
+   ------------------------------------------------------------ */
+
+/* Force user profile badge hover background in Light Mode */
+body.light-mode header div.cursor-pointer:hover,
+html.dark body.light-mode header div.cursor-pointer:hover {
+  background-color: #f1f5f9 !important; /* Soft slate/gray hover background */
+  border-radius: 0.75rem !important;
+}
+
+/* Ensure welcome text stays dark on hover */
+body.light-mode header div.cursor-pointer:hover #welcome-message,
+html.dark body.light-mode header div.cursor-pointer:hover #welcome-message {
+  color: #0f172a !important; /* High contrast dark text */
+}
+
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE USER PROFILE PILL & TEXT CONTRAST FIX
+   ------------------------------------------------------------ */
+
+/* Profile Pill Normal & Hover Backgrounds */
+body.light-mode header div.cursor-pointer,
+html.dark body.light-mode header div.cursor-pointer {
+  background-color: transparent !important;
+  transition: background-color 0.2s ease !important;
+}
+
+body.light-mode header div.cursor-pointer:hover,
+html.dark body.light-mode header div.cursor-pointer:hover {
+  background-color: #e2e8f0 !important; /* Crisp light-slate hover */
+  border-radius: 0.75rem !important;
+}
+
+/* Force Text to Dark Slate in Normal & Hover States */
+body.light-mode #welcome-message,
+body.light-mode header div.cursor-pointer #welcome-message,
+body.light-mode header div.cursor-pointer:hover #welcome-message,
+html.dark body.light-mode #welcome-message,
+html.dark body.light-mode header div.cursor-pointer #welcome-message,
+html.dark body.light-mode header div.cursor-pointer:hover #welcome-message {
+  color: #0f172a !important; /* High-contrast dark slate text */
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+/* Avatar Circle Border Adjustment for Light Mode */
+body.light-mode header div.cursor-pointer > div,
+html.dark body.light-mode header div.cursor-pointer > div {
+  border-color: #4f46e5 !important; /* Bold indigo border around avatar */
+  background-color: #f1f5f9 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

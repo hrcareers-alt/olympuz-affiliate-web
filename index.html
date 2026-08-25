@@ -2852,7 +2852,7 @@ body.light-mode #assign-recruit-select {
     let otpTimerInterval = null;
     let otpCountdown = 60;
 
-    // Open Full-Size Poster Modal
+    // 🟢 EXPOSE POSTER LIGHTBOX FUNCTIONS TO GLOBAL WINDOW SCOPE
 window.openPosterModal = function(imgSrc) {
   const modal = document.getElementById('poster-lightbox-modal');
   const img = document.getElementById('poster-modal-img');
@@ -2862,13 +2862,16 @@ window.openPosterModal = function(imgSrc) {
     img.src = imgSrc;
     if (dlBtn) dlBtn.href = imgSrc;
     modal.classList.remove('hidden');
+    modal.classList.add('flex');
   }
 };
 
-// Close Poster Modal
 window.closePosterModal = function() {
   const modal = document.getElementById('poster-lightbox-modal');
-  if (modal) modal.classList.add('hidden');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
 };
 
     // 🟢 POPULATE INVITER AND RECRUIT DROPDOWNS (WITH AUTOMATIC FIRESTORE FETCH FALLBACK)

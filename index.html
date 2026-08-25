@@ -1695,139 +1695,142 @@ body.light-mode #top-5-container .text-slate-400 {
     <!-- DESKTOP TOP NAV MENUS (FULL-WIDTH SPACED PILLS) -->
     <nav class="hidden lg:flex items-center justify-center gap-2 xl:gap-3 text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 max-w-4xl mx-auto">
       
-      <!-- Home -->
-      <button onclick="switchTab('home')" class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm">
-        <i class="fa-solid fa-house text-indigo-500 group-hover:text-white"></i>
-        <span>Home</span>
+      <!-- DESKTOP TOP NAV MENUS (FULL-WIDTH SPACED PILLS) -->
+<nav class="hidden lg:flex items-center justify-center gap-2 xl:gap-3 text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 max-w-4xl mx-auto">
+  
+  <!-- 1. Home -->
+  <button onclick="switchTab('home')" class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm">
+    <i class="fa-solid fa-house text-indigo-500 group-hover:text-white"></i>
+    <span>Home</span>
+  </button>
+
+  <!-- 🟢 2. Resources & Tools Dropdown (MOVED FIRST) -->
+  <div class="relative group">
+    <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+      <i class="fa-solid fa-toolbox text-sky-500"></i>
+      <span>Resources & Tools</span>
+      <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
+    </button>
+    <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
+      <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-circle-question text-sky-500 w-4 text-center"></i> FAQs
+      </a>
+      <button onclick="switchTab('channels')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-comments text-emerald-500 w-4 text-center"></i> Must Join: UPDATES
       </button>
+      <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-share-nodes text-indigo-500 w-4 text-center"></i> Refer and Earn
+      </a>
+      <button onclick="switchTab('treats')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-slate-800 dark:text-slate-200 font-semibold">
+        <span class="flex items-center gap-2.5"><i class="fa-solid fa-gift text-pink-500 w-4 text-center"></i> Treats & Rewards</span>
+        <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+      <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-graduation-cap text-indigo-500 w-4 text-center"></i> Virtual Orientation
+      </a>
+      <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-paste text-slate-500 w-4 text-center"></i> Post&Chat Templates
+      </a>
+      <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-store text-amber-500 w-4 text-center"></i> Affiliate Shop
+      </a>
+    </div>
+  </div>
 
-      <!-- Analytics & Payouts Dropdown -->
-      <div class="relative group">
-        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
-          <i class="fa-solid fa-chart-line text-indigo-500"></i>
-          <span>Analytics & Payouts</span>
-          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
-        </button>
-        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
-          <button onclick="switchTab('raw-referrals')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-chart-simple text-indigo-500 w-4 text-center"></i> Daily Referrals (RAW)
-          </button>
-          <button onclick="switchTab('leaderboard')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-trophy text-amber-500 w-4 text-center"></i> Leaderboard
-          </button>
-          <button onclick="switchTab('payout')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-wallet text-emerald-500 w-4 text-center"></i> Weekly Payout
-          </button>
-          <button onclick="switchTab('payout-30th')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-calendar-check text-emerald-500 w-4 text-center"></i> Monthly Hires Payout
-          </button>
-          <button onclick="switchTab('invited-affiliates')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-gift text-indigo-500 w-4 text-center"></i> Invite Earnings
-          </button>
-        </div>
-      </div>
+  <!-- 🟢 3. Analytics & Payouts Dropdown (MOVED SECOND) -->
+  <div class="relative group">
+    <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+      <i class="fa-solid fa-chart-line text-indigo-500"></i>
+      <span>Analytics & Payouts</span>
+      <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
+    </button>
+    <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
+      <button onclick="switchTab('raw-referrals')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-chart-simple text-indigo-500 w-4 text-center"></i> Daily Referrals (RAW)
+      </button>
+      <button onclick="switchTab('leaderboard')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-trophy text-amber-500 w-4 text-center"></i> Leaderboard
+      </button>
+      <button onclick="switchTab('payout')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-wallet text-emerald-500 w-4 text-center"></i> Weekly Payout
+      </button>
+      <button onclick="switchTab('payout-30th')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-calendar-check text-emerald-500 w-4 text-center"></i> Monthly Hires Payout
+      </button>
+      <button onclick="switchTab('invited-affiliates')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-gift text-indigo-500 w-4 text-center"></i> Invite Earnings
+      </button>
+    </div>
+  </div>
 
-      <!-- Resources & Tools Dropdown -->
-      <div class="relative group">
-        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
-          <i class="fa-solid fa-toolbox text-sky-500"></i>
-          <span>Resources & Tools</span>
-          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
-        </button>
-        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
-          <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-circle-question text-sky-500 w-4 text-center"></i> FAQs
-          </a>
-          <button onclick="switchTab('channels')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-comments text-emerald-500 w-4 text-center"></i> Must Join: UPDATES
-          </button>
-          <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-share-nodes text-indigo-500 w-4 text-center"></i> Refer and Earn
-          </a>
-          <button onclick="switchTab('treats')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-slate-800 dark:text-slate-200 font-semibold">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-gift text-pink-500 w-4 text-center"></i> Treats & Rewards</span>
-            <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
-          </button>
-          <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-graduation-cap text-indigo-500 w-4 text-center"></i> Virtual Orientation
-          </a>
-          <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-paste text-slate-500 w-4 text-center"></i> Post&Chat Templates
-          </a>
-          <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-store text-amber-500 w-4 text-center"></i> Affiliate Shop
-          </a>
-        </div>
-      </div>
+  <!-- 4. Support & Claims Dropdown -->
+  <div class="relative group">
+    <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+      <i class="fa-solid fa-headset text-rose-500"></i>
+      <span>Support & Claims</span>
+      <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
+    </button>
+    <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
+      <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-bullhorn text-rose-500 w-4 text-center"></i> Dispute? Claim Hire
+      </a>
+      <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-chart-line text-emerald-500 w-4 text-center"></i> Hire's Payout Result
+      </a>
+      <a href="https://linktr.ee/recruitmenthubs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-location-dot text-rose-500 w-4 text-center"></i> PH Addresses
+      </a>
+      <button onclick="switchTab('feedback')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-comment-dots text-purple-500 w-4 text-center"></i> Send Feedback
+      </button>
+      <button onclick="switchTab('settings')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-gear text-slate-500 w-4 text-center"></i> Settings
+      </button>
+    </div>
+  </div>
 
-      <!-- Support & Claims Dropdown -->
-      <div class="relative group">
-        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
-          <i class="fa-solid fa-headset text-rose-500"></i>
-          <span>Support & Claims</span>
-          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
-        </button>
-        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
-          <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-bullhorn text-rose-500 w-4 text-center"></i> Dispute? Claim Hire
-          </a>
-          <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-chart-line text-emerald-500 w-4 text-center"></i> Hire's Payout Result
-          </a>
-          <a href="https://linktr.ee/recruitmenthubs" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-location-dot text-rose-500 w-4 text-center"></i> PH Addresses
-          </a>
-          <button onclick="switchTab('feedback')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-comment-dots text-purple-500 w-4 text-center"></i> Send Feedback
-          </button>
-          <button onclick="switchTab('settings')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-gear text-slate-500 w-4 text-center"></i> Settings
-          </button>
-        </div>
-      </div>
+  <!-- 5. Admin Panel Dropdown -->
+  <div id="admin-top-menu" class="hidden relative group">
+    <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:from-amber-500 hover:to-orange-500 hover:text-white transition-all duration-200 inline-flex items-center gap-2 shadow-sm font-extrabold whitespace-nowrap">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Admin Panel</span>
+      <i class="fa-solid fa-chevron-down text-[10px] opacity-70 group-hover:rotate-180 transition-transform"></i>
+    </button>
+    <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-amber-500/30 rounded-2xl shadow-xl py-2 z-50">
+      <button onclick="switchTab('admin-invitations')" class="w-full text-left px-4 py-2.5 hover:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold flex items-center gap-2.5">
+        <i class="fa-solid fa-users-gear w-4 text-center"></i> Manage Invitations
+      </button>
+      <button onclick="switchTab('admin-users')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-address-book text-indigo-500 w-4 text-center"></i> Affiliate Database
+      </button>
+      <button onclick="switchTab('admin-slideshow')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-images text-sky-500 w-4 text-center"></i> Modify Slideshow
+      </button>
+      <button onclick="switchTab('admin-feedback')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-comments text-purple-500 w-4 text-center"></i> Admin Feedback
+      </button>
+      <button onclick="switchTab('admin-create')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-user-plus text-emerald-500 w-4 text-center"></i> Create Account
+      </button>
+      <button onclick="switchTab('admin-raw')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-chart-line text-indigo-500 w-4 text-center"></i> Manage Raw Referrals
+      </button>
+      <button onclick="switchTab('admin-disburse')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-money-bill-transfer text-emerald-500 w-4 text-center"></i> Disburse Weekly Payout
+      </button>
+      <button onclick="switchTab('admin-disburse-30th')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-calendar-plus text-emerald-500 w-4 text-center"></i> Disburse Monthly Payout
+      </button>
+      <button onclick="switchTab('admin-rewards')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-gift text-pink-500 w-4 text-center"></i> Affiliate Rewards
+      </button>
+      <button onclick="switchTab('admin-ads')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
+        <i class="fa-solid fa-rectangle-ad text-amber-500 w-4 text-center"></i> Create Ads
+      </button>
+    </div>
+  </div>
 
-      <!-- Admin Dropdown (Visible only to Admin role) -->
-      <div id="admin-top-menu" class="hidden relative group">
-        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:from-amber-500 hover:to-orange-500 hover:text-white transition-all duration-200 inline-flex items-center gap-2 shadow-sm font-extrabold whitespace-nowrap">
-          <i class="fa-solid fa-shield-halved"></i>
-          <span>Admin Panel</span>
-          <i class="fa-solid fa-chevron-down text-[10px] opacity-70 group-hover:rotate-180 transition-transform"></i>
-        </button>
-        <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-amber-500/30 rounded-2xl shadow-xl py-2 z-50">
-          <button onclick="switchTab('admin-invitations')" class="w-full text-left px-4 py-2.5 hover:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold flex items-center gap-2.5">
-            <i class="fa-solid fa-users-gear w-4 text-center"></i> Manage Invitations
-          </button>
-          <button onclick="switchTab('admin-users')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-address-book text-indigo-500 w-4 text-center"></i> Affiliate Database
-          </button>
-          <button onclick="switchTab('admin-slideshow')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-images text-sky-500 w-4 text-center"></i> Modify Slideshow
-          </button>
-          <button onclick="switchTab('admin-feedback')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-comments text-purple-500 w-4 text-center"></i> Admin Feedback
-          </button>
-          <button onclick="switchTab('admin-create')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-user-plus text-emerald-500 w-4 text-center"></i> Create Account
-          </button>
-          <button onclick="switchTab('admin-raw')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-chart-line text-indigo-500 w-4 text-center"></i> Manage Raw Referrals
-          </button>
-          <button onclick="switchTab('admin-disburse')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-money-bill-transfer text-emerald-500 w-4 text-center"></i> Disburse Weekly Payout
-          </button>
-          <button onclick="switchTab('admin-disburse-30th')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-calendar-plus text-emerald-500 w-4 text-center"></i> Disburse Monthly Payout
-          </button>
-          <button onclick="switchTab('admin-rewards')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-gift text-pink-500 w-4 text-center"></i> Affiliate Rewards
-          </button>
-          <button onclick="switchTab('admin-ads')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
-            <i class="fa-solid fa-rectangle-ad text-amber-500 w-4 text-center"></i> Create Ads
-          </button>
-        </div>
-      </div>
-
-    </nav>
+</nav>
 
     <!-- RIGHT PROFILE & LOGOUT CONTROLS -->
     <div class="flex items-center gap-3 shrink-0">

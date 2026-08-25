@@ -971,6 +971,46 @@ body.light-mode #assign-recruit-select {
   color: #0f172a !important;
   font-weight: 600 !important;
 }
+
+    CSS
+/* ------------------------------------------------------------
+   🟢 LIGHT MODE DROPDOWN & TOP NAV OVERRIDES
+   ------------------------------------------------------------ */
+
+/* Force Top Navbar & Dropdowns in Light Mode */
+body.light-mode header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode header nav button,
+body.light-mode header nav a {
+  color: #0f172a !important; /* Dark Slate Text */
+}
+
+body.light-mode header nav .group > div {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode header nav .group > div button,
+body.light-mode header nav .group > div a {
+  color: #1e293b !important;
+}
+
+body.light-mode header nav .group > div button:hover,
+body.light-mode header nav .group > div a:hover {
+  background-color: #f1f5f9 !important;
+  color: #4f46e5 !important;
+}
+
+/* Light Mode Admin Dropdown Trigger */
+body.light-mode #admin-top-menu button {
+  background-color: #fff7ed !important;
+  border-color: #fed7aa !important;
+  color: #c2410c !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

@@ -5963,37 +5963,62 @@ window.init30thMonthFilter = () => {
   try {
     let targetEmail = userInput;
 
-    // If user typed a username instead of an email address
+    // If user typed a username (doesn't contain '@')
     if (!userInput.includes('@')) {
+      const originalInput = userInput;
       const cleanUsername = userInput.toLowerCase();
       
-      // Query Firestore for matching username
-      const q = query(collection(db, "users"), where("username", "==", cleanUsername));
-      const snap = await getDocs(q);
+      // 1. First try querying exact match (e.g. AdminNick29)
+      let q = query(collection(db, "users"), where("username", "==", originalInput));
+      let snap = await getDocs(q);
 
+      // 2. If empty, fallback to querying lowercase match (e.g. adminnick29)
       if (snap.empty) {
-        alert("Username not found. Please check your credentials or register.");
-        submitBtn.innerText = "Log In";
-        submitBtn.disabled = false;
-        return;
+        q = query(collection(db, "users"), where("username", "==", cleanUsername));
+        snap = await getDocs(q);
       }
 
-      targetEmail = snap.docs[0].data().email;
+      // 3. If still empty, check if username exists with first letter capitalized or common formats
+      if (snap.empty) {
+        const usersSnap = await getDocs(collection(db, "users"));
+        let matchedDoc = null;
+        
+        usersSnap.forEach(d => {
+          const u = d.data();
+          if (u.username && u.username.toLowerCase() === cleanUsername) {
+            matchedDoc = d;
+          }
+        });
+
+        if (matchedDoc) {
+          targetEmail = matchedDoc.data().email;
+        } else {
+          alert("Username not found. Please check your credentials or register.");
+          submitBtn.innerText = "Log In";
+          submitBtn.disabled = false;
+          return;
+        }
+      } else {
+        targetEmail = snap.docs[0].data().email;
+      }
     }
 
-    // Authenticate with Firebase Auth
+    // Authenticate with Firebase Auth using resolved email
     await signInWithEmailAndPassword(auth, targetEmail, password);
     e.target.reset();
 
   } catch (error) {
     console.error("Login error details:", error);
-    alert("Login failed: " + error.message);
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+      alert("Invalid password. Please check your password and try again.");
+    } else {
+      alert("Login failed: " + error.message);
+    }
   } finally {
     submitBtn.innerText = "Log In";
     submitBtn.disabled = false;
   }
 });
-
     document.getElementById('public-forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button');

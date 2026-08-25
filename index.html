@@ -1227,6 +1227,31 @@ html.dark body.light-mode #admin-top-menu:hover button * {
   background-color: #ea580c !important; /* Vivid Orange Background */
   color: #ffffff !important; /* Pure White Text & Icons */
 }
+
+    /* ------------------------------------------------------------
+   🟢 FIXED SCREEN DISPLAY: ISOLATE AUTH VIEW
+   ------------------------------------------------------------ */
+
+/* Ensure Auth Screen acts as a full-screen overlay when visible */
+#auth-screen:not(.hidden) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100 !important;
+  overflow-y: auto !important;
+  background-color: #f8fafc !important; /* Matches Light Mode background */
+}
+
+body:not(.light-mode) #auth-screen:not(.hidden) {
+  background-color: #020617 !important; /* Dark Slate for Dark Mode */
+}
+
+/* Hide dashboard completely when auth screen is active */
+#auth-screen:not(.hidden) ~ #dashboard-screen,
+#auth-screen:not(.hidden) ~ #community-chat-widget {
+  display: none !important;
+}
+
+    
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -6601,14 +6626,19 @@ window.init30thMonthFilter = () => {
     const loginTime = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
     const currentTime = Date.now();
 
+    // 1. Session Expiration Check (12 Hours)
     if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
       localStorage.removeItem('loginTimestamp');
       await signOut(auth);
       
-      // 🟢 Safe Optional Chaining Checks
+      // Hide all authenticated dashboard elements
       document.getElementById('admin-top-menu')?.classList.add('hidden');
       document.getElementById('admin-menu')?.classList.add('hidden');
+      document.getElementById('mobile-top-dropdown')?.classList.add('hidden');
+      document.getElementById('community-chat-widget')?.classList.add('hidden');
       document.getElementById('dashboard-screen')?.classList.add('hidden');
+      
+      // Reveal Auth Screen
       document.getElementById('auth-screen')?.classList.remove('hidden');
       
       alert("Your 12-hour session has expired. Please log in again to continue.");
@@ -6644,13 +6674,13 @@ window.init30thMonthFilter = () => {
           applyTheme(userData.theme);
         }
 
-        // 🟢 POPULATE PROFILE INFORMATION INPUTS
+        // Populate Profile Inputs
         if (document.getElementById('setting-firstname')) document.getElementById('setting-firstname').value = userData.firstName || '';
         if (document.getElementById('setting-lastname')) document.getElementById('setting-lastname').value = userData.lastName || '';
         if (document.getElementById('setting-phone')) document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
         if (document.getElementById('setting-email')) document.getElementById('setting-email').value = userData.email || user.email || '';
 
-        // POPULATE PAYMENT METHOD INPUTS IF ALREADY SET
+        // Populate Payment Method
         if (userData.paymentMethod) {
           const bankSelect = document.getElementById('setting-bank');
           if (bankSelect) {
@@ -6666,8 +6696,10 @@ window.init30thMonthFilter = () => {
         if (userData.accountName && document.getElementById('setting-account-name')) document.getElementById('setting-account-name').value = userData.accountName;
         if (userData.accountNumber && document.getElementById('setting-account-num')) document.getElementById('setting-account-num').value = userData.accountNumber;
 
+        // 🟢 REVEAL DASHBOARD & FLOATING WIDGETS / HIDE AUTH SCREEN
         document.getElementById('auth-screen')?.classList.add('hidden');
         document.getElementById('dashboard-screen')?.classList.remove('hidden');
+        document.getElementById('community-chat-widget')?.classList.remove('hidden');
         
         const welcomeEl = document.getElementById('welcome-message');
         if (welcomeEl) welcomeEl.innerText = `Welcome, ${userData.firstName || userData.username || 'Affiliate'}`;
@@ -6697,17 +6729,17 @@ window.init30thMonthFilter = () => {
         if (typeof initRawMonthFilter === 'function') initRawMonthFilter();
         if (typeof window.init30thMonthFilter === 'function') window.init30thMonthFilter();
 
-        // 🟢 SHOW ADMIN MENUS IF USER IS ADMIN (SAFE ELEMENT ACCESS)
+        // Admin Menu Toggles
         if (userData.role === 'admin') {
-          document.getElementById('admin-top-menu')?.classList.remove('hidden'); // Top Nav Dropdown
-          document.getElementById('admin-menu')?.classList.remove('hidden');     // Mobile Drawer Menu
+          document.getElementById('admin-top-menu')?.classList.remove('hidden');
+          document.getElementById('admin-menu')?.classList.remove('hidden');
           await loadAffiliates();
         } else {
           document.getElementById('admin-top-menu')?.classList.add('hidden');
           document.getElementById('admin-menu')?.classList.add('hidden');
         }
 
-        // Start Realtime Listeners (Affiliate-Safe)
+        // Start Realtime Listeners
         listenToSlideshow();
         initUserAdsEngine();
         listenToMonthlyLeaderboard();
@@ -6718,7 +6750,7 @@ window.init30thMonthFilter = () => {
         if (typeof window.listenToUser30thInvoices === 'function') window.listenToUser30thInvoices(window.currentUid);
         if (typeof window.listenToCommunityChat === 'function') window.listenToCommunityChat();
 
-        // Admin-Only Realtime Listeners
+        // Admin Listeners
         if (userData.role === 'admin') {
           listenToPendingPayouts(); 
           listenToAdminFeedback(); 
@@ -6729,9 +6761,10 @@ window.init30thMonthFilter = () => {
           listenToAdmin30thPayoutsTrack();
         }
       } else {
-        // Fallback for phone users without an existing document profile
+        // Fallback profile state
         document.getElementById('auth-screen')?.classList.add('hidden');
         document.getElementById('dashboard-screen')?.classList.remove('hidden');
+        document.getElementById('community-chat-widget')?.classList.remove('hidden');
         
         const welcomeEl = document.getElementById('welcome-message');
         if (welcomeEl) welcomeEl.innerText = `Welcome, Affiliate`;
@@ -6742,9 +6775,12 @@ window.init30thMonthFilter = () => {
       console.error("Error fetching user data on auth change:", error);
     }
   } else {
+    // 🟢 UNAUTHENTICATED STATE: Hide Dashboard & Floating Widgets Completely
     window.currentUid = null;
-    document.getElementById('auth-screen')?.classList.remove('hidden');
     document.getElementById('dashboard-screen')?.classList.add('hidden');
+    document.getElementById('community-chat-widget')?.classList.add('hidden');
+    document.getElementById('mobile-top-dropdown')?.classList.add('hidden');
+    document.getElementById('auth-screen')?.classList.remove('hidden');
   }
 });
 
@@ -7322,29 +7358,40 @@ window.init30thMonthFilter = () => {
     };
 
     window.logout = async () => {
-      if (slideshowTimer) { clearInterval(slideshowTimer); slideshowTimer = null; }
-      if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
-      if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
-      if (unsub30thLeaderboard) { unsub30thLeaderboard(); unsub30thLeaderboard = null; }
-      if (unsubUser30thInvoices) { unsubUser30thInvoices(); unsubUser30thInvoices = null; }
-      if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
-      if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
-      if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
-      if (unsubSlideshow) { unsubSlideshow(); unsubSlideshow = null; }
-      if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
-      if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
-      if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }
-      if (unsubAdminPending30thPayouts) { unsubAdminPending30thPayouts(); unsubAdminPending30thPayouts = null; }
-      if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
-      if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
-      if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
-      if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
+  if (slideshowTimer) { clearInterval(slideshowTimer); slideshowTimer = null; }
+  if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
+  if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
+  if (unsub30thLeaderboard) { unsub30thLeaderboard(); unsub30thLeaderboard = null; }
+  if (unsubUser30thInvoices) { unsubUser30thInvoices(); unsubUser30thInvoices = null; }
+  if (unsubUserRewards) { unsubUserRewards(); unsubUserRewards = null; }
+  if (unsubUserPayouts) { unsubUserPayouts(); unsubUserPayouts = null; }
+  if (unsubUserAds) { unsubUserAds(); unsubUserAds = null; }
+  if (unsubSlideshow) { unsubSlideshow(); unsubSlideshow = null; }
+  if (unsubAdminAds) { unsubAdminAds(); unsubAdminAds = null; }
+  if (unsubAdminFeedback) { unsubAdminFeedback(); unsubAdminFeedback = null; }
+  if (unsubAdminPendingPayouts) { unsubAdminPendingPayouts(); unsubAdminPendingPayouts = null; }
+  if (unsubAdminPending30thPayouts) { unsubAdminPending30thPayouts(); unsubAdminPending30thPayouts = null; }
+  if (unsubAdmin30thTrack) { unsubAdmin30thTrack(); unsubAdmin30thTrack = null; }
+  if (unsubAdminRewards) { unsubAdminRewards(); unsubAdminRewards = null; }
+  if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
+  if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
 
-      await signOut(auth);
-      localStorage.removeItem('loginTimestamp');
-      document.getElementById('admin-menu').classList.add('hidden');
-      document.getElementById('login-form').reset();
-    };
+  await signOut(auth);
+  localStorage.removeItem('loginTimestamp');
+  
+  // Hide all dashboard structures
+  document.getElementById('admin-top-menu')?.classList.add('hidden');
+  document.getElementById('admin-menu')?.classList.add('hidden');
+  document.getElementById('mobile-top-dropdown')?.classList.add('hidden');
+  document.getElementById('dashboard-screen')?.classList.add('hidden');
+  document.getElementById('community-chat-widget')?.classList.add('hidden');
+  
+  // Show clean auth screen
+  document.getElementById('auth-screen')?.classList.remove('hidden');
+  if (document.getElementById('login-form')) {
+    document.getElementById('login-form').reset();
+  }
+};
   </script>
 <!-- FLOATING COMMUNITY CHAT WIDGET -->
 <div id="community-chat-widget" class="fixed bottom-4 right-4 z-50 flex flex-col items-end font-sans">

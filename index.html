@@ -1057,6 +1057,80 @@ body.light-mode #home-nav-grid > a:hover {
   border-color: #cbd5e1 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 LIGHT MODE HOVER CONTRAST FIX FOR NAV BUTTONS
+   ------------------------------------------------------------ */
+
+body.light-mode header nav button,
+body.light-mode header nav .group > button {
+  color: #0f172a !important;
+}
+
+body.light-mode header nav button:hover,
+body.light-mode header nav button:hover i,
+body.light-mode header nav .group:hover > button,
+body.light-mode header nav .group:hover > button i {
+  color: #ffffff !important;
+}
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE LIGHT MODE FIX: MOBILE TOP DROPDOWN / SIDEBAR
+   ------------------------------------------------------------ */
+
+/* Mobile Container & Section Wrappers */
+body.light-mode #mobile-top-dropdown,
+body.light-mode #main-sidebar {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Category Headings & Dividers */
+body.light-mode #mobile-top-dropdown span.uppercase,
+body.light-mode #main-sidebar span.uppercase {
+  color: #64748b !important; /* Muted Slate Label */
+  font-weight: 800 !important;
+}
+
+body.light-mode #mobile-top-dropdown div.border-t,
+body.light-mode #main-sidebar div.border-t {
+  border-color: #f1f5f9 !important;
+}
+
+/* Menu Text Buttons & Links */
+body.light-mode #mobile-top-dropdown button,
+body.light-mode #mobile-top-dropdown a,
+body.light-mode #main-sidebar button,
+body.light-mode #main-sidebar a {
+  color: #1e293b !important; /* High-contrast Dark Text */
+  font-weight: 700 !important;
+}
+
+/* Hover / Active Button States */
+body.light-mode #mobile-top-dropdown button:hover,
+body.light-mode #mobile-top-dropdown a:hover,
+body.light-mode #main-sidebar button:hover,
+body.light-mode #main-sidebar a:hover {
+  background-color: #f1f5f9 !important;
+  color: #4f46e5 !important; /* Indigo Highlight */
+  border-radius: 0.5rem;
+}
+
+/* Mobile Admin Section Header & Items */
+body.light-mode #admin-menu span.uppercase {
+  color: #c2410c !important; /* Amber/Orange Accent */
+}
+
+body.light-mode #admin-menu button {
+  color: #475569 !important;
+}
+
+body.light-mode #admin-menu button:hover {
+  color: #ea580c !important;
+  background-color: #fff7ed !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1286,31 +1360,33 @@ body.light-mode #home-nav-grid > a:hover {
     </div>
   </div>
 
-<!-- TOP NAVIGATION BAR (ENHANCED LEGIBILITY & LIGHT/DARK ADAPTIVE) -->
+<!-- TOP NAVIGATION BAR (FULL WIDTH & OPTIMIZED SPACING) -->
 <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 shadow-sm transition-colors">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
+  <div class="max-w-[95%] mx-auto px-2 sm:px-4 py-2.5 flex items-center justify-between gap-4">
     
     <!-- BRAND LOGO -->
     <div class="flex items-center gap-2.5 cursor-pointer shrink-0" onclick="switchTab('home')">
       <img src="Logo New.png" alt="Olympuz Logo" class="w-9 h-9 object-contain">
-      <span class="font-black text-lg text-indigo-600 dark:text-indigo-400 tracking-tight">Olympuz Affiliate Portal</span>
+      <span class="font-black text-lg text-indigo-600 dark:text-indigo-400 tracking-tight whitespace-nowrap">Olympuz Affiliate</span>
     </div>
 
-    <!-- DESKTOP TOP NAV MENUS -->
-    <nav class="hidden lg:flex items-center gap-1.5 text-sm font-bold text-slate-800 dark:text-slate-200">
+    <!-- DESKTOP TOP NAV MENUS (FULL-WIDTH SPACED PILLS) -->
+    <nav class="hidden lg:flex items-center justify-center gap-2 xl:gap-3 text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 max-w-4xl mx-auto">
       
       <!-- Home -->
-      <button onclick="switchTab('home')" class="px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-        Home
+      <button onclick="switchTab('home')" class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-house text-indigo-500 group-hover:text-white"></i>
+        <span>Home</span>
       </button>
 
       <!-- Analytics & Payouts Dropdown -->
       <div class="relative group">
-        <button class="px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition inline-flex items-center gap-1.5">
+        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+          <i class="fa-solid fa-chart-line text-indigo-500"></i>
           <span>Analytics & Payouts</span>
-          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:rotate-180 transition"></i>
+          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
         </button>
-        <div class="absolute left-0 top-full hidden group-hover:block w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 transition-all">
+        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
           <button onclick="switchTab('raw-referrals')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
             <i class="fa-solid fa-chart-simple text-indigo-500 w-4 text-center"></i> Daily Referrals (RAW)
           </button>
@@ -1331,11 +1407,12 @@ body.light-mode #home-nav-grid > a:hover {
 
       <!-- Resources & Tools Dropdown -->
       <div class="relative group">
-        <button class="px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition inline-flex items-center gap-1.5">
+        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+          <i class="fa-solid fa-toolbox text-sky-500"></i>
           <span>Resources & Tools</span>
-          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:rotate-180 transition"></i>
+          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
         </button>
-        <div class="absolute left-0 top-full hidden group-hover:block w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 transition-all">
+        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
           <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
             <i class="fa-solid fa-circle-question text-sky-500 w-4 text-center"></i> FAQs
           </a>
@@ -1347,7 +1424,7 @@ body.light-mode #home-nav-grid > a:hover {
           </a>
           <button onclick="switchTab('treats')" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-slate-800 dark:text-slate-200 font-semibold">
             <span class="flex items-center gap-2.5"><i class="fa-solid fa-gift text-pink-500 w-4 text-center"></i> Treats & Rewards</span>
-            <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
+            <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
           </button>
           <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
             <i class="fa-solid fa-graduation-cap text-indigo-500 w-4 text-center"></i> Virtual Orientation
@@ -1363,11 +1440,12 @@ body.light-mode #home-nav-grid > a:hover {
 
       <!-- Support & Claims Dropdown -->
       <div class="relative group">
-        <button class="px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition inline-flex items-center gap-1.5">
+        <button class="px-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all duration-200 inline-flex items-center gap-2 shadow-sm whitespace-nowrap">
+          <i class="fa-solid fa-headset text-rose-500"></i>
           <span>Support & Claims</span>
-          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:rotate-180 transition"></i>
+          <i class="fa-solid fa-chevron-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform"></i>
         </button>
-        <div class="absolute left-0 top-full hidden group-hover:block w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 transition-all">
+        <div class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
           <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-semibold">
             <i class="fa-solid fa-bullhorn text-rose-500 w-4 text-center"></i> Dispute? Claim Hire
           </a>
@@ -1386,14 +1464,14 @@ body.light-mode #home-nav-grid > a:hover {
         </div>
       </div>
 
-      <!-- Admin Dropdown -->
+      <!-- Admin Dropdown (Visible only to Admin role) -->
       <div id="admin-top-menu" class="hidden relative group">
-        <button class="px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition inline-flex items-center gap-1.5 font-extrabold">
+        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:from-amber-500 hover:to-orange-500 hover:text-white transition-all duration-200 inline-flex items-center gap-2 shadow-sm font-extrabold whitespace-nowrap">
           <i class="fa-solid fa-shield-halved"></i>
           <span>Admin Panel</span>
-          <i class="fa-solid fa-chevron-down text-[10px] group-hover:rotate-180 transition"></i>
+          <i class="fa-solid fa-chevron-down text-[10px] opacity-70 group-hover:rotate-180 transition-transform"></i>
         </button>
-        <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-amber-500/30 rounded-2xl shadow-xl py-2 z-50 transition-all">
+        <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white dark:bg-slate-900 border border-amber-500/30 rounded-2xl shadow-xl py-2 z-50">
           <button onclick="switchTab('admin-invitations')" class="w-full text-left px-4 py-2.5 hover:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold flex items-center gap-2.5">
             <i class="fa-solid fa-users-gear w-4 text-center"></i> Manage Invitations
           </button>
@@ -1429,17 +1507,17 @@ body.light-mode #home-nav-grid > a:hover {
 
     </nav>
 
-    <!-- RIGHT PROFILE & MOBILE MENU TRIGGER -->
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('settings')">
-        <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border border-indigo-500 overflow-hidden flex items-center justify-center shrink-0">
+    <!-- RIGHT PROFILE & LOGOUT CONTROLS -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="switchTab('settings')">
+        <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
           <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
           <i id="header-avatar-icon" class="fa-solid fa-user text-xs text-slate-400"></i>
         </div>
-        <span id="welcome-message" class="hidden sm:inline font-extrabold text-xs text-slate-800 dark:text-slate-200">Welcome, Affiliate</span>
+        <span id="welcome-message" class="hidden xl:inline font-extrabold text-xs text-slate-800 dark:text-slate-200">Welcome, Affiliate</span>
       </div>
 
-      <button onclick="logout()" class="hidden sm:inline-block text-xs bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-1.5 rounded-xl hover:bg-red-600/20 font-bold transition">
+      <button onclick="logout()" class="hidden sm:inline-block text-xs bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-2 rounded-xl hover:bg-red-600 hover:text-white transition font-bold shadow-sm">
         Logout
       </button>
 
@@ -1450,7 +1528,7 @@ body.light-mode #home-nav-grid > a:hover {
 
   </div>
 </header>
-
+  
  <!-- MOBILE TOP DROPDOWN MENU (REPLACES OLD SIDEBAR DRAWER) -->
 <div id="mobile-top-dropdown" class="hidden lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-4 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-xl transition-all">
   

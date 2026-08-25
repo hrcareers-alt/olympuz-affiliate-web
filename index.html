@@ -1621,6 +1621,59 @@ body.light-mode #tab-invited-affiliates .bg-slate-900 {
       </div>
     </div>
 
+    <!-- MANUAL AFFILIATE INVITATION ASSIGNMENT FORM -->
+<div class="bg-white dark:bg-slate-900 border border-amber-300 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+    <i class="fa-solid fa-link text-amber-500 text-base"></i>
+    <h3 class="font-extrabold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
+      Manually Assign Affiliate to Inviter Bucket
+    </h3>
+  </div>
+  <p class="text-xs text-slate-600 dark:text-slate-400">
+    Retroactively link or assign an existing affiliate recruit under an Inviter's referral bucket.
+  </p>
+
+  <form id="admin-manual-assign-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+    <!-- Select Inviter -->
+    <div>
+      <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+        Select Inviter (Uploader) *
+      </label>
+      <select 
+        id="assign-inviter-select" 
+        required 
+        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500"
+      >
+        <option value="">-- Choose Inviter --</option>
+      </select>
+    </div>
+
+    <!-- Select Recruit -->
+    <div>
+      <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+        Select Recruit (Invited Affiliate) *
+      </label>
+      <select 
+        id="assign-recruit-select" 
+        required 
+        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500"
+      >
+        <option value="">-- Choose Recruit --</option>
+      </select>
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button 
+        type="submit" 
+        class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold py-2 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5"
+      >
+        <i class="fa-solid fa-user-plus"></i> Assign to Bucket
+      </button>
+    </div>
+  </form>
+</div>
+
     <!-- INVITER SUMMARY BUCKETS TABLE -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
       <div class="p-4 bg-slate-950/60 border-b border-slate-800 font-bold text-xs text-slate-300 flex items-center justify-between">
@@ -2728,6 +2781,86 @@ window.closePosterModal = function() {
   const modal = document.getElementById('poster-lightbox-modal');
   if (modal) modal.classList.add('hidden');
 };
+
+    // 🟢 POPULATE INVITER AND RECRUIT DROPDOWNS
+window.populateManualAssignDropdowns = () => {
+  const inviterSelect = document.getElementById('assign-inviter-select');
+  const recruitSelect = document.getElementById('assign-recruit-select');
+
+  if (!inviterSelect || !recruitSelect) return;
+
+  const defaultOption = '<option value="">-- Choose Affiliate --</option>';
+  inviterSelect.innerHTML = defaultOption;
+  recruitSelect.innerHTML = defaultOption;
+
+  allAffiliates.forEach(u => {
+    const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || u.email || 'Affiliate';
+    const optHTML = `<option value="${u.id}">${fullName} (@${u.username || 'no-username'})</option>`;
+    inviterSelect.innerHTML += optHTML;
+    recruitSelect.innerHTML += optHTML;
+  });
+};
+
+// 🟢 SUBMIT MANUAL INVITATION LINKING FORM
+document.getElementById('admin-manual-assign-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button');
+
+  const inviterUid = document.getElementById('assign-inviter-select').value;
+  const recruitUid = document.getElementById('assign-recruit-select').value;
+
+  if (!inviterUid || !recruitUid) {
+    return alert("Please select both an Inviter and a Recruit.");
+  }
+
+  if (inviterUid === recruitUid) {
+    return alert("An affiliate cannot be assigned under their own bucket!");
+  }
+
+  submitBtn.innerText = "Assigning...";
+  submitBtn.disabled = true;
+
+  try {
+    const inviterUser = allAffiliates.find(u => u.id === inviterUid);
+    const recruitUser = allAffiliates.find(u => u.id === recruitUid);
+
+    const inviterName = `${inviterUser?.firstName || ''} ${inviterUser?.lastName || ''}`.trim() || inviterUser?.username || 'Affiliate';
+    const recruitName = `${recruitUser?.firstName || ''} ${recruitUser?.lastName || ''}`.trim() || recruitUser?.username || 'Affiliate';
+
+    const inviteId = `${inviterUid}_${recruitUid}`;
+
+    // Calculate initial raw count for accuracy
+    const rawCount = await fetchUserRawReferralCount(recruitUid);
+    const isQualified = rawCount >= 100;
+
+    await setDoc(doc(db, "invitations", inviteId), {
+      inviterUid: inviterUid,
+      inviterUsername: inviterUser?.username || 'user',
+      inviterName: inviterName,
+      invitedUid: recruitUid,
+      invitedUsername: recruitUser?.username || 'user',
+      invitedName: recruitName,
+      dateJoined: new Date(),
+      rawReferralsCount: rawCount,
+      targetGoal: 100,
+      rewardAmount: 50,
+      status: isQualified ? 'QUALIFIED' : 'IN_PROGRESS',
+      qualificationDate: isQualified ? new Date() : null,
+      paidDate: null,
+      adminRemarks: 'Manually Assigned by Admin',
+      receiptUrl: ''
+    });
+
+    alert(`Successfully assigned ${recruitName} under ${inviterName}'s bucket!`);
+    e.target.reset();
+  } catch (err) {
+    console.error("Manual bucket assignment error:", err);
+    alert("Failed to assign invite: " + err.message);
+  } finally {
+    submitBtn.innerText = "Assign to Bucket";
+    submitBtn.disabled = false;
+  }
+});
 
     // ============================================================
 // 🟢 ADMIN MANAGEMENT HUB: INVITER BUCKETS & PAYOUT MANAGEMENT

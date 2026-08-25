@@ -1451,58 +1451,94 @@ body.light-mode #home-nav-grid > a:hover {
   </div>
 </header>
 
-  <!-- MOBILE NAVIGATION DRAWER -->
-<div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden lg:hidden"></div>
-
-<div id="main-sidebar" class="fixed inset-y-0 right-0 w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-5 z-50 transform translate-x-full lg:hidden transition-transform duration-300 ease-in-out overflow-y-auto space-y-5">
-  <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-    <div class="font-black text-sm text-indigo-600 dark:text-indigo-400">Navigation Menu</div>
-    <button onclick="toggleMobileSidebar()" class="text-slate-400 hover:text-slate-600 text-lg">
-      <i class="fa-solid fa-xmark"></i>
+ <!-- MOBILE TOP DROPDOWN MENU (REPLACES OLD SIDEBAR DRAWER) -->
+<div id="mobile-top-dropdown" class="hidden lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-4 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-xl transition-all">
+  
+  <button onclick="switchTab('home')" class="w-full text-left py-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+    <i class="fa-solid fa-house text-indigo-500"></i> Home
+  </button>
+  
+  <div class="space-y-1.5 pt-1">
+    <span class="text-[10px] uppercase font-extrabold text-slate-400 block tracking-wider">Analytics & Payouts</span>
+    <button onclick="switchTab('raw-referrals')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-chart-simple text-indigo-500 w-4"></i> Daily Referrals (RAW)
+    </button>
+    <button onclick="switchTab('leaderboard')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-trophy text-amber-500 w-4"></i> Leaderboard
+    </button>
+    <button onclick="switchTab('payout')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-wallet text-emerald-500 w-4"></i> Weekly Payout
+    </button>
+    <button onclick="switchTab('payout-30th')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-calendar-check text-emerald-500 w-4"></i> Monthly Hires Payout
+    </button>
+    <button onclick="switchTab('invited-affiliates')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-gift text-indigo-500 w-4"></i> Invite Earnings
     </button>
   </div>
 
-  <div class="space-y-4 text-xs font-bold text-slate-800 dark:text-slate-200">
-    <button onclick="switchTab('home')" class="w-full text-left py-2 border-b border-slate-100 dark:border-slate-800">Home</button>
-    
-    <div>
-      <span class="text-[10px] uppercase font-extrabold text-slate-400 block mb-1">Analytics & Payouts</span>
-      <button onclick="switchTab('raw-referrals')" class="w-full text-left py-1.5 pl-2">Daily Referrals (RAW)</button>
-      <button onclick="switchTab('leaderboard')" class="w-full text-left py-1.5 pl-2">Leaderboard</button>
-      <button onclick="switchTab('payout')" class="w-full text-left py-1.5 pl-2">Weekly Payout</button>
-      <button onclick="switchTab('payout-30th')" class="w-full text-left py-1.5 pl-2">Monthly Hires Payout</button>
-      <button onclick="switchTab('invited-affiliates')" class="w-full text-left py-1.5 pl-2">Invite Earnings</button>
-    </div>
+  <div class="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
+    <span class="text-[10px] uppercase font-extrabold text-slate-400 block tracking-wider">Resources & Tools</span>
+    <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-circle-question text-sky-500 w-4"></i> FAQs
+    </a>
+    <button onclick="switchTab('channels')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-comments text-emerald-500 w-4"></i> Must Join: UPDATES
+    </button>
+    <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-share-nodes text-indigo-500 w-4"></i> Refer and Earn
+    </a>
+    <button onclick="switchTab('treats')" class="w-full text-left py-1.5 pl-2 flex items-center justify-between">
+      <span class="flex items-center gap-2"><i class="fa-solid fa-gift text-pink-500 w-4"></i> Treats & Rewards</span>
+      <span id="treats-unread-badge" class="hidden bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
+    </button>
+    <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-graduation-cap text-indigo-500 w-4"></i> Virtual Orientation
+    </a>
+    <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-paste text-slate-500 w-4"></i> Post&Chat Templates
+    </a>
+    <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-store text-amber-500 w-4"></i> Affiliate Shop
+    </a>
+  </div>
 
-    <div>
-      <span class="text-[10px] uppercase font-extrabold text-slate-400 block mb-1">Resources & Tools</span>
-      <a href="https://tinyurl.com/FAQsReferAndEarn" target="_blank" class="block py-1.5 pl-2">FAQs</a>
-      <button onclick="switchTab('channels')" class="w-full text-left py-1.5 pl-2">Must Join: UPDATES</button>
-      <a href="https://olympuz-org.com/remotejobs" target="_blank" class="block py-1.5 pl-2">Refer and Earn</a>
-      <button onclick="switchTab('treats')" class="w-full text-left py-1.5 pl-2">Treats & Rewards</button>
-      <a href="https://canva.link/6w1sd44q12vf40f" target="_blank" class="block py-1.5 pl-2">Virtual Orientation</a>
-      <a href="https://tinyurl.com/OlympuzTemplates" target="_blank" class="block py-1.5 pl-2">Post&Chat Templates</a>
-      <a href="https://linktr.ee/EarnPassiveWithUs" target="_blank" class="block py-1.5 pl-2">Affiliate Shop</a>
-    </div>
+  <div class="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
+    <span class="text-[10px] uppercase font-extrabold text-slate-400 block tracking-wider">Support & Claims</span>
+    <a href="https://tinyurl.com/MonitorYourEARNINGS" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-bullhorn text-rose-500 w-4"></i> Dispute? Claim Hire
+    </a>
+    <a href="https://tinyurl.com/MonitoringIncentives" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-chart-line text-emerald-500 w-4"></i> Hire's Payout Result
+    </a>
+    <a href="https://linktr.ee/recruitmenthubs" target="_blank" class="block py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-location-dot text-rose-500 w-4"></i> PH Addresses
+    </a>
+    <button onclick="switchTab('feedback')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-comment-dots text-purple-500 w-4"></i> Send Feedback
+    </button>
+    <button onclick="switchTab('settings')" class="w-full text-left py-1.5 pl-2 flex items-center gap-2">
+      <i class="fa-solid fa-gear text-slate-500 w-4"></i> Account Settings
+    </button>
+  </div>
 
-    <!-- ADMIN SECTION IN MOBILE DRAWER -->
-    <div id="admin-menu" class="hidden border-t border-slate-200 dark:border-slate-800 pt-3">
-      <span class="text-[10px] uppercase font-extrabold text-amber-500 block mb-1">Admin Panel</span>
-      <button onclick="switchTab('admin-invitations')" class="w-full text-left py-1.5 pl-2 text-amber-600 dark:text-amber-400">Manage Invitations</button>
-      <button onclick="switchTab('admin-users')" class="w-full text-left py-1.5 pl-2">Affiliate Database</button>
-      <button onclick="switchTab('admin-slideshow')" class="w-full text-left py-1.5 pl-2">Modify Slideshow</button>
-      <button onclick="switchTab('admin-feedback')" class="w-full text-left py-1.5 pl-2">Admin Feedback</button>
-      <button onclick="switchTab('admin-create')" class="w-full text-left py-1.5 pl-2">Create Account</button>
-      <button onclick="switchTab('admin-raw')" class="w-full text-left py-1.5 pl-2">Manage Raw Referrals</button>
-      <button onclick="switchTab('admin-disburse')" class="w-full text-left py-1.5 pl-2">Disburse Weekly Payout</button>
-      <button onclick="switchTab('admin-disburse-30th')" class="w-full text-left py-1.5 pl-2">Disburse Monthly Payout</button>
-      <button onclick="switchTab('admin-rewards')" class="w-full text-left py-1.5 pl-2">Affiliate Rewards</button>
-      <button onclick="switchTab('admin-ads')" class="w-full text-left py-1.5 pl-2">Create Ads</button>
-    </div>
+  <!-- ADMIN SECTION IN MOBILE DROPDOWN -->
+  <div id="admin-menu" class="hidden border-t border-slate-100 dark:border-slate-800 pt-3 space-y-1.5">
+    <span class="text-[10px] uppercase font-extrabold text-amber-500 block tracking-wider">Admin Panel</span>
+    <button onclick="switchTab('admin-invitations')" class="w-full text-left py-1.5 pl-2 text-amber-600 dark:text-amber-400 font-bold">Manage Invitations</button>
+    <button onclick="switchTab('admin-users')" class="w-full text-left py-1.5 pl-2">Affiliate Database</button>
+    <button onclick="switchTab('admin-slideshow')" class="w-full text-left py-1.5 pl-2">Modify Slideshow</button>
+    <button onclick="switchTab('admin-feedback')" class="w-full text-left py-1.5 pl-2">Admin Feedback</button>
+    <button onclick="switchTab('admin-create')" class="w-full text-left py-1.5 pl-2">Create Account</button>
+    <button onclick="switchTab('admin-raw')" class="w-full text-left py-1.5 pl-2">Manage Raw Referrals</button>
+    <button onclick="switchTab('admin-disburse')" class="w-full text-left py-1.5 pl-2">Disburse Weekly Payout</button>
+    <button onclick="switchTab('admin-disburse-30th')" class="w-full text-left py-1.5 pl-2">Disburse Monthly Payout</button>
+    <button onclick="switchTab('admin-rewards')" class="w-full text-left py-1.5 pl-2">Affiliate Rewards</button>
+    <button onclick="switchTab('admin-ads')" class="w-full text-left py-1.5 pl-2">Create Ads</button>
+  </div>
 
-    <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
-      <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-2 rounded-xl text-center">Logout</button>
-    </div>
+  <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+    <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-2 rounded-xl text-center">Logout</button>
   </div>
 </div>
 
@@ -2959,21 +2995,19 @@ body.light-mode #home-nav-grid > a:hover {
       }
     };
 
-    window.toggleMobileSidebar = function() {
-      const sidebar = document.getElementById('main-sidebar');
-      const overlay = document.getElementById('sidebar-overlay');
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    };
+   window.toggleMobileSidebar = function() {
+  const dropdown = document.getElementById('mobile-top-dropdown');
+  if (dropdown) {
+    dropdown.classList.toggle('hidden');
+  }
+};
 
-    window.closeSidebarOnMobile = function() {
-      const sidebar = document.getElementById('main-sidebar');
-      const overlay = document.getElementById('sidebar-overlay');
-      if (!sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-    };
+window.closeSidebarOnMobile = function() {
+  const dropdown = document.getElementById('mobile-top-dropdown');
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    dropdown.classList.add('hidden');
+  }
+};
 
     window.toggleAuthView = function(view) {
       const loginView = document.getElementById('auth-login-view');

@@ -1325,6 +1325,26 @@ body.light-mode .tab-content p,
 body.light-mode .tab-content span {
   color: #0f172a;
 }
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX: PREVENT TABS FROM STACKING BELOW HOME
+   ------------------------------------------------------------ */
+
+/* Force hidden tabs to occupy zero space */
+.tab-content.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Force active tab to fill the view container */
+.tab-content:not(.hidden) {
+  display: block !important;
+  visibility: visible !important;
+  width: 100% !important;
+  min-height: calc(100vh - 120px) !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -3223,23 +3243,23 @@ body.light-mode .tab-content span {
     window.switchTab = function(tabName) {
   if (!tabName) return;
 
-  // 1. Hide ALL tab sections
+  // 1. Force ALL tab sections to hide completely
   document.querySelectorAll('.tab-content').forEach(el => {
     el.classList.add('hidden');
     el.style.setProperty('display', 'none', 'important');
   });
 
-  // 2. Un-hide target tab section
+  // 2. Un-hide ONLY the targeted tab section
   const activeTab = document.getElementById(`tab-${tabName}`);
   if (activeTab) {
     activeTab.classList.remove('hidden');
     activeTab.style.setProperty('display', 'block', 'important');
   } else {
-    console.error(`Tab section "tab-${tabName}" not found in HTML.`);
+    console.error(`Tab section "tab-${tabName}" was not found in HTML.`);
     return;
   }
 
-  // 3. Tab-specific Data Triggers
+  // 3. Trigger Data Listeners for Active Tab
   try {
     if (tabName === 'raw-referrals' && typeof window.listenToRawLeaderboard === 'function') {
       window.listenToRawLeaderboard();
@@ -3260,16 +3280,16 @@ body.light-mode .tab-content span {
       window.fetchAffiliateDatabase();
     }
   } catch (err) {
-    console.warn("Tab listener warning:", err.message);
+    console.warn("Tab trigger warning:", err.message);
   }
 
-  // 4. Close mobile menu dropdown if open
+  // 4. Close mobile menu if open
   const mobileDropdown = document.getElementById('mobile-top-dropdown');
   if (mobileDropdown && !mobileDropdown.classList.contains('hidden')) {
     mobileDropdown.classList.add('hidden');
   }
 
-  // 5. Scroll page smoothly to top
+  // 5. Scroll page cleanly back to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 

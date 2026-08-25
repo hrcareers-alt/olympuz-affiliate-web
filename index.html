@@ -1251,19 +1251,23 @@ body:not(.light-mode) #auth-screen:not(.hidden) {
   display: none !important;
 }
 
- /* ------------------------------------------------------------
-   🟢 ABSOLUTE BLANK SCREEN FIX: TAB CONTENT VISIBILITY
+/* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX FOR BLANK DASHBOARD DISPLAY
    ------------------------------------------------------------ */
 
-/* Ensure main content wrapper takes full width and height */
-main {
-  width: 100% !important;
-  min-height: calc(100vh - 70px) !important;
+/* Force main content container to display */
+#dashboard-screen main,
+body.light-mode #dashboard-screen main {
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
+  min-height: calc(100vh - 80px) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: transparent !important;
 }
 
-/* Ensure active tab sections render clearly in Light Mode */
+/* Force visible tab sections to show */
 .tab-content:not(.hidden) {
   display: block !important;
   width: 100% !important;
@@ -1271,16 +1275,56 @@ main {
   visibility: visible !important;
 }
 
-/* Fix light mode section text & background overrides */
-body.light-mode .tab-content {
+/* Fix light mode text colors inside tab sections */
+body.light-mode .tab-content h1,
+body.light-mode .tab-content h2,
+body.light-mode .tab-content h3,
+body.light-mode .tab-content h4,
+body.light-mode .tab-content p,
+body.light-mode .tab-content span {
+  color: #0f172a;
+}
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX: FORCE VISIBILITY & CONTRAST IN LIGHT MODE
+   ------------------------------------------------------------ */
+
+/* Ensure dashboard wrapper takes full screen height and width */
+#dashboard-screen:not(.hidden) {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Force visible tab sections to display */
+.tab-content:not(.hidden) {
+  display: block !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Light mode text contrast overrides */
+body.light-mode #dashboard-screen {
+  background-color: #f8fafc !important;
   color: #0f172a !important;
 }
 
+body.light-mode #dashboard-screen main {
+  background-color: transparent !important;
+}
+
+body.light-mode .tab-content h1,
 body.light-mode .tab-content h2,
 body.light-mode .tab-content h3,
-body.light-mode .tab-content h4 {
-  color: #0f172a !important;
-}   
+body.light-mode .tab-content h4,
+body.light-mode .tab-content p,
+body.light-mode .tab-content span {
+  color: #0f172a;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

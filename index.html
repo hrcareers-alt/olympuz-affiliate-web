@@ -1477,6 +1477,44 @@ body.light-mode header button[onclick="toggleMobileSidebar()"]:hover {
   background-color: #e2e8f0 !important;
   color: #4f46e5 !important;
 }
+
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX: FORCE BURGER ICON VISIBILITY ON MOBILE
+   ------------------------------------------------------------ */
+
+/* Ensure top header flex container doesn't overflow or clip children */
+header > div {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Force the right controls block to stay visible */
+header .flex.items-center.gap-3.shrink-0 {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force the burger icon button to display on mobile */
+header button[onclick="toggleMobileSidebar()"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 99 !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Light mode background fix for mobile burger button */
+body.light-mode header button[onclick="toggleMobileSidebar()"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -1860,25 +1898,28 @@ body.light-mode header button[onclick="toggleMobileSidebar()"]:hover {
 </nav>
 
     <!-- RIGHT PROFILE & LOGOUT CONTROLS -->
-<div class="flex items-center gap-3 shrink-0">
+<div class="flex items-center gap-2 sm:gap-3 shrink-0">
+  
+  <!-- Profile Avatar Pill -->
   <div class="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="switchTab('settings')">
-    <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
       <img id="header-avatar-img" src="" class="w-full h-full object-cover hidden" alt="Avatar">
       <i id="header-avatar-icon" class="fa-solid fa-user text-xs text-slate-400"></i>
     </div>
     <span id="welcome-message" class="hidden xl:inline font-extrabold text-xs text-slate-800 dark:text-slate-200">Welcome, Affiliate</span>
   </div>
 
+  <!-- Logout Button (Desktop/Tablet) -->
   <button onclick="logout()" class="hidden sm:inline-block text-xs bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-2 rounded-xl hover:bg-red-600 hover:text-white transition font-bold shadow-sm">
     Logout
   </button>
 
-  <!-- 🟢 MOBILE BURGER BUTTON -->
-  <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-lg shadow-sm border border-slate-200 dark:border-slate-700/60 transition">
+  <!-- Burger Icon (Always Displayed on Mobile/Tablet) -->
+  <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-base shadow-sm border border-slate-200 dark:border-slate-700/60 transition">
     <i class="fa-solid fa-bars"></i>
   </button>
-</div>
 
+</div>
   </div>
 </header>
   

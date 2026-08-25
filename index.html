@@ -1184,6 +1184,49 @@ html.dark body.light-mode header div.cursor-pointer > div {
   border-color: #4f46e5 !important; /* Bold indigo border around avatar */
   background-color: #f1f5f9 !important;
 }
+    /* ------------------------------------------------------------
+   🟢 ABSOLUTE FIX: TOP NAVIGATION BUTTON HOVER CONTRAST
+   ------------------------------------------------------------ */
+
+/* Normal state: Slate text on light gray background pill */
+body.light-mode header nav button,
+body.light-mode header nav a,
+html.dark body.light-mode header nav button,
+html.dark body.light-mode header nav a {
+  color: #0f172a !important; /* Dark Slate Text */
+  background-color: #f1f5f9 !important; /* Light Slate Pill */
+  border-color: #cbd5e1 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Hover state: Indigo background with crisp WHITE text & icons */
+body.light-mode header nav button:hover,
+body.light-mode header nav button:hover *,
+body.light-mode header nav .group:hover > button,
+body.light-mode header nav .group:hover > button *,
+html.dark body.light-mode header nav button:hover,
+html.dark body.light-mode header nav button:hover *,
+html.dark body.light-mode header nav .group:hover > button,
+html.dark body.light-mode header nav .group:hover > button * {
+  background-color: #4f46e5 !important; /* Indigo Background */
+  color: #ffffff !important; /* Pure White Text & Icons */
+}
+
+/* Admin Panel Button Normal & Hover States */
+body.light-mode #admin-top-menu button,
+html.dark body.light-mode #admin-top-menu button {
+  background-color: #fff7ed !important;
+  border-color: #fed7aa !important;
+  color: #c2410c !important;
+}
+
+body.light-mode #admin-top-menu:hover button,
+body.light-mode #admin-top-menu:hover button *,
+html.dark body.light-mode #admin-top-menu:hover button,
+html.dark body.light-mode #admin-top-menu:hover button * {
+  background-color: #ea580c !important; /* Vivid Orange Background */
+  color: #ffffff !important; /* Pure White Text & Icons */
+}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">

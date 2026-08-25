@@ -5965,7 +5965,10 @@ window.init30thMonthFilter = () => {
 
     // If user typed a username instead of an email address
     if (!userInput.includes('@')) {
-      const q = query(collection(db, "users"), where("username", "==", userInput.toLowerCase()));
+      const cleanUsername = userInput.toLowerCase();
+      
+      // Query Firestore for matching username
+      const q = query(collection(db, "users"), where("username", "==", cleanUsername));
       const snap = await getDocs(q);
 
       if (snap.empty) {
@@ -5983,6 +5986,7 @@ window.init30thMonthFilter = () => {
     e.target.reset();
 
   } catch (error) {
+    console.error("Login error details:", error);
     alert("Login failed: " + error.message);
   } finally {
     submitBtn.innerText = "Log In";

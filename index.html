@@ -6344,10 +6344,13 @@ window.init30thMonthFilter = () => {
     if (loginTime && (currentTime - loginTime > TWELVE_HOURS_MS)) {
       localStorage.removeItem('loginTimestamp');
       await signOut(auth);
+      
+      // 🟢 Safe Optional Chaining Checks
       document.getElementById('admin-top-menu')?.classList.add('hidden');
       document.getElementById('admin-menu')?.classList.add('hidden');
-      document.getElementById('dashboard-screen').classList.add('hidden');
-      document.getElementById('auth-screen').classList.remove('hidden');
+      document.getElementById('dashboard-screen')?.classList.add('hidden');
+      document.getElementById('auth-screen')?.classList.remove('hidden');
+      
       alert("Your 12-hour session has expired. Please log in again to continue.");
       return;
     }
@@ -6403,8 +6406,8 @@ window.init30thMonthFilter = () => {
         if (userData.accountName && document.getElementById('setting-account-name')) document.getElementById('setting-account-name').value = userData.accountName;
         if (userData.accountNumber && document.getElementById('setting-account-num')) document.getElementById('setting-account-num').value = userData.accountNumber;
 
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('dashboard-screen').classList.remove('hidden');
+        document.getElementById('auth-screen')?.classList.add('hidden');
+        document.getElementById('dashboard-screen')?.classList.remove('hidden');
         
         const welcomeEl = document.getElementById('welcome-message');
         if (welcomeEl) welcomeEl.innerText = `Welcome, ${userData.firstName || userData.username || 'Affiliate'}`;
@@ -6434,9 +6437,9 @@ window.init30thMonthFilter = () => {
         if (typeof initRawMonthFilter === 'function') initRawMonthFilter();
         if (typeof window.init30thMonthFilter === 'function') window.init30thMonthFilter();
 
-        // 🟢 SHOW ADMIN MENUS IF USER IS ADMIN
+        // 🟢 SHOW ADMIN MENUS IF USER IS ADMIN (SAFE ELEMENT ACCESS)
         if (userData.role === 'admin') {
-          document.getElementById('admin-top-menu')?.classList.remove('hidden'); // Desktop Nav Dropdown
+          document.getElementById('admin-top-menu')?.classList.remove('hidden'); // Top Nav Dropdown
           document.getElementById('admin-menu')?.classList.remove('hidden');     // Mobile Drawer Menu
           await loadAffiliates();
         } else {
@@ -6467,8 +6470,8 @@ window.init30thMonthFilter = () => {
         }
       } else {
         // Fallback for phone users without an existing document profile
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('dashboard-screen').classList.remove('hidden');
+        document.getElementById('auth-screen')?.classList.add('hidden');
+        document.getElementById('dashboard-screen')?.classList.remove('hidden');
         
         const welcomeEl = document.getElementById('welcome-message');
         if (welcomeEl) welcomeEl.innerText = `Welcome, Affiliate`;
@@ -6480,8 +6483,8 @@ window.init30thMonthFilter = () => {
     }
   } else {
     window.currentUid = null;
-    document.getElementById('auth-screen').classList.remove('hidden');
-    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('auth-screen')?.classList.remove('hidden');
+    document.getElementById('dashboard-screen')?.classList.add('hidden');
   }
 });
 

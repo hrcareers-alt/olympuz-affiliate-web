@@ -3234,36 +3234,88 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
         <section id="tab-admin-disburse" class="tab-content hidden space-y-6">
   <h2 class="text-xl font-bold text-amber-400">Weekly Payout & Withdrawal Management</h2>
 
-  <!-- 🟢 1. ADMIN OVERRIDE / MODIFY WEEKLY VALID REFERRALS -->
-  <div class="bg-slate-900 p-6 rounded-2xl border border-indigo-500/40 space-y-4 shadow-xl">
+  <!-- 🟢 1. DISBURSE / STAGE NEW WEEKLY PAYOUT -->
+  <div class="bg-slate-900 p-6 rounded-2xl border border-emerald-500/40 space-y-4 shadow-xl">
     <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
-      <i class="fa-solid fa-pen-to-square text-indigo-400"></i>
-      <h3 class="font-bold text-indigo-400 text-sm uppercase tracking-wider">Modify / Adjust Affiliate Weekly Valid Referrals</h3>
+      <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i>
+      <h3 class="font-bold text-emerald-400 text-sm uppercase tracking-wider">Disburse / Stage New Weekly Payout</h3>
     </div>
-    <p class="text-xs text-slate-300">Use this tool to correct or set valid weekly endorsements for an affiliate in case of system or calculation errors.</p>
-    
-    <form id="admin-modify-referrals-form" onsubmit="submitModifyWeeklyReferrals(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+    <p class="text-xs text-slate-300">Stage a new weekly payout record for an affiliate. It will move to pending approvals before being finalized.</p>
+
+    <div class="space-y-4">
       <div>
         <label class="block text-xs text-slate-400 mb-1 font-semibold">Select Affiliate *</label>
-        <select id="modify-ref-user-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
+        <select id="disburse-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200" onchange="window.loadUserDisburseDetails()">
           <option value="">-- Choose Affiliate --</option>
         </select>
       </div>
-      <div>
-        <label class="block text-xs text-indigo-400 mb-1 font-semibold">Total Valid Referrals *</label>
-        <input type="number" id="modify-ref-count" min="0" required placeholder="e.g. 10" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+
+      <div id="disburse-bank-info" class="text-xs text-slate-300 bg-slate-950/60 p-3 rounded-lg border border-slate-800 hidden space-y-1">
+        <div><strong>Payment Method:</strong> <span id="disburse-method" class="text-emerald-400 font-bold">-</span></div>
+        <div><strong>Account Number:</strong> <span id="disburse-account" class="text-slate-200 font-bold">-</span></div>
       </div>
-      <div>
-        <label class="block text-xs text-emerald-400 mb-1 font-semibold">Calculated Amount (PHP) *</label>
-        <input type="number" id="modify-amount-count" min="0" step="0.01" required placeholder="e.g. 500.00" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs text-indigo-400 mb-1 font-semibold">Total Valid Referrals *</label>
+          <input type="number" id="disburse-referrals" min="0" placeholder="e.g. 5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+        </div>
+        <div>
+          <label class="block text-xs text-emerald-400 mb-1 font-semibold">Amount to Credit (PHP) *</label>
+          <input type="number" id="disburse-amount" min="0" step="0.01" placeholder="e.g. 250.00" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+        </div>
       </div>
-      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg text-xs transition col-span-full">
-        Update & Sync Valid Referrals
+
+      <button onclick="window.submitPreApproval()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
+        Stage Payout for Approval
       </button>
-    </form>
+    </div>
   </div>
 
-  <!-- 🟢 2. PENDING WITHDRAWAL REQUESTS QUEUE -->
+  <!-- 🟢 2. MODIFY / ADJUST EXISTING WEEKLY PAYOUT ENTRY -->
+  <div class="bg-slate-900 p-6 rounded-2xl border border-indigo-500/40 space-y-4 shadow-xl">
+    <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+      <i class="fa-solid fa-pen-to-square text-indigo-400"></i>
+      <h3 class="font-bold text-indigo-400 text-sm uppercase tracking-wider">Modify / Edit Existing Weekly Payout Record</h3>
+    </div>
+    <p class="text-xs text-slate-300">Select an affiliate to fetch their current/latest weekly payout record and adjust the total valid referrals or credited earnings.</p>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs text-slate-400 mb-1 font-semibold">Select Affiliate to Inspect/Edit *</label>
+        <select id="modify-ref-user-select" onchange="window.loadLatestPayoutForModification()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
+          <option value="">-- Choose Affiliate --</option>
+        </select>
+      </div>
+
+      <!-- Dynamic Form Container -->
+      <div id="modify-payout-fields" class="space-y-3 hidden">
+        <input type="hidden" id="modify-payout-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-indigo-400 mb-1 font-semibold">Current Valid Referrals *</label>
+            <input type="number" id="modify-ref-count" min="0" required class="w-full bg-slate-950 border border-indigo-500/40 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+          </div>
+          <div>
+            <label class="block text-xs text-emerald-400 mb-1 font-semibold">Current Earnings Amount (PHP) *</label>
+            <input type="number" id="modify-amount-count" min="0" step="0.01" required class="w-full bg-slate-950 border border-emerald-500/40 rounded-lg px-3 py-2 text-xs text-slate-200 font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1 font-semibold">Remarks / Note</label>
+          <input type="text" id="modify-remarks" placeholder="Reason for correction..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
+        </div>
+
+        <button onclick="window.saveModifiedPayoutRecord(this)" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
+          Save Corrected Payout Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟢 3. PENDING WITHDRAWAL REQUESTS QUEUE -->
   <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
     <h3 class="text-base font-bold text-white flex items-center gap-2">
       <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Pending Withdrawal Requests
@@ -3665,6 +3717,85 @@ let unsubPendingWithdrawals = null;
 
     let otpTimerInterval = null;
     let otpCountdown = 60;
+
+    // 🟢 Load an Affiliate's Latest Approved/Staged Payout for Modification
+window.loadLatestPayoutForModification = async () => {
+  const userId = document.getElementById('modify-ref-user-select')?.value;
+  const fieldsDiv = document.getElementById('modify-payout-fields');
+
+  if (!userId) {
+    if (fieldsDiv) fieldsDiv.classList.add('hidden');
+    return;
+  }
+
+  try {
+    const q = query(
+      collection(db, "payouts"),
+      where("userId", "==", userId)
+    );
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      alert("No existing payout records found for this affiliate to modify.");
+      if (fieldsDiv) fieldsDiv.classList.add('hidden');
+      return;
+    }
+
+    // Sort to get the newest record
+    const payouts = [];
+    snap.forEach(d => payouts.push({ id: d.id, ...d.data() }));
+    payouts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    const latest = payouts[0];
+
+    // Populate fields
+    document.getElementById('modify-payout-id').value = latest.id;
+    document.getElementById('modify-ref-count').value = latest.referrals || 0;
+    document.getElementById('modify-amount-count').value = latest.amount || 0;
+    document.getElementById('modify-remarks').value = latest.remarks || '';
+
+    fieldsDiv.classList.remove('hidden');
+  } catch (err) {
+    console.error("Error loading payout for edit:", err);
+    alert("Failed to load payout record: " + err.message);
+  }
+};
+
+// 🟢 Save Corrected Weekly Payout Record
+window.saveModifiedPayoutRecord = async (btn) => {
+  const payoutId = document.getElementById('modify-payout-id')?.value;
+  const referrals = parseInt(document.getElementById('modify-ref-count')?.value, 10);
+  const amount = parseFloat(document.getElementById('modify-amount-count')?.value);
+  const remarks = document.getElementById('modify-remarks')?.value.trim();
+
+  if (!payoutId) return alert("No payout record selected.");
+  if (isNaN(referrals) || isNaN(amount)) return alert("Please enter valid numbers for referrals and amount.");
+
+  btn.innerText = "Saving Changes...";
+  btn.disabled = true;
+
+  try {
+    await updateDoc(doc(db, "payouts", payoutId), {
+      referrals: referrals,
+      amount: amount,
+      remarks: remarks || "Corrected by Admin",
+      updatedAt: new Date().toISOString()
+    });
+
+    alert("Weekly payout record successfully updated and synced!");
+    
+    // Refresh calculations for current user if applicable
+    if (typeof window.calculateAvailableEarnings === 'function' && window.currentUid) {
+      window.calculateAvailableEarnings(window.currentUid);
+    }
+  } catch (err) {
+    console.error("Error updating payout record:", err);
+    alert("Failed to update payout record: " + err.message);
+  } finally {
+    btn.innerText = "Save Corrected Payout Record";
+    btn.disabled = false;
+  }
+};
 
     function listenToAdminFeedback() {
   if (currentUserRole !== 'admin') return;

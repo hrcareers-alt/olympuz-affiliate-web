@@ -3234,7 +3234,7 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
         <section id="tab-admin-disburse" class="tab-content hidden space-y-6">
   <h2 class="text-xl font-bold text-amber-400">Weekly Payout & Withdrawal Management</h2>
 
-  <!-- 🟢 1. DISBURSE / STAGE NEW WEEKLY PAYOUT -->
+  <!-- 1. DISBURSE / STAGE NEW WEEKLY PAYOUT -->
   <div class="bg-slate-900 p-6 rounded-2xl border border-emerald-500/40 space-y-4 shadow-xl">
     <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
       <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i>
@@ -3272,7 +3272,7 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
     </div>
   </div>
 
-  <!-- 🟢 2. MODIFY / ADJUST EXISTING WEEKLY PAYOUT ENTRY -->
+  <!-- 2. MODIFY / ADJUST EXISTING WEEKLY PAYOUT ENTRY -->
   <div class="bg-slate-900 p-6 rounded-2xl border border-indigo-500/40 space-y-4 shadow-xl">
     <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
       <i class="fa-solid fa-pen-to-square text-indigo-400"></i>
@@ -3288,7 +3288,6 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
         </select>
       </div>
 
-      <!-- Dynamic Form Container -->
       <div id="modify-payout-fields" class="space-y-3 hidden">
         <input type="hidden" id="modify-payout-id">
 
@@ -3308,14 +3307,14 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
           <input type="text" id="modify-remarks" placeholder="Reason for correction..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
         </div>
 
-        <button onclick="(this)" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
+        <button onclick="window.saveModifiedPayoutRecord(this)" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
           Save Corrected Payout Record
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 🟢 3. PENDING WITHDRAWAL REQUESTS QUEUE -->
+  <!-- 3. PENDING WITHDRAWAL REQUESTS QUEUE -->
   <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
     <h3 class="text-base font-bold text-white flex items-center gap-2">
       <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Pending Withdrawal Requests
@@ -3324,6 +3323,17 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
       <div class="text-xs text-slate-400 py-4 text-center">Loading pending withdrawal requests...</div>
     </div>
   </div>
+
+  <!-- 🟢 4. PENDING STAGED PAYOUT APPROVALS QUEUE (ADDED BELOW WITHDRAWAL REQUESTS) -->
+  <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+    <h3 class="text-base font-bold text-white flex items-center gap-2">
+      <i class="fa-solid fa-hourglass-half text-indigo-400"></i> Staged Payout Approvals
+    </h3>
+    <div id="pending-approval-list" class="space-y-3">
+      <div class="text-xs text-slate-400 py-4 text-center">Loading pending staged payouts...</div>
+    </div>
+  </div>
+
 </section>
 
         

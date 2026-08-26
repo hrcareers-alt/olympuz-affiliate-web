@@ -1498,15 +1498,17 @@ header .flex.items-center.gap-3.shrink-0 {
 }
 
 /* Force the burger icon button to display on mobile */
-header button[onclick="toggleMobileSidebar()"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 99 !important;
-  min-width: 38px !important;
-  min-height: 38px !important;
-  align-items: center !important;
-  justify-content: center !important;
+@media (max-width: 1023px) {
+  header button[onclick="toggleMobileSidebar()"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 99 !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
 
 /* Light mode background fix for mobile burger button */

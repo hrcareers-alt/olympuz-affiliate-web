@@ -1517,38 +1517,6 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
   color: #0f172a !important;
   border: 1px solid #cbd5e1 !important;
 }
-    /* ------------------------------------------------------------
-   🟢 LIGHT MODE FIXES FOR DISBURSE / STAGE PAYOUT FORM
-   ------------------------------------------------------------ */
-
-body.light-mode #tab-admin-disburse .bg-slate-900 {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #disburse-bank-info {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #334155 !important;
-}
-
-body.light-mode #disburse-bank-info span {
-  color: #0f172a !important;
-}
-
-body.light-mode #tab-admin-disburse select,
-body.light-mode #tab-admin-disburse input[type="number"],
-body.light-mode #tab-admin-disburse input[type="text"] {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-body.light-mode #tab-admin-disburse select option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
@@ -2217,6 +2185,29 @@ body.light-mode #tab-admin-disburse select option {
               <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Your Payout Earnings (Selected Month)</span>
               <span id="user-30th-monthly-amount" class="text-xl font-bold text-emerald-400">₱0.00</span>
             </div>
+          </div>
+
+          <!-- 🟢 AVAILABLE TOTAL EARNINGS & WITHDRAWAL REQUEST BOX (MONTHLY / EVERY 30TH) -->
+          <div class="bg-slate-900 p-4 rounded-xl border border-emerald-500/40 shadow-lg flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-300 text-xs md:text-sm font-bold uppercase tracking-wider">Available Total Earnings</span>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">Withdrawable</span>
+              </div>
+              <div id="available-30th-earnings-amount" class="text-2xl md:text-3xl font-black text-emerald-400 mt-1">₱0.00</div>
+              <p class="text-[10px] text-slate-400 mt-0.5">Minimum request threshold: <strong class="text-emerald-400">PHP 20.00</strong></p>
+            </div>
+
+            <!-- Withdrawal Request Input Form -->
+            <form id="user-30th-withdraw-form" onsubmit="window.submit30thWithdrawalRequest(event)" class="mt-3 space-y-2 pt-2 border-t border-slate-800 max-w-sm">
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">₱</span>
+                <input type="number" id="withdraw-30th-amount-input" min="20" step="0.01" required placeholder="Enter amount to withdraw" class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-2 text-xs text-slate-100 font-bold placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+              </div>
+              <button type="submit" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-paper-plane text-[10px]"></i> Request Withdrawal
+              </button>
+            </form>
           </div>
 
         <!-- MONTHLY HIRES STANDINGS SECTION -->
@@ -3375,44 +3366,55 @@ body.light-mode #tab-admin-disburse select option {
         <section id="tab-admin-disburse-30th" class="tab-content hidden max-w-xl space-y-6">
           <h2 class="text-xl font-semibold text-amber-400">Manage Every 30th (Hires for Payout)</h2>
           
-          <!-- 1. DISBURSE / STAGE NEW WEEKLY PAYOUT -->
-<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-emerald-500/40 space-y-4 shadow-xl text-slate-800 dark:text-slate-100">
-  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-    <i class="fa-solid fa-money-bill-transfer text-emerald-600 dark:text-emerald-400"></i>
-    <h3 class="font-bold text-emerald-600 dark:text-emerald-400 text-sm uppercase tracking-wider">Disburse / Stage New Weekly Payout</h3>
-  </div>
-  <p class="text-xs text-slate-600 dark:text-slate-300">Stage a new weekly payout record for an affiliate. It will move to pending approvals before being finalized.</p>
+          <div class="bg-slate-900 p-6 rounded-xl border border-emerald-500/40 space-y-4 shadow-xl">
+            <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-calendar-plus text-emerald-400"></i>
+              <h3 class="font-bold text-emerald-400">Stage Monthly Hire Payout</h3>
+            </div>
 
-  <div class="space-y-4">
-    <div>
-      <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1 font-semibold">Select Affiliate *</label>
-      <select id="disburse-user-select" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500" onchange="window.loadUserDisburseDetails()">
-        <option value="">-- Choose Affiliate --</option>
-      </select>
-    </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-semibold">Select Affiliate *</label>
+              <select id="disburse-30th-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200" onchange="loadUserDisburse30thDetails()">
+                <option value="">-- Choose Affiliate --</option>
+              </select>
+            </div>
 
-    <!-- 🟢 LIGHT/DARK DYNAMIC PAYMENT INFO BOX -->
-    <div id="disburse-bank-info" class="text-xs text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-950/60 p-3 rounded-lg border border-slate-200 dark:border-slate-800 hidden space-y-1">
-      <div><strong class="text-slate-900 dark:text-slate-100">Payment Method:</strong> <span id="disburse-method" class="text-emerald-600 dark:text-emerald-400 font-bold">-</span></div>
-      <div><strong class="text-slate-900 dark:text-slate-100">Account Number:</strong> <span id="disburse-account" class="text-slate-900 dark:text-slate-100 font-bold">-</span></div>
-    </div>
+            <div id="disburse-30th-bank-info" class="text-sm text-slate-300 bg-slate-950/50 p-3 rounded-lg hidden">
+              <div><strong>Payment Method:</strong> <span id="disburse-30th-method">-</span></div>
+              <div><strong>Account Number:</strong> <span id="disburse-30th-account">-</span></div>
+            </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <label class="block text-xs text-indigo-600 dark:text-indigo-400 mb-1 font-semibold">Total Valid Referrals *</label>
-        <input type="number" id="disburse-referrals" min="0" placeholder="e.g. 5" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:border-indigo-500">
-      </div>
-      <div>
-        <label class="block text-xs text-emerald-600 dark:text-emerald-400 mb-1 font-semibold">Amount to Credit (PHP) *</label>
-        <input type="number" id="disburse-amount" min="0" step="0.01" placeholder="e.g. 250.00" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:border-emerald-500">
-      </div>
-    </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-semibold">Target Month & Year (Resets on 30th) *</label>
+              <input type="month" id="disburse-30th-month" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
 
-    <button onclick="window.submitPreApproval()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
-      Stage Payout for Approval
-    </button>
-  </div>
-</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-indigo-400 mb-1 font-semibold">Total Verified Hires *</label>
+                <input type="number" id="disburse-30th-referrals" min="0" required placeholder="e.g. 5" class="w-full bg-slate-950 border border-indigo-500/40 rounded-lg px-3 py-2 text-slate-200 font-bold">
+              </div>
+
+              <div>
+                <label class="block text-xs text-emerald-400 mb-1 font-semibold">Payout Amount (PHP) *</label>
+                <input type="number" id="disburse-30th-amount" min="0" step="0.01" required placeholder="e.g. 2500" class="w-full bg-slate-950 border border-emerald-500/40 rounded-lg px-3 py-2 text-slate-200 font-bold">
+              </div>
+            </div>
+
+            <button onclick="submit30thPreApproval()" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-md text-xs">
+              Stage Monthly Payout for Approval
+            </button>
+          </div>
+
+          <!-- 🟢 PENDING MONTHLY (30TH) WITHDRAWAL REQUESTS QUEUE -->
+          <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Pending Withdrawal Requests
+            </h3>
+            <div id="pending-30th-withdrawal-list" class="space-y-3">
+              <div class="text-xs text-slate-400 py-4 text-center">Loading pending monthly withdrawal requests...</div>
+            </div>
+          </div>
 
           <div>
             <h3 class="text-lg font-semibold text-white mb-3">Pending Monthly Approvals</h3>
@@ -3758,6 +3760,10 @@ window.toggleAuthView = function(view) {
 let unsubPendingWithdrawals = null;
 let userWithdrawalsArray = [];
 
+// 🟢 Every 30th Withdrawal Request State (mirrors Weekly Withdrawal state above)
+let userAvailable30thEarnings = 0;
+let unsubPending30thWithdrawals = null;
+
 
     let otpTimerInterval = null;
     let otpCountdown = 60;
@@ -4044,6 +4050,185 @@ window.declineWithdrawal = async (withdrawId) => {
     try {
       await updateDoc(doc(db, "withdrawals", withdrawId), { status: 'DECLINED' });
       alert("Withdrawal request declined.");
+    } catch (err) {
+      alert("Error declining request: " + err.message);
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// 🟢 EVERY 30TH (MONTHLY) WITHDRAWAL REQUEST SYSTEM
+// Mirrors the Weekly Payout withdrawal flow above, but sources
+// available balance from "monthly_30th_payouts" (APPROVED) and
+// stores requests in a separate "withdrawals_30th" collection so
+// weekly and monthly withdrawal queues never mix.
+// ══════════════════════════════════════════════════════════════
+
+// 5a. Calculate Available Monthly (30th) Withdrawable Earnings
+window.calculateAvailable30thEarnings = async (uid) => {
+  if (!uid) return;
+
+  try {
+    const payoutsSnap = await getDocs(query(collection(db, "monthly_30th_payouts"), where("userId", "==", uid), where("status", "==", "APPROVED")));
+    let totalEarned = 0;
+    payoutsSnap.forEach(d => { totalEarned += Number(d.data().amount || 0); });
+
+    const withdrawSnap = await getDocs(query(collection(db, "withdrawals_30th"), where("userId", "==", uid)));
+    let totalWithdrawn = 0;
+    withdrawSnap.forEach(d => {
+      const data = d.data();
+      if (data.status === 'APPROVED' || data.status === 'PENDING') {
+        totalWithdrawn += Number(data.amount || 0);
+      }
+    });
+
+    userAvailable30thEarnings = Math.max(0, totalEarned - totalWithdrawn);
+
+    const availEl = document.getElementById('available-30th-earnings-amount');
+    if (availEl) {
+      availEl.innerText = `₱${userAvailable30thEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    }
+  } catch (err) {
+    console.warn("Error calculating available monthly balance:", err);
+  }
+};
+
+// 5b. Submit Affiliate Monthly (30th) Withdrawal Request
+window.submit30thWithdrawalRequest = async (e) => {
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button');
+  const amountInput = document.getElementById('withdraw-30th-amount-input');
+  const amount = parseFloat(amountInput.value);
+  const uid = window.currentUid || (auth.currentUser ? auth.currentUser.uid : null);
+
+  if (!uid) return alert("Session invalid. Please log in again.");
+  if (isNaN(amount) || amount < 20) {
+    return alert("The minimum withdrawal threshold is ₱20.00.");
+  }
+  if (amount > userAvailable30thEarnings) {
+    return alert(`Insufficient balance! Your available monthly earnings balance is ₱${userAvailable30thEarnings.toFixed(2)}.`);
+  }
+
+  submitBtn.innerText = "Submitting Request...";
+  submitBtn.disabled = true;
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+    const fullName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.username || userData.email || 'Affiliate';
+
+    await addDoc(collection(db, "withdrawals_30th"), {
+      userId: uid,
+      userName: fullName,
+      paymentMethod: userData.paymentMethod || 'Not Configured',
+      accountNumber: userData.accountNumber || 'Not Configured',
+      amount: amount,
+      status: 'PENDING',
+      createdAt: new Date().toISOString(),
+      receiptUrl: '',
+      adminRemarks: ''
+    });
+
+    alert(`Monthly withdrawal request for ₱${amount.toFixed(2)} submitted successfully! Admin will process your payout shortly.`);
+    amountInput.value = '';
+    window.calculateAvailable30thEarnings(uid);
+  } catch (err) {
+    alert("Failed to submit monthly withdrawal request: " + err.message);
+  } finally {
+    submitBtn.innerText = "Request Withdrawal";
+    submitBtn.disabled = false;
+  }
+};
+
+// 5c. Admin: Listen to Pending Monthly (30th) Withdrawal Requests
+function listenToPending30thWithdrawals() {
+  if (currentUserRole !== 'admin') return;
+
+  const q = query(collection(db, "withdrawals_30th"), where("status", "==", "PENDING"));
+  if (unsubPending30thWithdrawals) unsubPending30thWithdrawals();
+
+  unsubPending30thWithdrawals = onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('pending-30th-withdrawal-list');
+    if (!container) return;
+
+    if (snapshot.empty) {
+      container.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">No pending monthly withdrawal requests.</div>`;
+      return;
+    }
+
+    let html = '';
+    snapshot.forEach(docSnap => {
+      const item = { id: docSnap.id, ...docSnap.data() };
+      const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
+
+      html += `
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col space-y-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-bold text-sm text-emerald-400">${item.userName}</h4>
+              <p class="text-xs text-slate-400">Method: ${item.paymentMethod} | Account #: ${item.accountNumber}</p>
+              <p class="text-xs text-slate-500">Requested On: ${dateStr}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-lg font-black text-emerald-400">₱${Number(item.amount).toFixed(2)}</span>
+              <button onclick="decline30thWithdrawal('${item.id}')" class="block mt-1 text-[11px] bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded hover:bg-red-600/40">Decline</button>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-800 pt-3 space-y-2">
+            <input type="text" id="withdraw-30th-remark-${item.id}" placeholder="Admin Remarks / Payment Ref #" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200">
+            <div class="flex items-center gap-2">
+              <input type="file" id="withdraw-30th-receipt-${item.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-800 file:text-slate-200">
+              <button onclick="approve30thWithdrawal('${item.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shrink-0">
+                Approve & Attach Receipt
+              </button>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+  });
+}
+
+// 5d. Admin: Approve Monthly (30th) Withdrawal & Upload Receipt
+window.approve30thWithdrawal = async (withdrawId, btn) => {
+  const remarkInput = document.getElementById(`withdraw-30th-remark-${withdrawId}`)?.value.trim() || '';
+  const fileInput = document.getElementById(`withdraw-30th-receipt-${withdrawId}`)?.files[0];
+
+  btn.innerText = "Processing...";
+  btn.disabled = true;
+
+  try {
+    let receiptUrl = '';
+    if (fileInput) {
+      const storageRef = ref(storage, `withdrawal_receipts_30th/${withdrawId}_${Date.now()}_${fileInput.name}`);
+      await uploadBytes(storageRef, fileInput);
+      receiptUrl = await getDownloadURL(storageRef);
+    }
+
+    await updateDoc(doc(db, "withdrawals_30th", withdrawId), {
+      status: 'APPROVED',
+      approvedAt: new Date().toISOString(),
+      adminRemarks: remarkInput || 'Withdrawal Disbursed',
+      receiptUrl: receiptUrl
+    });
+
+    alert("Monthly withdrawal request approved and processed!");
+  } catch (err) {
+    alert("Failed to approve monthly withdrawal: " + err.message);
+  } finally {
+    btn.innerText = "Approve & Attach Receipt";
+    btn.disabled = false;
+  }
+};
+
+// 5e. Admin: Decline Monthly (30th) Withdrawal
+window.decline30thWithdrawal = async (withdrawId) => {
+  if (confirm("Decline this monthly withdrawal request? The amount will be released back to the affiliate's balance.")) {
+    try {
+      await updateDoc(doc(db, "withdrawals_30th", withdrawId), { status: 'DECLINED' });
+      alert("Monthly withdrawal request declined.");
     } catch (err) {
       alert("Error declining request: " + err.message);
     }
@@ -4895,11 +5080,38 @@ window.sendCommunityChatMessage = async (e) => {
 };
     
 
+    // ✏️ Edit / Modify an existing (e.g. already-approved) Monthly Hires record (Exposed to Global Scope)
+    window.edit30thPayout = async (payoutId, currentHires, currentAmount) => {
+      const newHiresInput = prompt("Enter corrected Total Verified Hires:", currentHires);
+      if (newHiresInput === null) return; // cancelled
+
+      const newAmountInput = prompt("Enter corrected Payout Amount (PHP):", currentAmount);
+      if (newAmountInput === null) return; // cancelled
+
+      const newHires = parseInt(newHiresInput, 10);
+      const newAmount = parseFloat(newAmountInput);
+
+      if (isNaN(newHires) || isNaN(newAmount) || newHires < 0 || newAmount < 0) {
+        return alert("Invalid input. Please enter valid non-negative numbers.");
+      }
+
+      try {
+        await updateDoc(doc(db, "monthly_30th_payouts", payoutId), {
+          hires: newHires,
+          referrals: newHires,
+          amount: newAmount
+        });
+        alert("Monthly hire payout record updated successfully!");
+      } catch (err) {
+        alert("Failed to update monthly payout record: " + err.message);
+      }
+    };
+
     // 🗑️ Delete 30th Monthly Payout (Exposed to Global Scope)
     window.delete30thPayout = async (payoutId) => {
       if (confirm("Are you sure you want to permanently delete this monthly payout record? It will be removed from the leaderboard and the affiliate's invoice list.")) {
         try {
-          await deleteDoc(doc(db, "payouts_30th", payoutId));
+          await deleteDoc(doc(db, "monthly_30th_payouts", payoutId));
           alert("Monthly payout record deleted successfully!");
         } catch (err) {
           alert("Failed to delete monthly payout: " + err.message);
@@ -4908,47 +5120,48 @@ window.sendCommunityChatMessage = async (e) => {
     };
 
     // 🔒 Confidential Invoice Listener: Fetches ONLY the logged-in affiliate's approved invoices
+    // 🟢 Real-time listener for the logged-in affiliate's OWN monthly (30th) withdrawal requests.
+    // Only PENDING or APPROVED requests are kept (mirrors the Weekly Payout withdrawal invoice list) —
+    // DECLINED requests are intentionally excluded from "Your Confidential Monthly Invoices".
     window.listenToUser30thInvoices = (uid) => {
   if (!uid) return;
 
-  const invoiceContainer = document.getElementById('user-30th-invoices-list');
-
-  // Query only the payouts belonging to this specific affiliate
   const q = query(
-    collection(db, "monthly_30th_payouts"),
-    where("userId", "==", uid),
-    where("status", "==", "APPROVED")
+    collection(db, "withdrawals_30th"),
+    where("userId", "==", uid)
   );
 
-  onSnapshot(q, (snapshot) => {
-    if (!invoiceContainer) return;
+  if (unsubUser30thInvoices) unsubUser30thInvoices();
+
+  unsubUser30thInvoices = onSnapshot(q, (snapshot) => {
+    const invoiceList = document.getElementById('invoice-30th-list');
+    if (!invoiceList) return;
 
     if (snapshot.empty) {
-      invoiceContainer.innerHTML = `<div class="text-center text-slate-400 py-4 text-xs">No official monthly invoices attached for this period yet.</div>`;
+      invoiceList.innerHTML = "<p class='text-xs text-slate-400 py-4 text-center'>No pending or successful monthly withdrawals found.</p>";
+      document.getElementById('pagination-30th-controls')?.classList.add('hidden');
       return;
     }
 
-    let invoicesHTML = `<div class="space-y-2">`;
+    const records = [];
     snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      invoicesHTML += `
-        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs">
-          <div>
-            <div class="font-bold text-slate-800 dark:text-slate-200">Invoice #${docSnap.id.substring(0, 8).toUpperCase()}</div>
-            <div class="text-[10px] text-slate-400">Period: ${data.period || 'N/A'} | Verified Hires: ${data.hires || 0}</div>
-          </div>
-          <div class="text-right">
-            <div class="font-extrabold text-emerald-600 dark:text-emerald-400">₱${Number(data.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-            <span class="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold uppercase">PAID</span>
-          </div>
-        </div>`;
+      const data = { id: docSnap.id, ...docSnap.data() };
+      if (data.status === 'APPROVED' || data.status === 'PENDING') {
+        records.push(data);
+      }
     });
-    invoicesHTML += `</div>`;
-    invoiceContainer.innerHTML = invoicesHTML;
-  }, (err) => {
-    console.warn("User 30th invoices notice:", err.message);
+
+    records.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    user30thPayoutsArray = records;
+
+    current30thInvoicePage = 1;
+    render30thInvoicePage();
+  }, (error) => {
+    console.warn("Monthly withdrawals invoice listener handled silently:", error.message);
   });
 };
+
+    // 🟢 RENDER "Your Confidential Monthly Invoices" (30TH WITHDRAWAL HISTORY ONLY — pending/successful)
     function render30thInvoicePage() {
       const invoiceList = document.getElementById('invoice-30th-list');
       const paginationControls = document.getElementById('pagination-30th-controls');
@@ -4956,8 +5169,8 @@ window.sendCommunityChatMessage = async (e) => {
       const pageNumbersDiv = document.getElementById('page-30th-numbers');
 
       if (!user30thPayoutsArray || user30thPayoutsArray.length === 0) {
-        invoiceList.innerHTML = "No official monthly invoices attached for this period yet.";
-        paginationControls.classList.add('hidden');
+        invoiceList.innerHTML = "<p class='text-xs text-slate-400 py-4 text-center'>No pending or successful monthly withdrawals found.</p>";
+        if (paginationControls) paginationControls.classList.add('hidden');
         return;
       }
 
@@ -4971,40 +5184,52 @@ window.sendCommunityChatMessage = async (e) => {
 
       invoiceList.innerHTML = "";
       pageItems.forEach((item) => {
-        const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const formattedDate = item.createdAt
+          ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'N/A';
+
+        let statusBadge = `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Pending</span>`;
+        if (item.status === 'APPROVED') {
+          statusBadge = `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Paid / Successful</span>`;
+        }
+
         invoiceList.innerHTML += `
-          <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg mb-2 flex justify-between items-center">
+          <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg mb-2 flex justify-between items-center text-xs">
             <div>
-              <p class="text-sm font-bold text-slate-200">Invoice: #${item.id.substring(0, 6).toUpperCase()}</p>
-              <p class="text-xs text-slate-400 mb-1">Period: ${item.monthKey || 'N/A'} (30th) | Credited: ${formattedDate}</p>
-              ${item.remarks ? `<p class="text-xs text-amber-400 italic">" ${item.remarks} "</p>` : ''}
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-slate-200">Ref: #${item.id.substring(0, 6).toUpperCase()}</span>
+                ${statusBadge}
+              </div>
+              <p class="text-[11px] text-slate-400">Requested: ${formattedDate}</p>
+              ${item.adminRemarks ? `<p class="text-[10px] text-indigo-400 italic">Note: ${item.adminRemarks}</p>` : ''}
             </div>
             <div class="text-right">
               <p class="text-sm text-emerald-400 font-bold">₱${(item.amount || 0).toFixed(2)}</p>
-              <p class="text-xs text-slate-400">${item.referrals || 0} Hires</p>
-              ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-xs hover:bg-indigo-600/40">View Receipt</a>` : ''}
+              ${item.receiptUrl ? `<a href="${item.receiptUrl}" target="_blank" class="inline-block mt-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/50 px-2 py-0.5 rounded text-[10px] hover:bg-indigo-600/40 font-bold"><i class="fa-solid fa-receipt mr-1"></i>View Receipt</a>` : ''}
             </div>
           </div>
         `;
       });
 
       if (totalPages > 1) {
-        paginationControls.classList.remove('hidden');
-        pageIndicator.innerText = `Page ${current30thInvoicePage} of ${totalPages}`;
+        if (paginationControls) paginationControls.classList.remove('hidden');
+        if (pageIndicator) pageIndicator.innerText = `Page ${current30thInvoicePage} of ${totalPages}`;
         document.getElementById('btn-prev-30th-page').disabled = (current30thInvoicePage === 1);
         document.getElementById('btn-next-30th-page').disabled = (current30thInvoicePage === totalPages);
 
-        pageNumbersDiv.innerHTML = "";
-        for (let i = 1; i <= totalPages; i++) {
-          pageNumbersDiv.innerHTML += `
-            <button onclick="goTo30thInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === current30thInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
-              ${i}
-            </button>
-          `;
+        if (pageNumbersDiv) {
+          pageNumbersDiv.innerHTML = "";
+          for (let i = 1; i <= totalPages; i++) {
+            pageNumbersDiv.innerHTML += `
+              <button onclick="goTo30thInvoicePage(${i})" class="px-2.5 py-1 rounded-md ${i === current30thInvoicePage ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+                ${i}
+              </button>
+            `;
+          }
         }
       } else {
-        paginationControls.classList.add('hidden');
-        pageIndicator.innerText = `Showing 1–${user30thPayoutsArray.length} of ${user30thPayoutsArray.length}`;
+        if (paginationControls) paginationControls.classList.add('hidden');
+        if (pageIndicator) pageIndicator.innerText = `Showing 1–${user30thPayoutsArray.length} of ${user30thPayoutsArray.length}`;
       }
     }
 
@@ -7588,6 +7813,7 @@ window.init30thMonthFilter = () => {
         if (typeof window.listenToUser30thInvoices === 'function') window.listenToUser30thInvoices(window.currentUid);
         if (typeof window.listenToCommunityChat === 'function') window.listenToCommunityChat();
         calculateAvailableEarnings(window.currentUid);
+        if (typeof window.calculateAvailable30thEarnings === 'function') window.calculateAvailable30thEarnings(window.currentUid);
 
         // Admin Listeners
         if (userData.role === 'admin') {
@@ -7599,6 +7825,7 @@ window.init30thMonthFilter = () => {
           listenToPending30thPayouts();
           listenToAdmin30thPayoutsTrack();
           listenToPendingWithdrawals();
+          listenToPending30thWithdrawals();
         }
       } else {
         // Fallback profile state

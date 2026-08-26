@@ -3375,45 +3375,44 @@ body.light-mode #tab-admin-disburse select option {
         <section id="tab-admin-disburse-30th" class="tab-content hidden max-w-xl space-y-6">
           <h2 class="text-xl font-semibold text-amber-400">Manage Every 30th (Hires for Payout)</h2>
           
-          <div class="bg-slate-900 p-6 rounded-xl border border-emerald-500/40 space-y-4 shadow-xl">
-            <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
-              <i class="fa-solid fa-calendar-plus text-emerald-400"></i>
-              <h3 class="font-bold text-emerald-400">Stage Monthly Hire Payout</h3>
-            </div>
+          <!-- 1. DISBURSE / STAGE NEW WEEKLY PAYOUT -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-emerald-500/40 space-y-4 shadow-xl text-slate-800 dark:text-slate-100">
+  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+    <i class="fa-solid fa-money-bill-transfer text-emerald-600 dark:text-emerald-400"></i>
+    <h3 class="font-bold text-emerald-600 dark:text-emerald-400 text-sm uppercase tracking-wider">Disburse / Stage New Weekly Payout</h3>
+  </div>
+  <p class="text-xs text-slate-600 dark:text-slate-300">Stage a new weekly payout record for an affiliate. It will move to pending approvals before being finalized.</p>
 
-            <div>
-              <label class="block text-xs text-slate-400 mb-1 font-semibold">Select Affiliate *</label>
-              <select id="disburse-30th-user-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200" onchange="loadUserDisburse30thDetails()">
-                <option value="">-- Choose Affiliate --</option>
-              </select>
-            </div>
+  <div class="space-y-4">
+    <div>
+      <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1 font-semibold">Select Affiliate *</label>
+      <select id="disburse-user-select" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500" onchange="window.loadUserDisburseDetails()">
+        <option value="">-- Choose Affiliate --</option>
+      </select>
+    </div>
 
-            <div id="disburse-30th-bank-info" class="text-sm text-slate-300 bg-slate-950/50 p-3 rounded-lg hidden">
-              <div><strong>Payment Method:</strong> <span id="disburse-30th-method">-</span></div>
-              <div><strong>Account Number:</strong> <span id="disburse-30th-account">-</span></div>
-            </div>
+    <!-- 🟢 LIGHT/DARK DYNAMIC PAYMENT INFO BOX -->
+    <div id="disburse-bank-info" class="text-xs text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-950/60 p-3 rounded-lg border border-slate-200 dark:border-slate-800 hidden space-y-1">
+      <div><strong class="text-slate-900 dark:text-slate-100">Payment Method:</strong> <span id="disburse-method" class="text-emerald-600 dark:text-emerald-400 font-bold">-</span></div>
+      <div><strong class="text-slate-900 dark:text-slate-100">Account Number:</strong> <span id="disburse-account" class="text-slate-900 dark:text-slate-100 font-bold">-</span></div>
+    </div>
 
-            <div>
-              <label class="block text-xs text-slate-400 mb-1 font-semibold">Target Month & Year (Resets on 30th) *</label>
-              <input type="month" id="disburse-30th-month" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
-            </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-xs text-indigo-600 dark:text-indigo-400 mb-1 font-semibold">Total Valid Referrals *</label>
+        <input type="number" id="disburse-referrals" min="0" placeholder="e.g. 5" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="block text-xs text-emerald-600 dark:text-emerald-400 mb-1 font-semibold">Amount to Credit (PHP) *</label>
+        <input type="number" id="disburse-amount" min="0" step="0.01" placeholder="e.g. 250.00" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:border-emerald-500">
+      </div>
+    </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs text-indigo-400 mb-1 font-semibold">Total Verified Hires *</label>
-                <input type="number" id="disburse-30th-referrals" min="0" required placeholder="e.g. 5" class="w-full bg-slate-950 border border-indigo-500/40 rounded-lg px-3 py-2 text-slate-200 font-bold">
-              </div>
-
-              <div>
-                <label class="block text-xs text-emerald-400 mb-1 font-semibold">Payout Amount (PHP) *</label>
-                <input type="number" id="disburse-30th-amount" min="0" step="0.01" required placeholder="e.g. 2500" class="w-full bg-slate-950 border border-emerald-500/40 rounded-lg px-3 py-2 text-slate-200 font-bold">
-              </div>
-            </div>
-
-            <button onclick="submit30thPreApproval()" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-md text-xs">
-              Stage Monthly Payout for Approval
-            </button>
-          </div>
+    <button onclick="window.submitPreApproval()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-md">
+      Stage Payout for Approval
+    </button>
+  </div>
+</div>
 
           <div>
             <h3 class="text-lg font-semibold text-white mb-3">Pending Monthly Approvals</h3>

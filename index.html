@@ -3472,8 +3472,17 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
 
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
-    window.switchTab = function(tabName) {
+window.switchTab = function(tabName) {
   if (!tabName) return;
+
+  // 0. Populate affiliate dropdowns when entering any admin tab
+  if (tabName.startsWith('admin-')) {
+    if (typeof window.populateAllAffiliateDropdowns === 'function') {
+      window.populateAllAffiliateDropdowns();
+    } else if (typeof window.loadAffiliates === 'function') {
+      window.loadAffiliates();
+    }
+  }
 
   // 1. Hide ALL tab sections completely
   document.querySelectorAll('.tab-content').forEach(el => {
@@ -3531,8 +3540,8 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
 window.handleMorphNav = function(targetTab) {
   window.switchTab(targetTab);
 };
-    
-   window.toggleMobileSidebar = function() {
+
+window.toggleMobileSidebar = function() {
   const dropdown = document.getElementById('mobile-top-dropdown');
   if (dropdown) {
     dropdown.classList.toggle('hidden');
@@ -3546,30 +3555,30 @@ window.closeSidebarOnMobile = function() {
   }
 };
 
-    window.toggleAuthView = function(view) {
-      const loginView = document.getElementById('auth-login-view');
-      const regView = document.getElementById('auth-register-view');
-      const successView = document.getElementById('auth-success-view');
-      const forgotView = document.getElementById('auth-forgot-view');
-      const phoneView = document.getElementById('auth-phone-view');
+window.toggleAuthView = function(view) {
+  const loginView = document.getElementById('auth-login-view');
+  const regView = document.getElementById('auth-register-view');
+  const successView = document.getElementById('auth-success-view');
+  const forgotView = document.getElementById('auth-forgot-view');
+  const phoneView = document.getElementById('auth-phone-view');
 
-      if (loginView) loginView.classList.add('hidden');
-      if (regView) regView.classList.add('hidden');
-      if (successView) successView.classList.add('hidden');
-      if (forgotView) forgotView.classList.add('hidden');
-      if (phoneView) phoneView.classList.add('hidden');
+  if (loginView) loginView.classList.add('hidden');
+  if (regView) regView.classList.add('hidden');
+  if (successView) successView.classList.add('hidden');
+  if (forgotView) forgotView.classList.add('hidden');
+  if (phoneView) phoneView.classList.add('hidden');
 
-      if (view === 'login' && loginView) loginView.classList.remove('hidden');
-      if (view === 'register' && regView) regView.classList.remove('hidden');
-      if (view === 'success' && successView) successView.classList.remove('hidden');
-      if (view === 'forgot' && forgotView) forgotView.classList.remove('hidden');
-      if (view === 'phone' && phoneView) {
-        phoneView.classList.remove('hidden');
-        document.getElementById('otp-step-send').classList.remove('hidden');
-        document.getElementById('otp-step-verify').classList.add('hidden');
-      }
-    };
-  </script>
+  if (view === 'login' && loginView) loginView.classList.remove('hidden');
+  if (view === 'register' && regView) regView.classList.remove('hidden');
+  if (view === 'success' && successView) successView.classList.remove('hidden');
+  if (view === 'forgot' && forgotView) forgotView.classList.remove('hidden');
+  if (view === 'phone' && phoneView) {
+    phoneView.classList.remove('hidden');
+    document.getElementById('otp-step-send').classList.remove('hidden');
+    document.getElementById('otp-step-verify').classList.add('hidden');
+  }
+};
+</script>
 
   <!-- FIREBASE APPLICATION MODULE -->
   <script type="module">
@@ -7808,120 +7817,128 @@ window.init30thMonthFilter = () => {
 });
 
     async function loadAffiliates() {
-      try {
-        const q = query(collection(db, "users"), where("role", "==", "affiliate"));
-        const querySnapshot = await getDocs(q);
-        
-        const disburseSelect = document.getElementById('disburse-user-select');
-        const disburse30thSelect = document.getElementById('disburse-30th-user-select');
-        const rewardSelect = document.getElementById('reward-user-select');
-        const dailyRawSelect = document.getElementById('daily-raw-user-select');
-        const pastRawSelect = document.getElementById('past-raw-user-select');
-        const overrideSelect = document.getElementById('override-raw-user-select');
-        
-        const defaultOption = '<option value="">-- Choose Affiliate --</option>';
-        if (disburseSelect) disburseSelect.innerHTML = defaultOption;
-        if (disburse30thSelect) disburse30thSelect.innerHTML = defaultOption;
-        if (rewardSelect) rewardSelect.innerHTML = defaultOption;
-        if (dailyRawSelect) dailyRawSelect.innerHTML = defaultOption;
-        if (pastRawSelect) pastRawSelect.innerHTML = defaultOption;
-        if (overrideSelect) overrideSelect.innerHTML = defaultOption;
+  try {
+    const q = query(collection(db, "users"), where("role", "==", "affiliate"));
+    const querySnapshot = await getDocs(q);
+    
+    const disburseSelect = document.getElementById('disburse-user-select');
+    const disburse30thSelect = document.getElementById('disburse-30th-user-select');
+    const rewardSelect = document.getElementById('reward-user-select');
+    const dailyRawSelect = document.getElementById('daily-raw-user-select');
+    const pastRawSelect = document.getElementById('past-raw-user-select');
+    const overrideSelect = document.getElementById('override-raw-user-select');
+    const modifyRefSelect = document.getElementById('modify-ref-user-select');
+    
+    const defaultOption = '<option value="">-- Choose Affiliate --</option>';
+    if (disburseSelect) disburseSelect.innerHTML = defaultOption;
+    if (disburse30thSelect) disburse30thSelect.innerHTML = defaultOption;
+    if (rewardSelect) rewardSelect.innerHTML = defaultOption;
+    if (dailyRawSelect) dailyRawSelect.innerHTML = defaultOption;
+    if (pastRawSelect) pastRawSelect.innerHTML = defaultOption;
+    if (overrideSelect) overrideSelect.innerHTML = defaultOption;
+    if (modifyRefSelect) modifyRefSelect.innerHTML = defaultOption;
 
-        allAffiliates = [];
+    allAffiliates = [];
 
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          data.id = docSnap.id;
-          allAffiliates.push(data);
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      data.id = docSnap.id;
+      allAffiliates.push(data);
 
-          const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || data.email || 'Unnamed Affiliate';
-          const optionHTML = `<option value="${data.id}">${fullName}</option>`;
+      const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || data.email || 'Unnamed Affiliate';
+      const optionHTML = `<option value="${data.id}">${fullName}</option>`;
 
-          if (disburseSelect) disburseSelect.innerHTML += optionHTML;
-          if (disburse30thSelect) disburse30thSelect.innerHTML += optionHTML;
-          if (rewardSelect) rewardSelect.innerHTML += optionHTML;
-          if (dailyRawSelect) dailyRawSelect.innerHTML += optionHTML;
-          if (pastRawSelect) pastRawSelect.innerHTML += optionHTML;
-          if (overrideSelect) overrideSelect.innerHTML += optionHTML;
-        });
-      } catch (err) {
-        console.warn("Could not load affiliates list:", err.message);
-      }
+      if (disburseSelect) disburseSelect.innerHTML += optionHTML;
+      if (disburse30thSelect) disburse30thSelect.innerHTML += optionHTML;
+      if (rewardSelect) rewardSelect.innerHTML += optionHTML;
+      if (dailyRawSelect) dailyRawSelect.innerHTML += optionHTML;
+      if (pastRawSelect) pastRawSelect.innerHTML += optionHTML;
+      if (overrideSelect) overrideSelect.innerHTML += optionHTML;
+      if (modifyRefSelect) modifyRefSelect.innerHTML += optionHTML;
+    });
+
+    // Also populate inviter/recruit dropdowns if present
+    if (typeof window.populateManualAssignDropdowns === 'function') {
+      window.populateManualAssignDropdowns();
     }
+  } catch (err) {
+    console.warn("Could not load affiliates list:", err.message);
+  }
+}
 
-    window.loadUserDisburseDetails = () => {
-      const selectedId = document.getElementById('disburse-user-select').value;
-      const infoDiv = document.getElementById('disburse-bank-info');
-      if (!selectedId) return infoDiv.classList.add('hidden');
+window.loadUserDisburseDetails = () => {
+  const selectedId = document.getElementById('disburse-user-select').value;
+  const infoDiv = document.getElementById('disburse-bank-info');
+  if (!selectedId) return infoDiv.classList.add('hidden');
 
-      const user = allAffiliates.find(u => u.id === selectedId);
-      document.getElementById('disburse-method').innerText = user.paymentMethod || 'Not Set';
-      document.getElementById('disburse-account').innerText = user.accountNumber || 'Not Set';
-      infoDiv.classList.remove('hidden');
-    };
+  const user = allAffiliates.find(u => u.id === selectedId);
+  document.getElementById('disburse-method').innerText = user.paymentMethod || 'Not Set';
+  document.getElementById('disburse-account').innerText = user.accountNumber || 'Not Set';
+  infoDiv.classList.remove('hidden');
+};
 
-    window.submitPreApproval = async () => {
-      const selectedId = document.getElementById('disburse-user-select').value;
-      const referrals = document.getElementById('disburse-referrals').value;
-      const amount = document.getElementById('disburse-amount').value;
-      if (!selectedId || !referrals || !amount) return alert("Please fill in all fields.");
+window.submitPreApproval = async () => {
+  const selectedId = document.getElementById('disburse-user-select').value;
+  const referrals = document.getElementById('disburse-referrals').value;
+  const amount = document.getElementById('disburse-amount').value;
+  if (!selectedId || !referrals || !amount) return alert("Please fill in all fields.");
 
-      const user = allAffiliates.find(u => u.id === selectedId);
-      try {
-        await addDoc(collection(db, "payouts"), {
-          userId: user.id,
-          userName: `${user.firstName} ${user.lastName}`,
-          paymentMethod: user.paymentMethod || 'None',
-          accountNumber: user.accountNumber || 'None',
-          referrals: parseInt(referrals),
-          amount: parseFloat(amount),
-          status: 'pending',
-          createdAt: new Date().toISOString()
-        });
-        alert("Payout staged for approval!");
-        document.getElementById('disburse-user-select').value = "";
-        document.getElementById('disburse-referrals').value = "";
-        document.getElementById('disburse-amount').value = "";
-        document.getElementById('disburse-bank-info').classList.add('hidden');
-      } catch (error) {
-        alert("Error staging payout: " + error.message);
-      }
-    };
+  const user = allAffiliates.find(u => u.id === selectedId);
+  try {
+    await addDoc(collection(db, "payouts"), {
+      userId: user.id,
+      userName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || user.email,
+      paymentMethod: user.paymentMethod || 'None',
+      accountNumber: user.accountNumber || 'None',
+      referrals: parseInt(referrals),
+      amount: parseFloat(amount),
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+    alert("Payout staged for approval!");
+    document.getElementById('disburse-user-select').value = "";
+    document.getElementById('disburse-referrals').value = "";
+    document.getElementById('disburse-amount').value = "";
+    document.getElementById('disburse-bank-info').classList.add('hidden');
+  } catch (error) {
+    alert("Error staging payout: " + error.message);
+  }
+};
 
-    window.approvePayout = async (payoutId, btn) => {
-      const remarkInput = document.getElementById(`remark-${payoutId}`).value;
-      const fileInput = document.getElementById(`receipt-${payoutId}`).files[0];
+window.approvePayout = async (payoutId, btn) => {
+  const remarkInput = document.getElementById(`remark-${payoutId}`).value;
+  const fileInput = document.getElementById(`receipt-${payoutId}`).files[0];
 
-      if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
+  if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
 
-      btn.innerText = "Uploading...";
-      btn.disabled = true;
-      try {
-        let receiptUrl = "";
-        if (fileInput) {
-          const storageRef = ref(storage, `receipts/${payoutId}_${fileInput.name}`);
-          await uploadBytes(storageRef, fileInput);
-          receiptUrl = await getDownloadURL(storageRef);
-        }
-        await updateDoc(doc(db, "payouts", payoutId), { 
-          status: 'approved',
-          remarks: remarkInput || "",
-          receiptUrl: receiptUrl
-        });
-      } catch (error) {
-        alert("Error approving payout: " + error.message);
-        btn.innerText = "Approve & Upload";
-        btn.disabled = false;
-      }
-    };
+  btn.innerText = "Uploading...";
+  btn.disabled = true;
+  try {
+    let receiptUrl = "";
+    if (fileInput) {
+      const storageRef = ref(storage, `receipts/${payoutId}_${fileInput.name}`);
+      await uploadBytes(storageRef, fileInput);
+      receiptUrl = await getDownloadURL(storageRef);
+    }
+    await updateDoc(doc(db, "payouts", payoutId), { 
+      status: 'approved',
+      remarks: remarkInput || "",
+      receiptUrl: receiptUrl
+    });
+  } catch (error) {
+    alert("Error approving payout: " + error.message);
+    btn.innerText = "Approve & Upload";
+    btn.disabled = false;
+  }
+};
 
-    window.declinePayout = async (payoutId) => {
-      if(confirm("Are you sure you want to decline and remove this payout?")) {
-        await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
-      }
-    };
+window.declinePayout = async (payoutId) => {
+  if (confirm("Are you sure you want to decline and remove this payout?")) {
+    await updateDoc(doc(db, "payouts", payoutId), { status: 'declined' });
+  }
+};
 
-    window.logout = async () => {
+window.logout = async () => {
   if (slideshowTimer) { clearInterval(slideshowTimer); slideshowTimer = null; }
   if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
   if (unsubRawLeaderboard) { unsubRawLeaderboard(); unsubRawLeaderboard = null; }
@@ -7940,6 +7957,7 @@ window.init30thMonthFilter = () => {
   if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
   if (unsubAdminInvitations) { unsubAdminInvitations(); unsubAdminInvitations = null; }
   if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
+  if (unsubPendingWithdrawals) { unsubPendingWithdrawals(); unsubPendingWithdrawals = null; }
 
   await signOut(auth);
   localStorage.removeItem('loginTimestamp');

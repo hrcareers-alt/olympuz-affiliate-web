@@ -5701,12 +5701,8 @@ directoryList.innerHTML += `
             </div>
             <button onclick="decline30thPayout('${docSnap.id}')" class="bg-red-600/20 text-red-400 border border-red-500/50 px-3 py-1 rounded text-xs hover:bg-red-600/40">Decline</button>
           </div>
-          <div class="border-t border-slate-800 pt-3 space-y-2">
-            <input type="text" id="remark-30th-${docSnap.id}" placeholder="Admin Remarks (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500">
-            <div class="flex items-center gap-2">
-              <input type="file" id="receipt-30th-${docSnap.id}" accept="image/*,.pdf" class="flex-1 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
-              <button onclick="approve30thPayout('${docSnap.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Approve & Attach Receipt</button>
-            </div>
+          <div class="border-t border-slate-800 pt-3">
+            <button onclick="approve30thPayout('${docSnap.id}', this)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-bold">Approve</button>
           </div>
         </div>
       `;
@@ -5731,35 +5727,21 @@ directoryList.innerHTML += `
 };
 
     window.approve30thPayout = async (payoutId, btn) => {
-  const remarkInput = document.getElementById(`remark-30th-${payoutId}`).value;
-  const fileInput = document.getElementById(`receipt-30th-${payoutId}`).files[0];
-
-  if (!fileInput && !confirm("Are you sure you want to approve this WITHOUT attaching a receipt?")) return;
-
-  btn.innerText = "Uploading...";
+  btn.innerText = "Approving...";
   btn.disabled = true;
 
   try {
-    let receiptUrl = "";
-    if (fileInput) {
-      const storageRef = ref(storage, `receipts_30th/${payoutId}_${fileInput.name}`);
-      await uploadBytes(storageRef, fileInput);
-      receiptUrl = await getDownloadURL(storageRef);
-    }
-
     // 🟢 UPDATED: Collection changed to "monthly_30th_payouts" & status to uppercase "APPROVED"
     await updateDoc(doc(db, "monthly_30th_payouts", payoutId), { 
-      status: 'APPROVED',
-      remarks: remarkInput || "",
-      receiptUrl: receiptUrl
+      status: 'APPROVED'
     });
 
-    alert("Monthly payout approved and receipt attached!");
+    alert("Monthly payout approved!");
   } catch (error) {
     alert("Error approving monthly payout: " + error.message);
   } finally {
     if (btn) {
-      btn.innerText = "Approve & Attach Receipt";
+      btn.innerText = "Approve";
       btn.disabled = false;
     }
   }

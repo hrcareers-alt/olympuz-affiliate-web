@@ -3723,6 +3723,7 @@ window.toggleAuthView = function(view) {
     let unsubRawLeaderboard = null;
     let unsubUserRewards = null;
     let unsubUserPayouts = null;
+    let unsubUserWithdrawals = null;
     let unsubUserAds = null;
     let unsubSlideshow = null;
     let unsubAdminAds = null;
@@ -7094,7 +7095,8 @@ directoryList.innerHTML += `
     where("userId", "==", uid)
   );
 
-  onSnapshot(qWithdrawals, (snapshot) => {
+  if (unsubUserWithdrawals) unsubUserWithdrawals();
+  unsubUserWithdrawals = onSnapshot(qWithdrawals, (snapshot) => {
     const invoiceList = document.getElementById('invoice-list');
     if (!invoiceList) return;
 
@@ -8407,6 +8409,8 @@ window.logout = async () => {
   if (unsubAdminInvitations) { unsubAdminInvitations(); unsubAdminInvitations = null; }
   if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
   if (unsubPendingWithdrawals) { unsubPendingWithdrawals(); unsubPendingWithdrawals = null; }
+  if (unsubUserWithdrawals) { unsubUserWithdrawals(); unsubUserWithdrawals = null; }
+  if (unsubPending30thWithdrawals) { unsubPending30thWithdrawals(); unsubPending30thWithdrawals = null; }
 
   await signOut(auth);
   localStorage.removeItem('loginTimestamp');

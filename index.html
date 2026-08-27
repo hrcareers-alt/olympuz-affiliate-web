@@ -3888,8 +3888,11 @@ window.saveModifiedPayoutRecord = async (btn) => {
   if (!uid) return;
 
   try {
-    // Fetch user approved payouts
-    const payoutsSnap = await getDocs(query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved")));
+    // Fetch user approved payouts — ONLY those staged through the withdrawal-eligible pipeline.
+    // Legacy payouts (added before this feature, or via the on-the-spot "Modify Valid Referrals"
+    // tool) don't carry withdrawable:true and are intentionally excluded — that money was already
+    // disbursed directly and should not appear as a withdrawable balance.
+    const payoutsSnap = await getDocs(query(collection(db, "payouts"), where("userId", "==", uid), where("status", "==", "approved"), where("withdrawable", "==", true)));
     let totalEarned = 0;
     payoutsSnap.forEach(d => { totalEarned += Number(d.data().amount || 0); });
 
@@ -4069,7 +4072,10 @@ window.calculateAvailable30thEarnings = async (uid) => {
   if (!uid) return;
 
   try {
-    const payoutsSnap = await getDocs(query(collection(db, "monthly_30th_payouts"), where("userId", "==", uid), where("status", "==", "APPROVED")));
+    // ONLY count monthly payouts staged through the withdrawal-eligible pipeline.
+    // Legacy monthly payouts (approved before this feature existed) don't carry
+    // withdrawable:true and are intentionally excluded — already disbursed directly.
+    const payoutsSnap = await getDocs(query(collection(db, "monthly_30th_payouts"), where("userId", "==", uid), where("status", "==", "APPROVED"), where("withdrawable", "==", true)));
     let totalEarned = 0;
     payoutsSnap.forEach(d => { totalEarned += Number(d.data().amount || 0); });
 
@@ -5656,7 +5662,8 @@ directoryList.innerHTML += `
       period: monthInput,
       monthKey: monthInput,
       status: 'PENDING',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      withdrawable: true // 🟢 Only records staged through this approval pipeline count toward the withdrawable balance
     });
 
     alert("Monthly 30th payout staged for approval!");
@@ -8311,7 +8318,8 @@ window.submitPreApproval = async () => {
       referrals: parseInt(referrals),
       amount: parseFloat(amount),
       status: 'pending',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      withdrawable: true // 🟢 Only records staged through this approval pipeline count toward the withdrawable balance
     });
     alert("Payout staged for approval!");
     document.getElementById('disburse-user-select').value = "";

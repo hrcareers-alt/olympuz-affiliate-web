@@ -7057,8 +7057,26 @@ directoryList.innerHTML += `
 
     if (yearlyPayouts.length > 0) {
       const latest = yearlyPayouts[0];
-      if (pRef) pRef.innerText = latest.referrals || 0;
-      if (pAmt) pAmt.innerText = `₱${(latest.amount || 0).toFixed(2)}`;
+
+      // 🟢 Only show the latest payout if it actually belongs to THIS week.
+      // Week boundary resets every Thursday 00:00 (payouts are usually logged Fri/Sat,
+      // so from Thursday until this week's record lands, show 0 instead of last week's number).
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // Sun=0 ... Thu=4 ... Sat=6
+      const daysSinceThursday = (dayOfWeek - 4 + 7) % 7;
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - daysSinceThursday);
+      weekStart.setHours(0, 0, 0, 0);
+
+      const latestDate = new Date(latest.createdAt || 0);
+
+      if (latestDate >= weekStart) {
+        if (pRef) pRef.innerText = latest.referrals || 0;
+        if (pAmt) pAmt.innerText = `₱${(latest.amount || 0).toFixed(2)}`;
+      } else {
+        if (pRef) pRef.innerText = "0";
+        if (pAmt) pAmt.innerText = "₱0.00";
+      }
     } else {
       if (pRef) pRef.innerText = "0";
       if (pAmt) pAmt.innerText = "₱0.00";

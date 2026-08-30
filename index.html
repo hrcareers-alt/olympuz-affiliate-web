@@ -1650,6 +1650,12 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
           </div>
 
           <div>
+            <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Date of Birth *</label>
+            <input type="date" id="reg-birthdate" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
+            <p class="text-[10px] text-slate-500 mt-0.5">This cannot be changed once your account is created.</p>
+          </div>
+
+          <div>
             <label class="block text-[11px] uppercase tracking-wider text-slate-300 mb-1 font-semibold">Username *</label>
             <input type="text" id="reg-username" required placeholder="juandelacruz" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500">
           </div>
@@ -3151,9 +3157,13 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
         <label class="block text-sm font-medium mb-1 text-slate-300">Last Name (Read-Only)</label>
         <input type="text" id="setting-lastname" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
       </div>
-      <div>
-        <label class="block text-sm font-medium mb-1 text-slate-300">Phone Number (Read-Only)</label>
+      <div id="phone-field-wrapper">
+        <label id="phone-field-label" class="block text-sm font-medium mb-1 text-slate-300">Phone Number (Read-Only)</label>
         <input type="tel" id="setting-phone" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
+      </div>
+      <div id="birthdate-field-wrapper">
+        <label id="birthdate-field-label" class="block text-sm font-medium mb-1 text-slate-300">Date of Birth (Read-Only)</label>
+        <input type="date" id="setting-birthdate" readonly class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
       </div>
       <div>
         <label class="block text-sm font-medium mb-1 text-slate-300">Email Address</label>
@@ -6211,6 +6221,11 @@ directoryList.innerHTML += `
       }
     };
 
+    // Prevent selecting a future birthdate on the registration form
+    if (document.getElementById('reg-birthdate')) {
+      document.getElementById('reg-birthdate').max = new Date().toISOString().split('T')[0];
+    }
+
     document.getElementById('public-register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = e.target.querySelector('button');
@@ -6219,6 +6234,7 @@ directoryList.innerHTML += `
   const lastName = document.getElementById('reg-lastname').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const rawPhone = document.getElementById('reg-phone').value.trim();
+  const birthDate = document.getElementById('reg-birthdate').value;
   const username = document.getElementById('reg-username').value.trim().toLowerCase();
   const password = document.getElementById('reg-password').value;
   const confirmPassword = document.getElementById('reg-confirm-password').value;
@@ -6227,6 +6243,10 @@ directoryList.innerHTML += `
   const formattedPhone = formatPHPhoneNumber(rawPhone);
   if (!formattedPhone) {
     return alert("Please enter a valid 10-digit Philippine mobile number starting with 9.");
+  }
+
+  if (!birthDate) {
+    return alert("Please enter your date of birth.");
   }
 
   if (password !== confirmPassword) {
@@ -6265,6 +6285,7 @@ directoryList.innerHTML += `
       username: username,
       email: email,
       phoneNumber: formattedPhone,
+      birthDate: birthDate,
       role: "affiliate",
       createdAt: new Date().toISOString()
     });
@@ -7749,8 +7770,30 @@ window.init30thMonthFilter = () => {
         // Populate Profile Inputs
         if (document.getElementById('setting-firstname')) document.getElementById('setting-firstname').value = userData.firstName || '';
         if (document.getElementById('setting-lastname')) document.getElementById('setting-lastname').value = userData.lastName || '';
-        if (document.getElementById('setting-phone')) document.getElementById('setting-phone').value = userData.phoneNumber || user.phoneNumber || '';
         if (document.getElementById('setting-email')) document.getElementById('setting-email').value = userData.email || user.email || '';
+
+        // 🟢 Phone Number & Date of Birth: editable ONCE (for affiliates who never set them), then permanently locked
+        renderLockableProfileField({
+          currentValue: userData.phoneNumber || user.phoneNumber || '',
+          inputId: 'setting-phone',
+          labelId: 'phone-field-label',
+          wrapperId: 'phone-field-wrapper',
+          fieldLabel: 'Phone Number',
+          inputType: 'tel',
+          placeholder: 'e.g. 09123456789',
+          confirmHandler: 'window.confirmPhoneNumber()'
+        });
+
+        renderLockableProfileField({
+          currentValue: userData.birthDate || '',
+          inputId: 'setting-birthdate',
+          labelId: 'birthdate-field-label',
+          wrapperId: 'birthdate-field-wrapper',
+          fieldLabel: 'Date of Birth',
+          inputType: 'date',
+          placeholder: '',
+          confirmHandler: 'window.confirmBirthDate()'
+        });
 
         // Populate Payment Method
         if (userData.paymentMethod) {
@@ -8028,6 +8071,93 @@ window.init30thMonthFilter = () => {
       }
       submitBtn.innerText = "Save Payment Details";
     });
+
+    // ══════════════════════════════════════════════════════════════
+    // 🟢 ONE-TIME-EDITABLE PROFILE FIELDS (Phone Number & Date of Birth)
+    // For affiliates who never set these (registered before this feature existed),
+    // renders an editable input + Confirm button. Once saved, the field is permanently
+    // locked to read-only (also enforced server-side in Firestore rules).
+    // ══════════════════════════════════════════════════════════════
+    function renderLockableProfileField(cfg) {
+      const wrapper = document.getElementById(cfg.wrapperId);
+      const label = document.getElementById(cfg.labelId);
+      if (!wrapper || !label) return;
+
+      if (cfg.currentValue) {
+        // 🔒 LOCKED STATE — already confirmed, permanently read-only
+        label.innerText = `${cfg.fieldLabel} (Read-Only)`;
+        wrapper.innerHTML = `
+          <label id="${cfg.labelId}" class="block text-sm font-medium mb-1 text-slate-300">${cfg.fieldLabel} (Read-Only)</label>
+          <input type="${cfg.inputType}" id="${cfg.inputId}" readonly value="${cfg.currentValue}" class="w-full bg-slate-950/50 border border-slate-800/50 rounded-lg px-3 py-2 text-slate-400 cursor-not-allowed">
+        `;
+      } else {
+        // ✏️ UNLOCKED STATE — never set yet, editable one time
+        wrapper.innerHTML = `
+          <label id="${cfg.labelId}" class="block text-sm font-medium mb-1 text-slate-300">${cfg.fieldLabel}</label>
+          <input type="${cfg.inputType}" id="${cfg.inputId}" placeholder="${cfg.placeholder}" class="w-full bg-slate-950 border border-amber-500/50 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400">
+          <p class="text-[11px] text-amber-400 mt-1">⚠️ You can only set this once. It cannot be edited after confirming.</p>
+          <button type="button" onclick="${cfg.confirmHandler}" class="mt-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition">
+            Confirm ${cfg.fieldLabel}
+          </button>
+        `;
+      }
+    }
+
+    window.confirmPhoneNumber = async () => {
+      const input = document.getElementById('setting-phone');
+      const rawValue = input.value.trim();
+
+      const formatted = formatPHPhoneNumber(rawValue);
+      if (!formatted || !/^\+639\d{9}$/.test(formatted)) {
+        return alert("Please enter a valid 10-digit Philippine mobile number (e.g. 9123456789).");
+      }
+
+      if (!confirm(`Confirm your phone number as ${formatted}? This CANNOT be changed afterward.`)) return;
+
+      try {
+        await updateDoc(doc(db, "users", window.currentUid), { phoneNumber: formatted });
+        alert("Phone number confirmed and saved!");
+        renderLockableProfileField({
+          currentValue: formatted,
+          inputId: 'setting-phone',
+          labelId: 'phone-field-label',
+          wrapperId: 'phone-field-wrapper',
+          fieldLabel: 'Phone Number',
+          inputType: 'tel'
+        });
+      } catch (err) {
+        alert("Failed to save phone number: " + err.message);
+      }
+    };
+
+    window.confirmBirthDate = async () => {
+      const input = document.getElementById('setting-birthdate');
+      const value = input.value;
+
+      if (!value) {
+        return alert("Please select your date of birth.");
+      }
+      if (new Date(value) > new Date()) {
+        return alert("Date of birth cannot be in the future.");
+      }
+
+      if (!confirm(`Confirm your date of birth as ${value}? This CANNOT be changed afterward.`)) return;
+
+      try {
+        await updateDoc(doc(db, "users", window.currentUid), { birthDate: value });
+        alert("Date of birth confirmed and saved!");
+        renderLockableProfileField({
+          currentValue: value,
+          inputId: 'setting-birthdate',
+          labelId: 'birthdate-field-label',
+          wrapperId: 'birthdate-field-wrapper',
+          fieldLabel: 'Date of Birth',
+          inputType: 'date'
+        });
+      } catch (err) {
+        alert("Failed to save date of birth: " + err.message);
+      }
+    };
 
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();

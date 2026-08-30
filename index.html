@@ -2886,37 +2886,79 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
       </div>
       <div>
         <h3 id="modal-user-fullname" class="text-lg font-bold text-white leading-tight"></h3>
-        <p id="modal-user-email" class="text-xs text-indigo-400 font-medium"></p>
+        <p id="modal-user-email-display" class="text-xs text-indigo-400 font-medium"></p>
         <span id="modal-user-role-badge" class="inline-block mt-1 bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full"></span>
       </div>
     </div>
 
-    <!-- Inside #admin-user-modal METRICS GRID -->
-<div class="grid grid-cols-2 gap-3 text-xs">
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-    <span class="text-slate-400 text-[11px] block font-semibold">Username</span>
-    <span id="modal-user-username" class="font-bold text-slate-200 text-sm"></span>
+    <!-- Inside #admin-user-modal EDITABLE PROFILE FIELDS -->
+<div class="space-y-3 text-xs">
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <label class="block text-slate-400 text-[11px] font-semibold mb-1">First Name</label>
+      <input type="text" id="modal-edit-firstname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+    </div>
+    <div>
+      <label class="block text-slate-400 text-[11px] font-semibold mb-1">Last Name</label>
+      <input type="text" id="modal-edit-lastname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+    </div>
   </div>
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-    <span class="text-slate-400 text-[11px] block font-semibold">Mobile Number</span>
-    <span id="modal-user-phone" class="font-bold text-emerald-400 text-sm"></span>
+
+  <div>
+    <label class="block text-slate-400 text-[11px] font-semibold mb-1">Username</label>
+    <input type="text" id="modal-edit-username" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
   </div>
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-    <span class="text-slate-400 text-[11px] block font-semibold">Account ID</span>
-    <span id="modal-user-id" class="font-mono text-[10px] text-slate-300 truncate block"></span>
+
+  <div>
+    <label class="block text-slate-400 text-[11px] font-semibold mb-1">Email Address</label>
+    <input type="email" id="modal-edit-email" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+    <p class="text-[10px] text-amber-400 mt-1">⚠️ Changing this updates the affiliate's REAL login email. They will need to sign in with the new address, and it will require re-verification.</p>
   </div>
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-    <span class="text-slate-400 text-[11px] block font-semibold">Preferred Payment Method</span>
-    <span id="modal-user-payment-method" class="font-bold text-emerald-400"></span>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <label class="block text-slate-400 text-[11px] font-semibold mb-1">Mobile Number</label>
+      <input type="tel" id="modal-edit-phone" placeholder="9123456789" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+    </div>
+    <div>
+      <label class="block text-slate-400 text-[11px] font-semibold mb-1">Date of Birth</label>
+      <input type="date" id="modal-edit-birthdate" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+    </div>
   </div>
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
-    <span class="text-slate-400 text-[11px] block font-semibold">Account Number</span>
-    <span id="modal-user-account-num" class="font-bold text-slate-200"></span>
+
+  <div>
+    <label class="block text-slate-400 text-[11px] font-semibold mb-1">Preferred Payment Method</label>
+    <select id="modal-edit-paymentmethod" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+      <option value="GoTyme">GoTyme</option>
+      <option value="GCash">GCash</option>
+      <option value="Maya">Maya</option>
+      <option value="BPI">BPI</option>
+      <option value="RCBC">RCBC</option>
+      <option value="Metrobank">Metrobank</option>
+      <option value="China Bank">China Bank</option>
+      <option value="Others">Others</option>
+    </select>
   </div>
-  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
-    <span class="text-slate-400 text-[11px] block font-semibold">Account Created On</span>
-    <span id="modal-user-created-at" class="font-bold text-amber-400"></span>
+
+  <div>
+    <label class="block text-slate-400 text-[11px] font-semibold mb-1">Account Number</label>
+    <input type="text" id="modal-edit-accountnum" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
   </div>
+
+  <div class="grid grid-cols-2 gap-3 pt-1">
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-slate-400 text-[11px] block font-semibold">Account ID</span>
+      <span id="modal-user-id" class="font-mono text-[10px] text-slate-300 truncate block"></span>
+    </div>
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-slate-400 text-[11px] block font-semibold">Account Created On</span>
+      <span id="modal-user-created-at" class="font-bold text-amber-400 text-[11px]"></span>
+    </div>
+  </div>
+
+  <button id="modal-save-edits-btn" onclick="saveAdminUserEdits()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+  </button>
 </div>
 
     <!-- HR ACTIONS: CHANGE PASSWORD -->
@@ -3577,6 +3619,67 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
     </div>
   </div>
 
+  <!-- 🎉 BIRTHDAY CELEBRATION POPUP -->
+  <div id="birthday-popup" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[9999] flex items-center justify-center p-4 hidden overflow-hidden">
+    <div id="birthday-confetti-layer" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+    <div id="birthday-balloon-layer" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+    <div class="relative bg-gradient-to-b from-indigo-950 via-slate-900 to-pink-950/70 border-2 border-amber-400/60 rounded-3xl p-8 max-w-md w-full shadow-2xl text-center space-y-4 birthday-card-pop">
+      <div class="text-6xl birthday-cake-bounce">🎂</div>
+      <h3 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-indigo-400">
+        Happy Birthday, <span id="birthday-popup-name">Affiliate</span>! 🎉
+      </h3>
+      <p class="text-sm text-slate-200 leading-relaxed">
+        Wishing you an amazing day filled with joy and celebration! Thank you for being part of the <strong class="text-amber-400">Olympuz Affiliate</strong> family. 🥳🎈
+      </p>
+      <button onclick="closeBirthdayPopup()" class="w-full bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-extrabold py-3 rounded-xl text-sm transition shadow-lg">
+        🎁 Thank You!
+      </button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes birthdayConfettiFall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+    }
+    @keyframes birthdayBalloonFloat {
+      0% { transform: translateY(10vh) translateX(0) rotate(-3deg); opacity: 0; }
+      10% { opacity: 1; }
+      50% { transform: translateY(-50vh) translateX(15px) rotate(3deg); }
+      100% { transform: translateY(-115vh) translateX(-15px) rotate(-3deg); opacity: 0.9; }
+    }
+    @keyframes birthdayCardPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes birthdayCakeBounce {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-12px) rotate(4deg); }
+    }
+    .birthday-card-pop { animation: birthdayCardPop 0.5s ease-out; }
+    .birthday-cake-bounce { animation: birthdayCakeBounce 1.2s ease-in-out infinite; display: inline-block; }
+    .birthday-confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      opacity: 0.95;
+      animation-name: birthdayConfettiFall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    .birthday-balloon-piece {
+      position: absolute;
+      bottom: -60px;
+      font-size: 2.5rem;
+      animation-name: birthdayBalloonFloat;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+  </style>
+
   <!-- TAB SWITCHER & MOBILE MENU SCRIPT -->
   <script>
 window.switchTab = function(tabName) {
@@ -3706,6 +3809,7 @@ window.toggleAuthView = function(view) {
     } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
 
     const firebaseConfig = {
   apiKey: "AIzaSyDzup6L4GXzisZ8daVXRtr8SwCMsMqMn9A",
@@ -3722,6 +3826,7 @@ window.toggleAuthView = function(view) {
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
+    const functionsInstance = getFunctions(app); // 🟢 Used for admin-only server-side actions (e.g. changing another affiliate's login email)
     
     let allAffiliates = [];
     let userPayoutsArray = [];
@@ -5368,6 +5473,7 @@ window.sendCommunityChatMessage = async (e) => {
       "Username": user.username || "N/A",
       "Email Address": user.email || "N/A",
       "Phone Number": user.phoneNumber || "N/A",
+      "Birthdate": user.birthDate || "N/A",
       "Role": (user.role || 'affiliate').toUpperCase(),
       "Payment Method": user.paymentMethod || "Not Configured",
       "Account Name": user.accountName || "N/A",
@@ -5510,7 +5616,8 @@ directoryList.innerHTML += `
         <p class="text-xs text-slate-400">
           ${user.email || 'No email registered'} | 
           Username: <span class="text-slate-300 font-semibold">${user.username || '-'}</span> | 
-          <span class="text-emerald-400 font-bold"><i class="fa-solid fa-phone text-[10px] mr-0.5"></i> ${user.phoneNumber || 'No phone'}</span>
+          <span class="text-emerald-400 font-bold"><i class="fa-solid fa-phone text-[10px] mr-0.5"></i> ${user.phoneNumber || 'No phone'}</span> | 
+          <span class="text-indigo-300 font-semibold"><i class="fa-solid fa-cake-candles text-[10px] mr-0.5"></i> ${user.birthDate || 'No birthdate'}</span>
         </p>
       </div>
     </div>
@@ -5568,14 +5675,29 @@ directoryList.innerHTML += `
         : 'Registration N/A';
 
       document.getElementById('modal-user-fullname').innerText = fullName;
-      document.getElementById('modal-user-email').innerText = user.email || 'No email';
-      document.getElementById('modal-user-phone').innerText = user.phoneNumber || 'Not Configured';
+      document.getElementById('modal-user-email-display').innerText = user.email || 'No email';
       document.getElementById('modal-user-role-badge').innerText = (user.role || 'affiliate').toUpperCase();
-      document.getElementById('modal-user-username').innerText = user.username || 'Not set';
       document.getElementById('modal-user-id').innerText = user.id;
-      document.getElementById('modal-user-payment-method').innerText = user.paymentMethod || 'Not Configured';
-      document.getElementById('modal-user-account-num').innerText = user.accountNumber || 'Not Configured';
       document.getElementById('modal-user-created-at').innerText = formattedDate;
+
+      // Editable profile fields
+      document.getElementById('modal-edit-firstname').value = user.firstName || '';
+      document.getElementById('modal-edit-lastname').value = user.lastName || '';
+      document.getElementById('modal-edit-username').value = user.username || '';
+      document.getElementById('modal-edit-email').value = user.email || '';
+      document.getElementById('modal-edit-phone').value = user.phoneNumber || '';
+      document.getElementById('modal-edit-birthdate').value = user.birthDate || '';
+      document.getElementById('modal-edit-accountnum').value = user.accountNumber || '';
+
+      const paymentOptions = ['GoTyme', 'GCash', 'Maya', 'BPI', 'RCBC', 'Metrobank', 'China Bank'];
+      const paymentSelect = document.getElementById('modal-edit-paymentmethod');
+      if (user.paymentMethod && paymentOptions.includes(user.paymentMethod)) {
+        paymentSelect.value = user.paymentMethod;
+      } else if (user.paymentMethod) {
+        paymentSelect.value = 'Others';
+      } else {
+        paymentSelect.value = 'GoTyme';
+      }
 
       const avatarImg = document.getElementById('modal-user-avatar');
       const avatarIcon = document.getElementById('modal-user-avatar-icon');
@@ -5589,6 +5711,73 @@ directoryList.innerHTML += `
       }
 
       document.getElementById('admin-user-modal').classList.remove('hidden');
+    };
+
+    // 🟢 Admin: Save all edited affiliate profile fields (bypasses the self-edit phone/birthdate lock)
+    window.saveAdminUserEdits = async () => {
+      const user = affiliateDatabaseList.find(u => u.id === selectedInspectorUserId);
+      if (!user) return;
+
+      const btn = document.getElementById('modal-save-edits-btn');
+      const originalBtnText = btn.innerHTML;
+      btn.innerText = "Saving...";
+      btn.disabled = true;
+
+      try {
+        const newUsername = document.getElementById('modal-edit-username').value.trim().toLowerCase();
+        const newFirstName = document.getElementById('modal-edit-firstname').value.trim();
+        const newLastName = document.getElementById('modal-edit-lastname').value.trim();
+        const newEmail = document.getElementById('modal-edit-email').value.trim();
+        const rawPhone = document.getElementById('modal-edit-phone').value.trim();
+        const newBirthDate = document.getElementById('modal-edit-birthdate').value;
+        const newPaymentMethod = document.getElementById('modal-edit-paymentmethod').value;
+        const newAccountNum = document.getElementById('modal-edit-accountnum').value.trim();
+
+        if (!newUsername) {
+          alert("Username cannot be empty.");
+          return;
+        }
+
+        // Prevent duplicate usernames if it was changed
+        if (newUsername !== (user.username || '').toLowerCase()) {
+          const dupSnap = await getDocs(query(collection(db, "users"), where("username", "==", newUsername)));
+          const conflict = dupSnap.docs.find(d => d.id !== selectedInspectorUserId);
+          if (conflict) {
+            alert("This username is already taken by another affiliate. Please choose a different username.");
+            return;
+          }
+        }
+
+        const formattedPhone = rawPhone ? (formatPHPhoneNumber(rawPhone) || rawPhone) : '';
+        const emailChanged = newEmail && newEmail.toLowerCase() !== (user.email || '').toLowerCase();
+
+        // 🟢 If the email changed, update the REAL Firebase Auth login email via
+        // the admin-only Cloud Function (this also syncs the Firestore email field
+        // for that account — do NOT include email in the updateDoc below).
+        if (emailChanged) {
+          const adminUpdateUserEmail = httpsCallable(functionsInstance, 'adminUpdateUserEmail');
+          await adminUpdateUserEmail({ targetUid: selectedInspectorUserId, newEmail: newEmail });
+        }
+
+        await updateDoc(doc(db, "users", selectedInspectorUserId), {
+          firstName: newFirstName,
+          lastName: newLastName,
+          username: newUsername,
+          phoneNumber: formattedPhone,
+          birthDate: newBirthDate,
+          paymentMethod: newPaymentMethod,
+          accountNumber: newAccountNum
+        });
+
+        alert("Affiliate information updated successfully!" + (emailChanged ? " Their login email has also been changed." : ""));
+        closeAdminUserModal();
+        fetchAffiliateDatabase();
+      } catch (err) {
+        alert("Failed to update affiliate information: " + err.message);
+      } finally {
+        btn.innerHTML = originalBtnText;
+        btn.disabled = false;
+      }
     };
 
     window.closeAdminUserModal = () => {
@@ -7795,6 +7984,9 @@ window.init30thMonthFilter = () => {
           confirmHandler: 'window.confirmBirthDate()'
         });
 
+        // 🎉 Check for birthday and show the celebration popup (once per year)
+        checkAndShowBirthdayPopup(userData);
+
         // Populate Payment Method
         if (userData.paymentMethod) {
           const bankSelect = document.getElementById('setting-bank');
@@ -8078,6 +8270,84 @@ window.init30thMonthFilter = () => {
     // renders an editable input + Confirm button. Once saved, the field is permanently
     // locked to read-only (also enforced server-side in Firestore rules).
     // ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    // 🎉 BIRTHDAY CELEBRATION POPUP
+    // Shows once per calendar year when the logged-in affiliate's birthDate
+    // (month + day) matches today's date. Uses localStorage keyed by uid+year
+    // so it doesn't nag on every login within the same birthday period.
+    // ══════════════════════════════════════════════════════════════
+    function checkAndShowBirthdayPopup(userData) {
+      if (!userData.birthDate) return;
+
+      const today = new Date();
+      const birthDate = new Date(userData.birthDate + 'T00:00:00');
+      if (isNaN(birthDate.getTime())) return;
+
+      const isBirthdayToday = (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate());
+      if (!isBirthdayToday) return;
+
+      const storageKey = `birthdayPopupShown_${window.currentUid}_${today.getFullYear()}`;
+      if (localStorage.getItem(storageKey)) return;
+
+      const displayName = userData.firstName || currentUsername || 'Affiliate';
+      const nameEl = document.getElementById('birthday-popup-name');
+      if (nameEl) nameEl.innerText = displayName;
+
+      spawnBirthdayConfetti();
+      spawnBirthdayBalloons();
+
+      const popup = document.getElementById('birthday-popup');
+      if (popup) popup.classList.remove('hidden');
+
+      localStorage.setItem(storageKey, 'true');
+    }
+
+    function spawnBirthdayConfetti() {
+      const layer = document.getElementById('birthday-confetti-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+
+      const colors = ['#f59e0b', '#ec4899', '#6366f1', '#10b981', '#facc15', '#f472b6'];
+      const shapes = ['50%', '2px'];
+
+      for (let i = 0; i < 60; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'birthday-confetti-piece';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+        piece.style.animationDuration = `${2.5 + Math.random() * 2.5}s`;
+        piece.style.animationDelay = `${Math.random() * 2.5}s`;
+        layer.appendChild(piece);
+      }
+    }
+
+    function spawnBirthdayBalloons() {
+      const layer = document.getElementById('birthday-balloon-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+
+      const balloonEmojis = ['🎈', '🎈', '🎈', '🎉', '🎊'];
+      for (let i = 0; i < 10; i++) {
+        const balloon = document.createElement('div');
+        balloon.className = 'birthday-balloon-piece';
+        balloon.innerText = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+        balloon.style.left = `${5 + Math.random() * 90}%`;
+        balloon.style.animationDuration = `${5 + Math.random() * 3}s`;
+        balloon.style.animationDelay = `${Math.random() * 2}s`;
+        layer.appendChild(balloon);
+      }
+    }
+
+    window.closeBirthdayPopup = () => {
+      const popup = document.getElementById('birthday-popup');
+      if (popup) popup.classList.add('hidden');
+      const confettiLayer = document.getElementById('birthday-confetti-layer');
+      const balloonLayer = document.getElementById('birthday-balloon-layer');
+      if (confettiLayer) confettiLayer.innerHTML = '';
+      if (balloonLayer) balloonLayer.innerHTML = '';
+    };
+
     function renderLockableProfileField(cfg) {
       const wrapper = document.getElementById(cfg.wrapperId);
       const label = document.getElementById(cfg.labelId);

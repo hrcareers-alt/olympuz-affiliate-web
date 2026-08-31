@@ -6443,8 +6443,16 @@ directoryList.innerHTML += `
     return alert("Please enter your date of birth.");
   }
 
-  if (password !== confirmPassword) {
+    if (password !== confirmPassword) {
     return alert("Passwords do not match!");
+  }
+
+  if (/\s/.test(username)) {
+    return alert("Username cannot contain spaces. Please remove any spaces and try again.");
+  }
+
+  if (!/^[a-z0-9_.]+$/.test(username)) {
+    return alert("Username can only contain letters, numbers, underscores, and periods (no spaces or special characters).");
   }
 
   submitBtn.innerText = "Registering Account...";

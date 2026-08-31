@@ -134,11 +134,12 @@
     border-color: #e2e8f0 !important;
   }
 
-  body.light-mode #ad-popup-modal,
+    body.light-mode #ad-popup-modal,
   body.light-mode #reward-view-modal,
   body.light-mode #raw-edit-modal,
   body.light-mode #reward-login-popup,
-  body.light-mode #admin-user-modal {
+  body.light-mode #admin-user-modal,
+  body.light-mode #birthday-popup {
     background-color: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
@@ -148,7 +149,8 @@
   body.light-mode #reward-view-modal > div,
   body.light-mode #raw-edit-modal > div,
   body.light-mode #reward-login-popup > div,
-  body.light-mode #admin-user-modal > div {
+  body.light-mode #admin-user-modal > div,
+  body.light-mode #birthday-popup > div.relative {
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
     background-color: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
@@ -156,6 +158,9 @@
     color: #0f172a !important;
   }
 
+  body.light-mode #birthday-popup p {
+    color: #334155 !important;
+  }
   /* ------------------------------------------------------------
      3. DARK MODE CHATBOX OVERRIDES
      ------------------------------------------------------------ */

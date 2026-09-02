@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="tailwind-compiled.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+  /* ------------------------------------------------------------
+     0. GLOBAL HORIZONTAL OVERFLOW SAFETY NET
+     Prevents any single oversized element (e.g. native file
+     input widgets on some mobile browsers) from pushing the
+     whole page into horizontal scroll and clipping content.
+     ------------------------------------------------------------ */
   html, body {
     max-width: 100%;
     overflow-x: hidden;
@@ -3141,6 +3147,21 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
               Save Past Monthly Raw Count
             </button>
           </form>
+
+          <div class="bg-slate-900 p-6 rounded-xl border border-rose-500/40 space-y-4 shadow-lg">
+            <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-magnifying-glass-chart text-rose-400"></i>
+              <h3 class="font-bold text-rose-400">Detect & Purge Orphaned Cross-Month Entries</h3>
+            </div>
+            <p class="text-xs text-slate-300">
+              Finds <code class="text-rose-300">raw_referrals</code> docs whose <strong>Month Key</strong> doesn't match the actual month of their <strong>timestamp</strong> — the signature left behind by the old override bug, where a "weekly" entry for one month got stamped with today's date. These can inflate another month's Weekly total even though they don't belong to it.
+            </p>
+            <button onclick="window.scanOrphanedRawEntries()" id="scan-orphan-btn" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg transition shadow-md">
+              <i class="fa-solid fa-magnifying-glass mr-1"></i> Scan for Orphaned Entries
+            </button>
+            <div id="orphan-scan-summary" class="text-xs text-slate-400"></div>
+            <div id="orphan-scan-results" class="space-y-3"></div>
+          </div>
 
           <div class="pt-4">
             <h3 class="text-lg font-bold text-white mb-3">Logged Raw Referrals History</h3>
@@ -7719,6 +7740,124 @@ function renderInvoicePage() {
         } catch (err) {
           alert("Failed to delete entry: " + err.message);
         }
+      }
+    };
+
+    // 🟢 ORPHANED CROSS-MONTH RAW REFERRAL ENTRIES: detect & purge
+    // Flags any raw_referrals doc whose stored monthKey does not match
+    // the calendar month its timestamp actually falls in. This is the
+    // fingerprint left by the old override bug (a "weekly" entry for
+    // month X stamped with today's date), which let entries bleed into
+    // another month's Weekly total. Manual review + delete, no auto-purge.
+    window.scanOrphanedRawEntries = async function() {
+      const btn = document.getElementById('scan-orphan-btn');
+      const summaryDiv = document.getElementById('orphan-scan-summary');
+      const resultsDiv = document.getElementById('orphan-scan-results');
+      if (!summaryDiv || !resultsDiv) return;
+
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Scanning...';
+      }
+      summaryDiv.innerText = '';
+      resultsDiv.innerHTML = '<div class="text-slate-500 text-xs py-2">Scanning raw_referrals collection...</div>';
+
+      try {
+        const snapshot = await getDocs(collection(db, "raw_referrals"));
+        const orphans = [];
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (!data.monthKey) return; // nothing to compare against
+
+          const docDate = new Date(data.timestamp || data.createdAt);
+          if (isNaN(docDate.getTime())) return; // can't evaluate, skip
+
+          const actualMonthKey = `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}`;
+          if (actualMonthKey !== data.monthKey) {
+            orphans.push({ id: docSnap.id, ...data, docDate, actualMonthKey });
+          }
+        });
+
+        if (orphans.length === 0) {
+          summaryDiv.innerHTML = '<span class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i>No orphaned entries found. All timestamps match their Month Key.</span>';
+          resultsDiv.innerHTML = '';
+          return;
+        }
+
+        orphans.sort((a, b) => b.docDate - a.docDate);
+        summaryDiv.innerHTML = `<span class="text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Found ${orphans.length} orphaned ${orphans.length === 1 ? 'entry' : 'entries'} — Month Key doesn't match the timestamp's actual month.</span>`;
+
+        let html = '';
+        for (const o of orphans) {
+          let displayName = o.userName;
+          if (!displayName || displayName === "Affiliate") {
+            const targetUser = allAffiliates.find(u => u.id === o.userId);
+            displayName = targetUser
+              ? (`${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() || targetUser.username || targetUser.email)
+              : (o.userId || 'Unknown Affiliate');
+          }
+
+          const formattedDate = o.docDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          html += `
+            <div class="bg-slate-950 border border-rose-500/30 p-3.5 rounded-xl flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <h4 class="font-bold text-sm text-slate-100">${displayName}</h4>
+                <p class="text-xs text-rose-400 font-semibold">${o.count || 0} raw (type: ${o.type || 'unknown'})</p>
+                <p class="text-[10px] text-slate-500">
+                  Tagged Month Key: <strong class="text-slate-300">${o.monthKey}</strong>
+                  &nbsp;|&nbsp; Actual date: <strong class="text-amber-400">${formattedDate} (${o.actualMonthKey})</strong>
+                </p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="window.fixOrphanRawEntryDate('${o.id}', '${o.monthKey}')" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Re-date this entry to fall within its tagged Month Key">
+                  <i class="fa-solid fa-clock-rotate-left mr-1"></i> Fix Date
+                </button>
+                <button onclick="window.deleteOrphanRawEntry('${o.id}')" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 text-xs px-2.5 py-1 rounded-lg transition" title="Delete this entry">
+                  <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                </button>
+              </div>
+            </div>
+          `;
+        }
+        resultsDiv.innerHTML = html;
+      } catch (err) {
+        console.error("Error scanning for orphaned raw entries:", err);
+        summaryDiv.innerHTML = `<span class="text-red-400">Scan failed: ${err.message}</span>`;
+        resultsDiv.innerHTML = '';
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    };
+
+    // Re-dates an orphaned entry to the 1st of its tagged Month Key, so it
+    // stops contaminating whatever "current week" it was accidentally
+    // stamped into, while keeping it correctly counted toward its month's total.
+    window.fixOrphanRawEntryDate = async (rawId, monthKey) => {
+      if (!confirm(`Re-date this entry to the 1st of ${monthKey}? It will stop counting toward any "current week" total and only count toward that month's Raw Referrals total.`)) return;
+      try {
+        const fixedDate = new Date(`${monthKey}-01T00:00:00`).toISOString();
+        await updateDoc(doc(db, "raw_referrals", rawId), { timestamp: fixedDate });
+        alert("Entry re-dated successfully!");
+        window.scanOrphanedRawEntries();
+      } catch (err) {
+        alert("Failed to fix entry: " + err.message);
+      }
+    };
+
+    window.deleteOrphanRawEntry = async (rawId) => {
+      if (!confirm("Delete this orphaned raw referral entry? This cannot be undone.")) return;
+      try {
+        await deleteDoc(doc(db, "raw_referrals", rawId));
+        alert("Orphaned entry deleted successfully!");
+        window.scanOrphanedRawEntries();
+      } catch (err) {
+        alert("Failed to delete entry: " + err.message);
       }
     };
 

@@ -2633,17 +2633,6 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
 
       </div>
     </div>
-<div id="poster-lightbox-modal" class="hidden fixed inset-0 z-[999] bg-slate-950/80 backdrop-blur-md items-center justify-center p-4" onclick="window.closePosterModal()">
-      <div class="relative max-w-lg w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
-        <button onclick="window.closePosterModal()" class="absolute -top-10 right-0 text-white hover:text-amber-400 text-xl font-bold transition">
-          <i class="fa-solid fa-xmark mr-1"></i> Close
-        </button>
-        <img id="poster-modal-img" src="InviteandEarn.jpg" alt="Full Promo Poster" class="w-full h-auto max-h-[80vh] object-contain rounded-xl shadow-2xl border border-amber-500/30">
-        <a id="poster-download-btn" href="InviteandEarn.jpg" download="InviteandEarn.jpg" target="_blank" class="mt-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-lg inline-flex items-center gap-2">
-          <i class="fa-solid fa-download"></i> Download High-Res Poster
-        </a>
-      </div>
-    </div>
 
   </div>
 </section>
@@ -3047,6 +3036,19 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
         <i class="fa-solid fa-user-xmark"></i> Delete Affiliate Record
       </button>
     </div>
+  </div>
+</div>
+
+<!-- 🖼️ GLOBAL PROMO POSTER LIGHTBOX MODAL (accessible from any tab) -->
+<div id="poster-lightbox-modal" class="hidden fixed inset-0 z-[999] bg-slate-950/80 backdrop-blur-md items-center justify-center p-4" onclick="window.closePosterModal()">
+  <div class="relative max-w-lg w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+    <button onclick="window.closePosterModal()" class="absolute -top-10 right-0 text-white hover:text-amber-400 text-xl font-bold transition">
+      <i class="fa-solid fa-xmark mr-1"></i> Close
+    </button>
+    <img id="poster-modal-img" src="InviteandEarn.jpg" alt="Full Promo Poster" class="w-full h-auto max-h-[80vh] object-contain rounded-xl shadow-2xl border border-amber-500/30">
+    <a id="poster-download-btn" href="InviteandEarn.jpg" download="InviteandEarn.jpg" target="_blank" class="mt-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-lg inline-flex items-center gap-2">
+      <i class="fa-solid fa-download"></i> Download High-Res Poster
+    </a>
   </div>
 </div>
         

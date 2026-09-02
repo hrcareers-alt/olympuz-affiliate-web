@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Tailwind CDN Config -->
-<script>
-  tailwind = {
-    suppressWarning: true // 🟢 Suppresses cdn.tailwindcss.com production warning
-  }
-</script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Olympuz Affiliate Portal</title>
   <link rel="icon" type="image/png" href="logo.jpg">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="tailwind-compiled.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
   /* ------------------------------------------------------------
@@ -4053,6 +4047,7 @@ window.saveModifiedPayoutRecord = async (btn) => {
       return;
     }
 
+    let html = '';
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       let authorName = data.userName || "Affiliate User";
@@ -4060,7 +4055,7 @@ window.saveModifiedPayoutRecord = async (btn) => {
         ? new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
         : 'Recent';
 
-      listDiv.innerHTML += `
+      html += `
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg mb-3">
           <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
             <p class="font-bold text-indigo-400">${authorName}</p>
@@ -4070,6 +4065,7 @@ window.saveModifiedPayoutRecord = async (btn) => {
         </div>
       `;
     });
+    listDiv.innerHTML = html;
   }, (error) => {
     console.warn("Feedback listener subscription handled silently:", error.message);
   });
@@ -4546,13 +4542,16 @@ window.populateManualAssignDropdowns = async () => {
   });
 
   // 4. Render names into select options
+  let inviterHtml = '', recruitHtml = '';
   sortedList.forEach(u => {
     const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || u.email || 'Affiliate';
     const optHTML = `<option value="${u.id}">${fullName} (@${u.username || 'no-username'})</option>`;
     
-    inviterSelect.innerHTML += optHTML;
-    recruitSelect.innerHTML += optHTML;
+    inviterHtml += optHTML;
+    recruitHtml += optHTML;
   });
+  inviterSelect.innerHTML += inviterHtml;
+  recruitSelect.innerHTML += recruitHtml;
 };
 
 // 🟢 SUBMIT MANUAL INVITATION LINKING FORM
@@ -5196,7 +5195,7 @@ window.listenToCommunityChat = () => {
       docsArray.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
       // Inside window.listenToCommunityChat -> docsArray.forEach loop:
-
+      let chatHtml = '';
 docsArray.forEach((msg) => {
   const isMe = msg.userId === currentUid;
   const formattedTime = msg.createdAt 
@@ -5209,7 +5208,7 @@ docsArray.forEach((msg) => {
     : '';
 
   // 🟢 Make sure ${msg.text} is placed directly against the inner HTML tags
-  listDiv.innerHTML += `
+  chatHtml += `
     <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-0.5 my-1.5">
       <div class="flex items-center gap-1 text-[10px] text-slate-500 px-1">
         <span class="font-bold ${isMe ? 'text-indigo-600' : 'text-slate-700'}">${usernameDisplay}</span>
@@ -5224,6 +5223,7 @@ docsArray.forEach((msg) => {
     </div>
   `;
 });
+listDiv.innerHTML = chatHtml;
 
       if (!window.isChatOpen && snapshot.docChanges().some(change => change.type === 'added')) {
         window.unreadChatCount++;
@@ -5998,9 +5998,10 @@ directoryList.innerHTML += `
       return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-2'>No pending monthly 30th approvals.</p>";
     }
 
+    let html = '';
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
-      listDiv.innerHTML += `
+      html += `
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
           <div class="flex justify-between items-start">
             <div>
@@ -6016,6 +6017,7 @@ directoryList.innerHTML += `
         </div>
       `;
     });
+    listDiv.innerHTML = html;
   }, (err) => {
     if (err.code !== 'permission-denied') {
       console.warn("Pending 30th payouts error:", err.message);
@@ -6079,13 +6081,14 @@ directoryList.innerHTML += `
 
     items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
+    let html = '';
     items.forEach((data) => {
       const safeHires = data.hires || data.referrals || 0;
       const safeAmount = data.amount || 0;
       const safeName = data.userName || data.affiliateName || 'Affiliate';
       const safePeriod = data.period || data.monthKey || 'N/A';
 
-      listDiv.innerHTML += `
+      html += `
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
           <div>
             <h4 class="font-bold text-sm text-slate-100">${safeName}</h4>
@@ -6104,6 +6107,7 @@ directoryList.innerHTML += `
         </div>
       `;
     });
+    listDiv.innerHTML = html;
   }, (err) => {
     if (err.code !== 'permission-denied') {
       console.warn("Admin 30th track listener error:", err.message);
@@ -7012,11 +7016,12 @@ directoryList.innerHTML += `
           return;
         }
 
+        let rawLbHtml = '';
         rankings.forEach((item, index) => {
           const rankNum = index + 1;
           const isCurrentUser = item.userId === currentUid;
 
-          listDiv.innerHTML += `
+          rawLbHtml += `
             <div class="bg-slate-900 border ${isCurrentUser ? 'border-indigo-500 bg-indigo-950/40' : 'border-slate-800'} p-3 rounded-xl flex items-center justify-between text-xs transition">
               <div class="flex items-center gap-3">
                 <span class="font-extrabold text-slate-400 w-6 text-center text-sm">#${rankNum}</span>
@@ -7037,6 +7042,7 @@ directoryList.innerHTML += `
             </div>
           `;
         });
+        listDiv.innerHTML = rawLbHtml;
       }, (err) => console.warn("Raw referrals listener handled silently:", err.message));
     };
 
@@ -7172,11 +7178,12 @@ directoryList.innerHTML += `
       if (extendedRanks.length === 0) {
         extendedList.innerHTML = `<div class="text-xs text-slate-500 py-2">All active participants are currently in the Top 5!</div>`;
       } else {
+        let extHtml = '';
         extendedRanks.forEach((item, index) => {
           const rankNum = index + 6;
           const isCurrentUser = item.userId === currentUid;
 
-          extendedList.innerHTML += `
+          extHtml += `
             <div class="bg-slate-900/80 border ${isCurrentUser ? 'border-indigo-500 bg-indigo-950/40' : 'border-slate-800'} p-2.5 rounded-lg flex items-center justify-between text-xs">
               <div class="flex items-center gap-3">
                 <span class="font-extrabold text-slate-400 w-6 text-center">#${rankNum}</span>
@@ -7195,6 +7202,7 @@ directoryList.innerHTML += `
             </div>
           `;
         });
+        extendedList.innerHTML = extHtml;
       }
     }
 
@@ -7536,9 +7544,10 @@ function renderInvoicePage() {
       return listDiv.innerHTML = "<p class='text-xs text-slate-400 py-4 text-center'>No pending staged payouts.</p>";
     }
 
+    let html = '';
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
-      listDiv.innerHTML += `
+      html += `
         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
           <div>
             <p class="font-bold text-indigo-400 text-sm">${data.userName}</p>
@@ -7556,6 +7565,7 @@ function renderInvoicePage() {
         </div>
       `;
     });
+    listDiv.innerHTML = html;
   }, (error) => {
     console.warn("Pending payouts listener subscription handled silently:", error.message);
   });
@@ -7599,6 +7609,7 @@ function renderInvoicePage() {
 
         rawArray.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
 
+        let html = '';
         for (const data of rawArray) {
           let displayName = data.userName;
 
@@ -7623,7 +7634,7 @@ function renderInvoicePage() {
 
           const formattedDate = new Date(data.createdAt || data.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-          listDiv.innerHTML += `
+          html += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-3">
               <div>
                 <h4 class="font-bold text-sm text-slate-100">${displayName}</h4>
@@ -7642,6 +7653,7 @@ function renderInvoicePage() {
             </div>
           `;
         }
+        listDiv.innerHTML = html;
       }, (err) => console.warn("Admin raw referrals listener subscription handled silently:", err.message));
     }
 
@@ -7701,6 +7713,7 @@ function renderInvoicePage() {
         listDiv.innerHTML = "";
 
         let unclaimedCount = 0;
+        let html = '';
 
         if (snapshot.empty) {
           listDiv.innerHTML = `<div class="text-slate-400 text-sm py-6 col-span-full text-center">No treats or rewards assigned yet. Keep referring to earn perks!</div>`;
@@ -7724,7 +7737,7 @@ function renderInvoicePage() {
             badge = `<span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Proof Invalid - Please Reupload</span>`;
           }
 
-          listDiv.innerHTML += `
+          html += `
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between shadow-lg space-y-3">
               <div>
                 <div class="flex justify-between items-start gap-2 mb-2">
@@ -7740,6 +7753,7 @@ function renderInvoicePage() {
             </div>
           `;
         });
+        listDiv.innerHTML = html;
 
         if (badgeSpan) {
           if (unclaimedCount > 0) {
@@ -7784,6 +7798,7 @@ function renderInvoicePage() {
 
         rewardsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+        let html = '';
         rewardsArray.forEach((data) => {
           const rewardId = data.id;
           const formattedDate = new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -7797,7 +7812,7 @@ function renderInvoicePage() {
             statusBadge = `<span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] px-2 py-0.5 rounded-full font-bold">Invalid - Reupload Requested</span>`;
           }
 
-          listDiv.innerHTML += `
+          html += `
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
               <div class="flex justify-between items-start">
                 <div>
@@ -7838,6 +7853,7 @@ function renderInvoicePage() {
             </div>
           `;
         });
+        listDiv.innerHTML = html;
       }, (err) => console.warn("Admin rewards listener issue handled:", err.message));
     }
 
@@ -8840,6 +8856,8 @@ window.init30thMonthFilter = () => {
 
     allAffiliates = [];
 
+    let disburseHtml = '', disburse30thHtml = '', rewardHtml = '', dailyRawHtml = '', pastRawHtml = '', overrideHtml = '', modifyRefHtml = '';
+
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
       data.id = docSnap.id;
@@ -8848,14 +8866,22 @@ window.init30thMonthFilter = () => {
       const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || data.email || 'Unnamed Affiliate';
       const optionHTML = `<option value="${data.id}">${fullName}</option>`;
 
-      if (disburseSelect) disburseSelect.innerHTML += optionHTML;
-      if (disburse30thSelect) disburse30thSelect.innerHTML += optionHTML;
-      if (rewardSelect) rewardSelect.innerHTML += optionHTML;
-      if (dailyRawSelect) dailyRawSelect.innerHTML += optionHTML;
-      if (pastRawSelect) pastRawSelect.innerHTML += optionHTML;
-      if (overrideSelect) overrideSelect.innerHTML += optionHTML;
-      if (modifyRefSelect) modifyRefSelect.innerHTML += optionHTML;
+      disburseHtml += optionHTML;
+      disburse30thHtml += optionHTML;
+      rewardHtml += optionHTML;
+      dailyRawHtml += optionHTML;
+      pastRawHtml += optionHTML;
+      overrideHtml += optionHTML;
+      modifyRefHtml += optionHTML;
     });
+
+    if (disburseSelect) disburseSelect.innerHTML += disburseHtml;
+    if (disburse30thSelect) disburse30thSelect.innerHTML += disburse30thHtml;
+    if (rewardSelect) rewardSelect.innerHTML += rewardHtml;
+    if (dailyRawSelect) dailyRawSelect.innerHTML += dailyRawHtml;
+    if (pastRawSelect) pastRawSelect.innerHTML += pastRawHtml;
+    if (overrideSelect) overrideSelect.innerHTML += overrideHtml;
+    if (modifyRefSelect) modifyRefSelect.innerHTML += modifyRefHtml;
 
     // Also populate inviter/recruit dropdowns if present
     if (typeof window.populateManualAssignDropdowns === 'function') {

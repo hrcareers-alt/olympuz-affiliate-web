@@ -192,33 +192,34 @@
    ------------------------------------------------------------ */
 
 /* Image Blur Keyframes (Blurs photo for 4s, unblurs for next 4s) */
-/* OPTIMIZED: Clean, GPU-accelerated transition without heavy pixel-blur repaints */
-@keyframes heroImageFade {
+@keyframes heroImageBlur {
   0% {
-    opacity: 0.85;
-    transform: scale(1.03);
+    filter: blur(8px) scale(1.03);
+  }
+  50% {
+    filter: blur(8px) scale(1.03);
+  }
+  65% {
+    filter: blur(0px) scale(1);
   }
   100% {
-    opacity: 1;
-    transform: scale(1);
+    filter: blur(0px) scale(1);
   }
 }
 
-/* Apply optimized animation to slide image */
-#slideshow-slides-container .slide-item img {
-  animation: heroImageFade 8s ease-in-out forwards !important;
-  transition: transform 0.4s ease, opacity 0.4s ease !important;
-}
-
+/* Text Overlay Keyframes (Full dark backdrop for 4s, softens to 65% opacity) */
 @keyframes heroTextOverlay {
   0% {
     opacity: 1;
   }
+  50% {
+    opacity: 1;
+  }
   65% {
-    opacity: 0.75;
+    opacity: 0.65;
   }
   100% {
-    opacity: 0.75;
+    opacity: 0.65;
   }
 }
 
@@ -258,9 +259,7 @@ body.light-mode .slide-text-overlay p {
 }
 
 #slideshow-slides-container:hover .slide-item img {
-  /* Removed expensive live blur filter; subtle scale transform is hardware-accelerated */
-  transform: scale(1.02) !important;
-  transition: transform 0.4s ease !important;
+  filter: blur(6px) scale(1.02) !important;
 }
   /* ------------------------------------------------------------
      5. LEADERBOARD & DAILY RAW REFERRAL OVERRIDES
@@ -4652,6 +4651,7 @@ window.filterAdminInvitations = async () => {
 
   if (!tableBody) return;
 
+  // Filter raw invitation records first
   const filtered = cachedAdminInvitations.filter(item => {
     const matchesSearch = item.inviterName.toLowerCase().includes(searchVal) || 
                           item.invitedName.toLowerCase().includes(searchVal) ||
@@ -4667,7 +4667,7 @@ window.filterAdminInvitations = async () => {
     return;
   }
 
-  // Group by Inviter UID synchronously without blocking network calls
+  // Group by Inviter UID
   const inviterMap = {};
 
   for (const item of filtered) {
@@ -4681,57 +4681,26 @@ window.filterAdminInvitations = async () => {
       };
     }
 
-    // Use stored count instead of executing a new database call on every keystroke/render
-    const currentRawCount = item.rawReferralsCount || 0;
+    // Fetch real-time raw referral count for recruit progress calculation
+    const currentRawCount = await fetchUserRawReferralCount(item.invitedUid);
 
+    if (currentRawCount >= 100 && item.status === 'IN_PROGRESS') {
+      try {
+        await updateDoc(doc(db, "invitations", item.id), {
+          status: 'QUALIFIED',
+          rawReferralsCount: currentRawCount,
+          qualificationDate: new Date()
+        });
+        item.status = 'QUALIFIED'; // Sync local object state
+      } catch (err) {
+        console.warn("Auto-sync qualification error:", err.message);
+      }
+    }
     inviterMap[uid].recruits.push({
       ...item,
       currentRawCount
     });
   }
-
-  const bucketKeys = Object.keys(inviterMap);
-  if (countSpan) countSpan.innerText = `${bucketKeys.length} Inviter${bucketKeys.length === 1 ? '' : 's'}`;
-
-  let html = '';
-  bucketKeys.forEach(uid => {
-    const bucket = inviterMap[uid];
-    const totalRecruits = bucket.recruits.length;
-    const activeRecruits = bucket.recruits.filter(r => r.currentRawCount > 0).length;
-    const qualifiedRecruits = bucket.recruits.filter(r => 
-      r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT' || r.status === 'PAID'
-    ).length;
-    
-    const pendingAmount = bucket.recruits.filter(r => 
-      (r.currentRawCount >= 100 || r.status === 'QUALIFIED' || r.status === 'FOR_CREDIT') && r.status !== 'PAID'
-    ).length * 50;
-    const paidAmount = bucket.recruits.filter(r => r.status === 'PAID').length * 50;
-
-    html += `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-        <td class="p-3.5">
-          <div class="font-bold text-slate-900 dark:text-white">${bucket.inviterName}</div>
-          <div class="text-[10px] text-slate-500 font-semibold">@${bucket.inviterUsername}</div>
-        </td>
-        <td class="p-3.5 text-center font-bold text-slate-700 dark:text-slate-300">${totalRecruits}</td>
-        <td class="p-3.5 text-center font-bold text-indigo-600 dark:text-indigo-400">${activeRecruits}</td>
-        <td class="p-3.5 text-center font-extrabold text-amber-600 dark:text-amber-400">${qualifiedRecruits}</td>
-        <td class="p-3.5 text-right font-black text-amber-600 dark:text-amber-400">₱${pendingAmount.toFixed(2)}</td>
-        <td class="p-3.5 text-right font-black text-emerald-600 dark:text-emerald-400">₱${paidAmount.toFixed(2)}</td>
-        <td class="p-3.5 text-center">
-          <button onclick="openInviterInspectorModal('${uid}')" class="bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 font-bold px-3 py-1.5 rounded-lg text-[11px] transition inline-flex items-center gap-1.5">
-            <i class="fa-solid fa-folder-open"></i> Inspect Bucket (${totalRecruits})
-          </button>
-        </td>
-      </tr>`;
-  });
-
-  tableBody.innerHTML = html;
-
-  if (currentInspectedInviterUid) {
-    renderInspectedInviterDetails(currentInspectedInviterUid);
-  }
-};
 
   const bucketKeys = Object.keys(inviterMap);
   if (countSpan) countSpan.innerText = `${bucketKeys.length} Inviter${bucketKeys.length === 1 ? '' : 's'}`;

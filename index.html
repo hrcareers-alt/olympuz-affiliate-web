@@ -6701,6 +6701,18 @@ directoryList.innerHTML += `
 
     const nonWeeklyMonthlyDiff = Math.max(0, newMonthlyTotal - newWeeklyTotal);
 
+    // 🟢 FIX: Only stamp the "weekly" portion as happening "now" when the
+    // month being overridden IS the current month. Overriding a past month
+    // must never inject a record that looks like it happened this week —
+    // that was leaking into every user's current Weekly total regardless
+    // of which month was actually being viewed.
+    const nowDate = new Date();
+    const currentMonthKey = `${nowDate.getFullYear()}-${String(nowDate.getMonth() + 1).padStart(2, '0')}`;
+    const isOverridingCurrentMonth = targetMonthKey === currentMonthKey;
+    const weeklyPortionDate = isOverridingCurrentMonth
+      ? nowDate
+      : new Date(`${targetMonthKey}-01T00:00:00`);
+
     // 3. Write new weekly count if > 0 (uses 'newWeeklyTotal')
     if (newWeeklyTotal > 0) {
       await addDoc(collection(db, "raw_referrals"), {
@@ -6709,8 +6721,8 @@ directoryList.innerHTML += `
         count: newWeeklyTotal, // 🟢 FIXED: Used newWeeklyTotal instead of undefined 'count'
         monthKey: targetMonthKey,
         type: "daily",
-        timestamp: new Date().toISOString(),
-        createdAt: new Date().toISOString()
+        timestamp: weeklyPortionDate.toISOString(),
+        createdAt: nowDate.toISOString()
       });
     }
 
@@ -6724,7 +6736,7 @@ directoryList.innerHTML += `
         monthKey: targetMonthKey,
         type: "override_monthly_base",
         timestamp: pastDate.toISOString(),
-        createdAt: pastDate.toISOString()
+        createdAt: nowDate.toISOString()
       });
     }
 
@@ -6991,10 +7003,14 @@ directoryList.innerHTML += `
 
           if (itemMonthKey === selectedRawMonthKey) {
             userMonthlyMap[item.userId] = (userMonthlyMap[item.userId] || 0) + (item.count || 0);
-          }
 
-          if (docDate >= monday) {
-            userWeeklyMap[item.userId] = (userWeeklyMap[item.userId] || 0) + (item.count || 0);
+            // 🟢 FIX: Weekly must be scoped to the same month being viewed,
+            // otherwise entries tagged to other months but timestamped "now"
+            // (e.g. admin overrides for a past month) leak into this week's
+            // total and can make Weekly exceed the monthly Raw Referrals sum.
+            if (docDate >= monday) {
+              userWeeklyMap[item.userId] = (userWeeklyMap[item.userId] || 0) + (item.count || 0);
+            }
           }
         });
 

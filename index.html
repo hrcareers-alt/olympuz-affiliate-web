@@ -2973,6 +2973,16 @@ body.light-mode header button[onclick="toggleMobileSidebar()"] {
     <p class="text-[10px] text-amber-400 mt-1">⚠️ Changing this updates the affiliate's REAL login email. They will need to sign in with the new address, and it will require re-verification.</p>
   </div>
 
+  <div>
+    <label class="block text-slate-400 text-[11px] font-semibold mb-1">Access Role</label>
+    <select id="modal-edit-role" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+      <option value="affiliate">Affiliate</option>
+      <option value="moderator">Moderator</option>
+      <option value="admin">Admin</option>
+    </select>
+    <p class="text-[10px] text-slate-500 mt-1">Moderators can remove Community Chat messages, send images, and post messages with clickable links.</p>
+  </div>
+
   <div class="grid grid-cols-2 gap-3">
     <div>
       <label class="block text-slate-400 text-[11px] font-semibold mb-1">Mobile Number</label>
@@ -5168,6 +5178,146 @@ async function sendQualificationNotification(uid, recruitName) {
 window.isChatOpen = false;
 window.unreadChatCount = 0;
 window.unsubCommunityChat = null;
+window.chatMutedUntil = null;
+window.chatMuteTimer = null;
+
+// 🛡️ Escape raw text before injecting into the chat DOM
+window.escapeChatHtml = (str) => {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+// 🔗 Detect whether a chat message contains a link
+window.chatContainsLink = (str) => {
+  return /((https?:\/\/|www\.)\S+)/i.test(str || '');
+};
+
+// 🔗 Turn URLs in an already-escaped string into clickable links (Admin/Moderator messages only)
+window.linkifyChatText = (escapedText) => {
+  return escapedText.replace(/((https?:\/\/|www\.)[^\s<]+)/gi, (match) => {
+    let href = match;
+    if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="underline break-all font-semibold hover:opacity-80">${match}</a>`;
+  });
+};
+
+// 🎛️ Show/hide the "send image" button based on the logged-in user's role
+window.updateChatComposerForRole = () => {
+  const imageBtn = document.getElementById('chat-image-btn');
+  const canModerateChat = (currentUserRole === 'admin' || currentUserRole === 'moderator');
+  if (imageBtn) imageBtn.classList.toggle('hidden', !canModerateChat);
+};
+
+// 🔇 Reflect the affiliate's current mute status (from window.chatMutedUntil) in the chat input UI
+window.applyChatMuteState = () => {
+  const input = document.getElementById('chat-message-input');
+  const muteBanner = document.getElementById('chat-mute-banner');
+  if (!input) return;
+
+  if (window.chatMuteTimer) { clearInterval(window.chatMuteTimer); window.chatMuteTimer = null; }
+
+  const canModerateChat = (currentUserRole === 'admin' || currentUserRole === 'moderator');
+  const mutedUntilTime = window.chatMutedUntil ? new Date(window.chatMutedUntil).getTime() : 0;
+
+  if (!canModerateChat && mutedUntilTime > Date.now()) {
+    input.disabled = true;
+    input.placeholder = "Muted — see notice below";
+
+    const updateCountdown = () => {
+      const remaining = Math.max(0, Math.ceil((mutedUntilTime - Date.now()) / 1000));
+      if (remaining <= 0) {
+        clearInterval(window.chatMuteTimer);
+        window.chatMuteTimer = null;
+        window.chatMutedUntil = null;
+        input.disabled = false;
+        input.placeholder = "Type or paste a message...";
+        if (muteBanner) muteBanner.classList.add('hidden');
+        return;
+      }
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      if (muteBanner) {
+        muteBanner.classList.remove('hidden');
+        muteBanner.innerText = `🔇 Muted for sending a link — try again in ${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+    };
+    updateCountdown();
+    window.chatMuteTimer = setInterval(updateCountdown, 1000);
+  } else {
+    input.disabled = false;
+    input.placeholder = "Type or paste a message...";
+    if (muteBanner) muteBanner.classList.add('hidden');
+  }
+};
+
+// 🗑️ Admin/Moderator: remove a message for everyone
+window.deleteChatMessage = async (messageId) => {
+  if (!(currentUserRole === 'admin' || currentUserRole === 'moderator')) return;
+  if (!confirm("Remove this message for everyone?")) return;
+  try {
+    await deleteDoc(doc(db, "community_chat", messageId));
+  } catch (err) {
+    console.error("Failed to delete message:", err);
+    alert("Failed to delete message: " + err.message);
+  }
+};
+
+// 🖼️ Admin/Moderator: upload and send an image in the community chat
+window.handleChatImageSelect = async (event) => {
+  const fileInputEl = event.target;
+  const file = fileInputEl.files && fileInputEl.files[0];
+  fileInputEl.value = ""; // allow re-selecting the same file later
+  if (!file) return;
+
+  if (!(currentUserRole === 'admin' || currentUserRole === 'moderator')) {
+    return alert("Only admins and moderators can send images in the community chat.");
+  }
+
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in to send an image.");
+  if (!file.type.startsWith('image/')) return alert("Please select a valid image file.");
+  if (file.size > 5 * 1024 * 1024) return alert("Image is too large. Please choose a file under 5MB.");
+
+  const imageBtn = document.getElementById('chat-image-btn');
+  if (imageBtn) { imageBtn.disabled = true; imageBtn.classList.add('opacity-50'); }
+
+  try {
+    const storageRef = ref(storage, `community_chat_images/${user.uid}_${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db, "community_chat"), {
+      userId: user.uid,
+      username: currentUsername || 'user',
+      role: currentUserRole || 'affiliate',
+      text: '',
+      imageUrl: imageUrl,
+      createdAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error("Failed to send image:", err);
+    alert("Failed to send image: " + err.message);
+  } finally {
+    if (imageBtn) { imageBtn.disabled = false; imageBtn.classList.remove('opacity-50'); }
+  }
+};
+
+// 🔍 View a chat image full-size
+window.viewChatImage = (url) => {
+  const modal = document.getElementById('chat-image-view-modal');
+  const img = document.getElementById('chat-image-view-img');
+  if (!modal || !img) return;
+  img.src = url;
+  modal.classList.remove('hidden');
+};
+
+window.closeChatImageView = () => {
+  document.getElementById('chat-image-view-modal')?.classList.add('hidden');
+};
 
 // Toggle Function (Automatically starts listener when opened)
 window.toggleCommunityChat = () => {
@@ -5222,6 +5372,7 @@ window.listenToCommunityChat = () => {
 
       // Inside window.listenToCommunityChat -> docsArray.forEach loop:
       let chatHtml = '';
+      const canModerateChat = (currentUserRole === 'admin' || currentUserRole === 'moderator');
 docsArray.forEach((msg) => {
   const isMe = msg.userId === currentUid;
   const formattedTime = msg.createdAt 
@@ -5231,6 +5382,23 @@ docsArray.forEach((msg) => {
   const usernameDisplay = `@${msg.username || 'user'}`;
   const roleTag = msg.role === 'admin' 
     ? `<span class="text-[9px] bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-1 rounded font-bold uppercase ml-1">Admin</span>` 
+    : (msg.role === 'moderator'
+      ? `<span class="text-[9px] bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 px-1 rounded font-bold uppercase ml-1">Mod</span>`
+      : '');
+
+  // 🟢 Escape text first, then only Admin/Moderator messages get their links turned clickable
+  const canPostLinks = (msg.role === 'admin' || msg.role === 'moderator');
+  const safeText = window.escapeChatHtml((msg.text || '').trim());
+  const renderedText = canPostLinks ? window.linkifyChatText(safeText) : safeText;
+
+  const imageBlock = msg.imageUrl
+    ? `<div class="mt-1.5 rounded-lg overflow-hidden border ${isMe ? 'border-indigo-400/40' : 'border-slate-200'} cursor-zoom-in" onclick="window.viewChatImage('${msg.imageUrl}')">
+         <img src="${msg.imageUrl}" class="max-w-full max-h-48 object-cover" alt="Attached image">
+       </div>`
+    : '';
+
+  const removeBtn = canModerateChat
+    ? `<button type="button" onclick="window.deleteChatMessage('${msg.id}')" title="Remove message" class="text-slate-400 hover:text-red-500 text-[10px] ml-1"><i class="fa-solid fa-trash"></i></button>`
     : '';
 
   // 🟢 Make sure ${msg.text} is placed directly against the inner HTML tags
@@ -5240,12 +5408,13 @@ docsArray.forEach((msg) => {
         <span class="font-bold ${isMe ? 'text-indigo-600' : 'text-slate-700'}">${usernameDisplay}</span>
         ${roleTag}
         <span class="text-slate-400 text-[9px]">${formattedTime}</span>
+        ${removeBtn}
       </div>
       <div class="p-2.5 rounded-2xl max-w-[85%] whitespace-pre-wrap break-words ${
         isMe 
           ? 'bg-indigo-600 text-white rounded-tr-none' 
           : 'bg-white border border-slate-200 text-slate-800 chat-bubble-received rounded-tl-none shadow-sm'
-      }">${msg.text.trim()}</div>
+      }">${renderedText}${imageBlock}</div>
     </div>
   `;
 });
@@ -5292,19 +5461,48 @@ window.sendCommunityChatMessage = async (e) => {
   }
 
   try {
-    input.value = "";
-
+    // 🟢 Always re-read the live role & mute status from Firestore so a stale
+    // cached role/mute can't be used to bypass the link restriction below.
     let senderUsername = typeof currentUsername !== 'undefined' ? currentUsername : '';
     let senderRole = typeof currentUserRole !== 'undefined' ? currentUserRole : 'affiliate';
+    let liveMutedUntil = window.chatMutedUntil || null;
 
-    if (!senderUsername) {
-      const uDoc = await getDoc(doc(db, "users", user.uid));
-      if (uDoc.exists()) {
-        const uData = uDoc.data();
-        senderUsername = uData.username || 'user';
-        senderRole = uData.role || 'affiliate';
-      }
+    const uDoc = await getDoc(doc(db, "users", user.uid));
+    if (uDoc.exists()) {
+      const uData = uDoc.data();
+      senderUsername = uData.username || senderUsername || 'user';
+      senderRole = uData.role || 'affiliate';
+      liveMutedUntil = uData.chatMutedUntil || null;
+      currentUserRole = senderRole;
+      window.chatMutedUntil = liveMutedUntil;
     }
+
+    const canModerateChat = (senderRole === 'admin' || senderRole === 'moderator');
+
+    // 🔇 Block sending while an active mute is in effect
+    if (!canModerateChat && liveMutedUntil && new Date(liveMutedUntil).getTime() > Date.now()) {
+      window.applyChatMuteState();
+      alert("You're currently muted for sending a link. Please wait for the mute timer to finish.");
+      return false;
+    }
+
+    // 🚫 Affiliates can't send links — the message is blocked (not sent/stored) and a 5-minute
+    // mute is applied, stacking another 5 minutes on top of any mute already running.
+    if (!canModerateChat && window.chatContainsLink(text)) {
+      const baseTime = (liveMutedUntil && new Date(liveMutedUntil).getTime() > Date.now())
+        ? new Date(liveMutedUntil).getTime()
+        : Date.now();
+      const newMutedUntil = new Date(baseTime + 5 * 60 * 1000).toISOString();
+
+      await updateDoc(doc(db, "users", user.uid), { chatMutedUntil: newMutedUntil });
+      window.chatMutedUntil = newMutedUntil;
+      window.applyChatMuteState();
+
+      alert("Links aren't allowed in the community chat. You've been muted for 5 minutes.");
+      return false;
+    }
+
+    input.value = "";
 
     await addDoc(collection(db, "community_chat"), {
       userId: user.uid,
@@ -5723,6 +5921,8 @@ window.formatPHPhoneNumber = formatPHPhoneNumber;
 
         const roleBadge = user.role === 'admin' 
           ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Admin</span>`
+          : user.role === 'moderator'
+          ? `<span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Moderator</span>`
           : `<span class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Affiliate</span>`;
 
         // Replace directoryList.innerHTML += `...` inside renderAdminUserPage() with this:
@@ -5810,6 +6010,7 @@ directoryList.innerHTML += `
       document.getElementById('modal-edit-lastname').value = user.lastName || '';
       document.getElementById('modal-edit-username').value = user.username || '';
       document.getElementById('modal-edit-email').value = user.email || '';
+      document.getElementById('modal-edit-role').value = (user.role === 'admin' || user.role === 'moderator') ? user.role : 'affiliate';
       document.getElementById('modal-edit-phone').value = user.phoneNumber || '';
       document.getElementById('modal-edit-birthdate').value = user.birthDate || '';
       document.getElementById('modal-edit-city').value = user.cityOfResidence || '';
@@ -5859,6 +6060,7 @@ directoryList.innerHTML += `
         const newCityOfResidence = document.getElementById('modal-edit-city').value.trim();
         const newPaymentMethod = document.getElementById('modal-edit-paymentmethod').value;
         const newAccountNum = document.getElementById('modal-edit-accountnum').value.trim();
+        const newRole = document.getElementById('modal-edit-role').value;
 
         if (!newUsername) {
           alert("Username cannot be empty.");
@@ -5894,7 +6096,8 @@ directoryList.innerHTML += `
           birthDate: newBirthDate,
           cityOfResidence: newCityOfResidence,
           paymentMethod: newPaymentMethod,
-          accountNumber: newAccountNum
+          accountNumber: newAccountNum,
+          role: newRole
         });
 
         alert("Affiliate information updated successfully!" + (emailChanged ? " Their login email has also been changed." : ""));
@@ -8242,6 +8445,9 @@ window.init30thMonthFilter = () => {
         const userData = docSnap.data();
         currentUsername = userData.username || 'user';
         currentUserRole = userData.role || 'affiliate';
+        window.chatMutedUntil = userData.chatMutedUntil || null;
+        if (typeof window.updateChatComposerForRole === 'function') window.updateChatComposerForRole();
+        if (typeof window.applyChatMuteState === 'function') window.applyChatMuteState();
 
         sessionStorage.removeItem('rewardPopupDismissed');
 
@@ -9149,6 +9355,8 @@ window.logout = async () => {
   if (unsubAdminRaw) { unsubAdminRaw(); unsubAdminRaw = null; }
   if (unsubAdminInvitations) { unsubAdminInvitations(); unsubAdminInvitations = null; }
   if (unsubCommunityChat) { unsubCommunityChat(); unsubCommunityChat = null; }
+  if (window.chatMuteTimer) { clearInterval(window.chatMuteTimer); window.chatMuteTimer = null; }
+  window.chatMutedUntil = null;
   if (unsubPendingWithdrawals) { unsubPendingWithdrawals(); unsubPendingWithdrawals = null; }
   if (unsubUserWithdrawals) { unsubUserWithdrawals(); unsubUserWithdrawals = null; }
   if (unsubPending30thWithdrawals) { unsubPending30thWithdrawals(); unsubPending30thWithdrawals = null; }
@@ -9192,8 +9400,15 @@ window.logout = async () => {
       <div class="text-center text-slate-400 py-8">Loading messages...</div>
     </div>
 
+    <!-- MUTE NOTICE BANNER -->
+    <div id="chat-mute-banner" class="hidden px-3 py-1.5 bg-red-50 border-t border-red-200 text-red-600 text-[10px] font-semibold text-center shrink-0"></div>
+
     <!-- INPUT FORM -->
     <form id="chat-input-form" onsubmit="sendCommunityChatMessage(event); return false;" class="p-2.5 bg-white border-t border-slate-200 flex gap-2 items-end shrink-0">
+      <input type="file" id="chat-image-input" accept="image/*" class="hidden" onchange="window.handleChatImageSelect(event)">
+      <button type="button" id="chat-image-btn" onclick="document.getElementById('chat-image-input').click()" title="Send image (Admin/Moderator only)" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2.5 rounded-xl transition text-xs shrink-0 self-end">
+        <i class="fa-solid fa-image"></i>
+      </button>
       <textarea 
         id="chat-message-input" 
         rows="1" 
@@ -9215,6 +9430,16 @@ window.logout = async () => {
     <span id="chat-unread-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-md">0</span>
   </button>
 
+</div>
+
+<!-- CHAT IMAGE FULL VIEW MODAL -->
+<div id="chat-image-view-modal" class="hidden fixed inset-0 z-[999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onclick="window.closeChatImageView()">
+  <div class="relative max-w-3xl w-full max-h-[90vh] flex items-center justify-center" onclick="event.stopPropagation()">
+    <button onclick="window.closeChatImageView()" class="absolute -top-10 right-0 text-white hover:text-amber-400 text-xl font-bold transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img id="chat-image-view-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl" alt="Full size attachment">
+  </div>
 </div>
 </body>
 </html>
